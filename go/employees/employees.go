@@ -1,4 +1,4 @@
-package main
+package employees
 
 import (
 	"database/sql"
@@ -7,6 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+var db *sql.DB
 
 type Employee struct {
 	ID            int    `json:"id"`
@@ -24,7 +26,7 @@ type Employee struct {
 	StatusID      int    `json:"statusID"`
 }
 
-func GetEmployees(db *sql.DB, c *gin.Context) {
+func GetEmployees(c *gin.Context) {
 
 	// An albums slice to hold data from returned rows.
 	var employees []Employee

@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/benfortenberry/accredi-track/employees"
+	employees "github.com/benfortenberry/accredi-track/employees"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 )
