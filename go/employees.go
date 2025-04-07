@@ -1,4 +1,4 @@
-package employees
+package main
 
 import (
 	"database/sql"
