@@ -1,4 +1,4 @@
-package licenseTypes
+package licensetypes
 
 import (
 	"database/sql"
