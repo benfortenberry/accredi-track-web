@@ -9,24 +9,16 @@ import (
 )
 
 type Employee struct {
-	ID            int    `json:"id"`
-	FirstName     string `json:"firstName"`
-	LastName      string `json:"lastName"`
-	MiddleName    string `json:"middleName,omitempty"` // Optional field
-	StreetAddress string `json:"streetAddress"`
-	City          string `json:"city"`
-	State         string `json:"state"`
-	Zipcode       string `json:"zipcode"`
-	Phone1        string `json:"phone1"`
-	Phone2        string `json:"phone2,omitempty"` // Optional field
-	Email         string `json:"email"`
-	EmployerID    int    `json:"employerID"`
-	StatusID      int    `json:"statusID"`
+	ID        int    `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Phone1    string `json:"phone1"`
+	Email     string `json:"email"`
 }
 
 func GetEmployees(db *sql.DB, c *gin.Context) {
 	var employees []Employee
-	rows, err := db.Query("SELECT * FROM employees")
+	rows, err := db.Query("SELECT id, firstName, lastName,  phone1, email FROM employees")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query employees"})
@@ -37,9 +29,9 @@ func GetEmployees(db *sql.DB, c *gin.Context) {
 	for rows.Next() {
 		var emp Employee
 		if err := rows.Scan(
-			&emp.ID, &emp.FirstName, &emp.LastName, &emp.MiddleName,
-			&emp.StreetAddress, &emp.City, &emp.State, &emp.Zipcode,
-			&emp.Phone1, &emp.Phone2, &emp.Email, &emp.EmployerID, &emp.StatusID,
+			&emp.ID, &emp.FirstName, &emp.LastName,
+
+			&emp.Phone1, &emp.Email,
 		); err != nil {
 			fmt.Println("Error: ", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan employee data"})
@@ -68,15 +60,14 @@ func InsertEmployee(db *sql.DB, c *gin.Context) {
 	// Prepare the SQL statement for inserting an employee
 	query := `
         INSERT INTO employees (
-            firstName, lastName, middleName, streetAddress, city, state, zipcode,
-            phone1, phone2, email, employerID, statusID
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            firstName, lastName, 
+            phone1, email
+        ) VALUES (?, ?, ?, ?)
     `
 
 	// Execute the query
 	result, err := db.Exec(query,
-		emp.FirstName, emp.LastName, emp.MiddleName, emp.StreetAddress, emp.City,
-		emp.State, emp.Zipcode, emp.Phone1, emp.Phone2, emp.Email, emp.EmployerID, emp.StatusID,
+		emp.FirstName, emp.LastName, emp.Phone1, emp.Email,
 	)
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -142,15 +133,13 @@ func UpdateEmployee(db *sql.DB, c *gin.Context) {
 	// Prepare the SQL statement for updating an employee
 	query := `
         UPDATE employees
-        SET firstName = ?, lastName = ?, middleName = ?, streetAddress = ?, city = ?, state = ?, zipcode = ?,
-            phone1 = ?, phone2 = ?, email = ?, employerID = ?, statusID = ?
+        SET firstName = ?, lastName = ?, phone1 = ?, email = ?
         WHERE id = ?
     `
 
 	// Execute the query
 	result, err := db.Exec(query,
-		emp.FirstName, emp.LastName, emp.MiddleName, emp.StreetAddress, emp.City,
-		emp.State, emp.Zipcode, emp.Phone1, emp.Phone2, emp.Email, emp.EmployerID, emp.StatusID, id,
+		emp.FirstName, emp.LastName, emp.Phone1, emp.Email, id,
 	)
 	if err != nil {
 		fmt.Println("Error: ", err)

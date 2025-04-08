@@ -2,8 +2,8 @@ import { Outlet } from "react-router-dom";
 
 function Layout() {
   return (
-    <div className="container-fluid mx-auto">
-      <header className="text-center py-3">
+    <div className="">
+      <header className="text-center text-2xl font-bold  py-3">
         <h1>
           &nbsp;AccrediTrack
         </h1>
