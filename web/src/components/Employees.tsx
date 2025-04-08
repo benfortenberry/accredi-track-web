@@ -5,23 +5,18 @@ function Employees() {
   const api = "http://localhost:8080/employees";
 
   interface Employee {
+    id: number;
     firstName: string;
     lastName: string;
-    middleName: string;
-    streetAddress: string;
-    city: string;
-    state: string;
-    zipcode: string;
     phone1: string;
-    phone2?: string; // Optional field
     email: string;
-    employerID: number;
-    statusID: number;
   }
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false); // Tracks if the modal is in edit mode
+  const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null); // Stores the employee being edited
 
   useEffect(() => {
     getExmployees();
@@ -50,27 +45,94 @@ function Employees() {
 
     // Create a new employee object from the form inputs
     const formData = new FormData(event.currentTarget);
-    const newEmployee = {
+    const employeeData = {
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       phone1: formData.get("phone1") as string,
       email: formData.get("email") as string,
     };
 
-    // Send a POST request to the API
+    if (isEditing && currentEmployee) {
+      axios
+        .put(`${api}/${currentEmployee.id}`, employeeData)
+        .then((res) => {
+          console.log("Employee updated successfully:", res.data);
+          showToast("Employee updated successfully!", "success");
+          (
+            document.getElementById("addEmployeeForm") as HTMLFormElement
+          )?.reset();
+         // getExmployees();
+        
+          // Update the employee list
+          setEmployees((prevEmployees) =>
+            prevEmployees.map((employee) =>
+              employee.id === currentEmployee.id ? res.data : employee
+            )
+          );
+          // Close the modal
+          (
+            document.getElementById("add-employee-modal") as HTMLDialogElement
+          )?.close();
+        })
+        .catch((err) => {
+          console.error("Error updating employee:", err);
+          showToast("Failed to update employee. Please try again.", "error");
+        });
+    } else {
+      // Send a POST request to the API
+      axios
+        .post(api, employeeData)
+        .then((res) => {
+          console.log("Employee added successfully:", res.data);
+          showToast("Employee added successfully!", "success");
+          // Optionally, refresh the employee list
+          getExmployees();
+
+          // event.currentTarget.reset();
+          (
+            document.getElementById("addEmployeeForm") as HTMLFormElement
+          )?.reset();
+          // Close the modal
+          (
+            document.getElementById("add-employee-modal") as HTMLDialogElement
+          )?.close();
+        })
+        .catch((err) => {
+          console.error("Error adding employee:", err);
+          showToast("An error happened when trying to add employee.", "error");
+        });
+    }
+  };
+
+  const handleDelete = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Get the employee ID to delete (you can pass it as a hidden input in the form or store it in state)
+    const formData = new FormData(event.currentTarget);
+    const employeeId = formData.get("employeeId") as string;
+
+    // Send a DELETE request to the API
     axios
-      .post(api, newEmployee)
+      .delete(`${api}/${employeeId}`)
       .then((res) => {
-        console.log("Employee added successfully:", res.data);
-        showToast("Employee added successfully!", "success");
-        // Optionally, refresh the employee list
-        getExmployees();
+        console.log("Employee deleted successfully:", res.data);
+        showToast("Employee deleted successfully", "success");
+        // Refresh the employee list
+        //getExmployees();
+        setEmployees((prevEmployees) =>
+          prevEmployees.filter(
+            (employee) => employee.id.toString() !== employeeId
+          )
+        );
+
         // Close the modal
-        (document.getElementById("my_modal_1") as HTMLDialogElement)?.close();
+        (
+          document.getElementById("delete-employee-modal") as HTMLDialogElement
+        )?.close();
       })
       .catch((err) => {
-        console.error("Error adding employee:", err);
-        alert("Failed to add employee. Please try again.");
+        console.error("Error deleting employee:", err);
+        showToast("Failed to delete employee. Please try again.", "error");
       });
   };
 
@@ -103,11 +165,15 @@ function Employees() {
           Employees
           <button
             className="btn float-right"
-            onClick={() =>
+            onClick={() => {
+              setIsEditing(false); // Set to add mode
+              setCurrentEmployee(null); // Clear current employee
               (
-                document.getElementById("my_modal_1") as HTMLDialogElement
-              )?.showModal()
-            }
+                document.getElementById(
+                  "add-employee-modal"
+                ) as HTMLDialogElement
+              )?.showModal();
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +200,7 @@ function Employees() {
             <tbody>
               {employees?.map((employee, i) => {
                 return (
-                  <tr>
+                  <tr key={ i}>
                     <td>
                       {" "}
                       <div className="status status-success float-right"></div>
@@ -163,7 +229,17 @@ function Employees() {
                           </a>
                         </li>
                         <li>
-                          <a>
+                          <a
+                            onClick={() => {
+                              setIsEditing(true); // Set to edit mode
+                              setCurrentEmployee(employee); // Set the employee to be edited
+                              (
+                                document.getElementById(
+                                  "add-employee-modal"
+                                ) as HTMLDialogElement
+                              )?.showModal();
+                            }}
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 16 16"
@@ -176,7 +252,22 @@ function Employees() {
                           </a>
                         </li>
                         <li>
-                          <a>
+                          <a
+                            onClick={() => {
+                              // Set the employee ID in the hidden input field
+                              const employeeIdInput = document.getElementById(
+                                "employeeIdToDelete"
+                              ) as HTMLInputElement;
+                              employeeIdInput.value = employee.id.toString();
+
+                              // Show the delete modal
+                              (
+                                document.getElementById(
+                                  "delete-employee-modal"
+                                ) as HTMLDialogElement
+                              )?.showModal();
+                            }}
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 16 16"
@@ -200,7 +291,27 @@ function Employees() {
           </table>
         </div>
 
-        <dialog id="my_modal_1" className="modal">
+        <dialog id="delete-employee-modal" className="modal">
+          <div className="modal-box">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+            <h3 className="font-bold text-lg my-5">
+              Are you sure you wish to delete this employee?
+            </h3>
+
+            <form id="addEmployeeForm" onSubmit={handleDelete}>
+              <input type="hidden" name="employeeId" id="employeeIdToDelete" />
+              <button className="btn float-right btn-error mt-2">
+                Yes, delete
+              </button>
+            </form>
+          </div>
+        </dialog>
+
+        <dialog id="add-employee-modal" className="modal">
           <div className="modal-box">
             <form method="dialog">
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -209,7 +320,7 @@ function Employees() {
             </form>
             <h3 className="font-bold text-lg">Add Employee</h3>
 
-            <form onSubmit={handleSubmit}>
+            <form id="addEmployeeForm" onSubmit={handleSubmit}>
               <label className="input validator mt-2">
                 <input
                   type="text"
@@ -217,6 +328,7 @@ function Employees() {
                   className=""
                   name="lastName"
                   placeholder="Last Name"
+                  defaultValue={currentEmployee?.lastName || ""} // Populate when editing
                 />
               </label>
               <p className="validator-hint  hidden mt-1 mb-2">Required</p>
@@ -228,6 +340,7 @@ function Employees() {
                   className="grow"
                   name="firstName"
                   placeholder="First Name"
+                  defaultValue={currentEmployee?.firstName || ""} // Populate when editing
                 />
               </label>
               <p className="validator-hint hidden mt-1 mb-2">Required</p>
@@ -258,13 +371,14 @@ function Employees() {
                   required
                   placeholder="Phone Number"
                   pattern="[0-9]*"
-                  minLength={9}
-                  maxLength={9}
-                  title="Must be 9 digits"
+                  minLength={10}
+                  maxLength={10}
+                  title="Must be 10 digits"
+                  defaultValue={currentEmployee?.phone1 || ""} // Populate when editing
                 />
               </label>
               <p className="validator-hint hidden mt-1 mb-2">
-                Must be 9 digits
+                Must be 10 digits
               </p>
 
               <label className="input validator mt-2">
@@ -289,13 +403,16 @@ function Employees() {
                   name="email"
                   placeholder="Email Address"
                   required
+                  defaultValue={currentEmployee?.email || ""} // Populate when editing
                 />
               </label>
               <div className="validator-hint hidden mt-1 mb-2">
                 Enter valid email address
               </div>
 
-              <button className="btn float-right btn-success mt-2">Add</button>
+              <button className="btn float-right btn-success mt-2">
+                {isEditing ? "Save Changes" : "Add"}
+              </button>
             </form>
           </div>
         </dialog>

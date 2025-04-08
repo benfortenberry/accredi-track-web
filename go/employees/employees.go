@@ -160,6 +160,29 @@ func UpdateEmployee(db *sql.DB, c *gin.Context) {
 		return
 	}
 
+	// Query the updated employee data
+	var updatedEmployee Employee
+	getQuery := `
+		 SELECT id, firstName, lastName, phone1, email
+		 FROM employees
+		 WHERE id = ?
+	 `
+	err = db.QueryRow(getQuery, id).Scan(
+		&updatedEmployee.ID,
+		&updatedEmployee.FirstName,
+		&updatedEmployee.LastName,
+		&updatedEmployee.Phone1,
+		&updatedEmployee.Email,
+	)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve updated employee"})
+		return
+	}
+
+	// Respond with the updated employee data
+	c.JSON(http.StatusOK, updatedEmployee)
+
 	// Respond with a success message
-	c.JSON(http.StatusOK, gin.H{"message": "Employee updated successfully"})
+	// c.JSON(http.StatusOK, gin.H{"message": "Employee updated successfully"})
 }

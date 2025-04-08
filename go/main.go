@@ -57,7 +57,7 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET"},
+		AllowMethods:     []string{"GET, POST, DELETE, PUT"},
 		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding", "Authorization", "Cache-Control"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -70,10 +70,10 @@ func main() {
 	router.POST("/employees", func(c *gin.Context) {
 		employees.InsertEmployee(db, c)
 	})
-	router.DELETE("/employees:id", func(c *gin.Context) {
+	router.DELETE("/employees/:id", func(c *gin.Context) {
 		employees.DeleteEmployee(db, c)
 	})
-	router.PUT("/employees:id", func(c *gin.Context) {
+	router.PUT("/employees/:id", func(c *gin.Context) {
 		employees.UpdateEmployee(db, c)
 	})
 
