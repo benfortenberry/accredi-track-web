@@ -150,17 +150,18 @@ function Employees() {
       });
   };
 
-
   const handleCloseModal = () => {
     // Reset the form and close the modal
-    const form = document.getElementById("addEmployeeForm") as HTMLFormElement;
-    form.reset();
-    setCurrentEmployee(null); // Clear the current employee
-    setIsEditing(false); // Reset to add mode
+
     const modal = document.getElementById(
       "add-employee-modal"
     ) as HTMLDialogElement;
     modal.close();
+
+    const form = document.getElementById("addEmployeeForm") as HTMLFormElement;
+    form.reset();
+    setCurrentEmployee(null); // Clear the current employee
+    setIsEditing(false); // Reset to add mode
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
@@ -175,7 +176,7 @@ function Employees() {
 
         <h2 className="text-xl font-bold mb-4">
           {" "}
-          Employees
+          Employees{" "}
           <button
             className="btn float-right"
             onClick={() => {
@@ -203,6 +204,32 @@ function Employees() {
             <thead>
               <tr>
                 <th></th>
+                <th>
+                  Status
+                  <div className="tooltip tooltip-right">
+                    <div className="tooltip-content text-left p-3 pt-5">
+                      <div className="status   status-success "></div> - All
+                      Licenses Current
+                      <br />
+                      <div className="status  status-error "></div> - Some or
+                      All Licences Expired
+                    </div>
+                    <button className="ml-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3 3 0 1 1 2.871 5.026v.345a.75.75 0 0 1-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 1 0 8.94 6.94ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </th>
                 <th>Last Name</th>
                 <th>First Name</th>
                 <th>Phone</th>
@@ -215,32 +242,7 @@ function Employees() {
                 return (
                   <tr key={i}>
                     <td>
-                      {" "}
-                      <div className="status status-success float-right"></div>
-                    </td>
-                    <td>{employee.lastName}</td>
-                    <td>{employee.firstName}</td>
-                    <td>{employee.phone1}</td>
-                    <td>{employee.email}</td>
-                    <td className="">
-                      <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
-                        <li>
-                          <a>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 16 16"
-                              fill="currentColor"
-                              className="size-5"
-                            >
-                              <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </a>
-                        </li>
+                      <ul className="menu menu-horizontal bg-base-200  rounded-box">
                         <li>
                           <a
                             onClick={() => {
@@ -297,6 +299,34 @@ function Employees() {
                         </li>
                       </ul>
                     </td>
+
+                    <td>
+                      <div className="status status-xl text-center ml-3 status-success "></div>
+                    </td>
+                    <td>{employee.lastName}</td>
+                    <td>{employee.firstName}</td>
+                    <td>{employee.phone1}</td>
+                    <td>{employee.email}</td>
+                    <td className="">
+                      <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
+                        <li>
+                          <a>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="size-5"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </a>
+                        </li>
+                      </ul>
+                    </td>
                   </tr>
                 );
               })}
@@ -327,9 +357,12 @@ function Employees() {
         <dialog id="add-employee-modal" className="modal">
           <div className="modal-box">
             {/* <form method="dialog"> */}
-            <button onClick={handleCloseModal} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
+            <button
+              onClick={handleCloseModal}
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            >
+              ✕
+            </button>
             {/* </form> */}
             <h3 className="font-bold text-lg">Add Employee</h3>
 
@@ -424,7 +457,7 @@ function Employees() {
               </div>
 
               <button className="btn float-right btn-success mt-2">
-                {isEditing ? "Save Changes" : "Add"}
+                {isEditing ? "Save" : "Add"}
               </button>
             </form>
           </div>
