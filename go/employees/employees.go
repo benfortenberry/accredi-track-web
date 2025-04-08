@@ -183,6 +183,4 @@ func UpdateEmployee(db *sql.DB, c *gin.Context) {
 	// Respond with the updated employee data
 	c.JSON(http.StatusOK, updatedEmployee)
 
-	// Respond with a success message
-	// c.JSON(http.StatusOK, gin.H{"message": "Employee updated successfully"})
 }

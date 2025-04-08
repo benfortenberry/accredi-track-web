@@ -61,8 +61,8 @@ function Employees() {
           (
             document.getElementById("addEmployeeForm") as HTMLFormElement
           )?.reset();
-         // getExmployees();
-        
+          // getExmployees();
+
           // Update the employee list
           setEmployees((prevEmployees) =>
             prevEmployees.map((employee) =>
@@ -149,6 +149,19 @@ function Employees() {
         setError("Failed to fetch employees");
       });
   };
+
+
+  const handleCloseModal = () => {
+    // Reset the form and close the modal
+    const form = document.getElementById("addEmployeeForm") as HTMLFormElement;
+    form.reset();
+    setCurrentEmployee(null); // Clear the current employee
+    setIsEditing(false); // Reset to add mode
+    const modal = document.getElementById(
+      "add-employee-modal"
+    ) as HTMLDialogElement;
+    modal.close();
+  };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
   } else if (isLoading) {
@@ -200,7 +213,7 @@ function Employees() {
             <tbody>
               {employees?.map((employee, i) => {
                 return (
-                  <tr key={ i}>
+                  <tr key={i}>
                     <td>
                       {" "}
                       <div className="status status-success float-right"></div>
@@ -302,7 +315,7 @@ function Employees() {
               Are you sure you wish to delete this employee?
             </h3>
 
-            <form id="addEmployeeForm" onSubmit={handleDelete}>
+            <form id="deleteEmployeeForm" onSubmit={handleDelete}>
               <input type="hidden" name="employeeId" id="employeeIdToDelete" />
               <button className="btn float-right btn-error mt-2">
                 Yes, delete
@@ -313,11 +326,11 @@ function Employees() {
 
         <dialog id="add-employee-modal" className="modal">
           <div className="modal-box">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            {/* <form method="dialog"> */}
+            <button onClick={handleCloseModal} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                 ✕
               </button>
-            </form>
+            {/* </form> */}
             <h3 className="font-bold text-lg">Add Employee</h3>
 
             <form id="addEmployeeForm" onSubmit={handleSubmit}>

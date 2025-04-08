@@ -15,22 +15,6 @@ import (
 
 var db *sql.DB
 
-type Employee struct {
-	ID            int    `json:"id"`
-	FirstName     string `json:"firstName"`
-	LastName      string `json:"lastName"`
-	MiddleName    string `json:"middleName,omitempty"` // Optional field
-	StreetAddress string `json:"streetAddress"`
-	City          string `json:"city"`
-	State         string `json:"state"`
-	Zipcode       string `json:"zipcode"`
-	Phone1        string `json:"phone1"`
-	Phone2        string `json:"phone2,omitempty"` // Optional field
-	Email         string `json:"email"`
-	EmployerID    int    `json:"employerID"`
-	StatusID      int    `json:"statusID"`
-}
-
 func main() {
 	// Capture connection properties.
 	cfg := mysql.Config{
