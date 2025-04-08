@@ -18,7 +18,7 @@ type Employee struct {
 
 func GetEmployees(db *sql.DB, c *gin.Context) {
 	var employees []Employee
-	rows, err := db.Query("SELECT id, firstName, lastName,  phone1, email FROM employees")
+	rows, err := db.Query("SELECT id, firstName, lastName,  phone1, email FROM employees where deleted IS NULL")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query employees"})
@@ -92,7 +92,11 @@ func DeleteEmployee(db *sql.DB, c *gin.Context) {
 	id := c.Param("id")
 
 	// Prepare the SQL statement for deleting an employee
-	query := "DELETE FROM employees WHERE id = ?"
+	query := `
+        UPDATE employees
+        SET deleted = current_timestamp()
+        WHERE id = ?
+    `
 
 	// Execute the query
 	result, err := db.Exec(query, id)

@@ -19,7 +19,7 @@ function Layout() {
                     <a href="/employees">Employees</a>
                   </li>
                   <li>
-                    <a>Licenses</a>
+                    <a href="/license-types">Licenses</a>
                   </li>
                 </ul>
               </details>

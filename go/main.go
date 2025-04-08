@@ -7,7 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/benfortenberry/accredi-track/employees"
+	employees "github.com/benfortenberry/accredi-track/employees"
+	licensetypes "github.com/benfortenberry/accredi-track/licenses-types"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -61,8 +62,12 @@ func main() {
 		employees.UpdateEmployee(db, c)
 	})
 
-	router.GET("/licenses", func(c *gin.Context) {
-		licensesTypes.GetLicenses(db, c) // Corrected the package name to match the import
+	router.GET("/license-type", func(c *gin.Context) {
+		licensetypes.GetLicenseTypes(db, c)
+	})
+
+	router.POST("/license-type", func(c *gin.Context) {
+		licensetypes.InsertLicenseType(db, c)
 	})
 
 	router.Run("localhost:8080")

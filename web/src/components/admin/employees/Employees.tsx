@@ -19,7 +19,7 @@ function Employees() {
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null); // Stores the employee being edited
 
   useEffect(() => {
-    getExmployees();
+    getEmployees();
   }, []);
 
   const showToast = (message: string, type: "success" | "error") => {
@@ -61,7 +61,7 @@ function Employees() {
           (
             document.getElementById("addEmployeeForm") as HTMLFormElement
           )?.reset();
-          // getExmployees();
+
 
           // Update the employee list
           setEmployees((prevEmployees) =>
@@ -71,7 +71,7 @@ function Employees() {
           );
           // Close the modal
           (
-            document.getElementById("add-employee-modal") as HTMLDialogElement
+            document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
         })
         .catch((err) => {
@@ -86,7 +86,7 @@ function Employees() {
           console.log("Employee added successfully:", res.data);
           showToast("Employee added successfully!", "success");
           // Optionally, refresh the employee list
-          getExmployees();
+          getEmployees();
 
           // event.currentTarget.reset();
           (
@@ -94,7 +94,7 @@ function Employees() {
           )?.reset();
           // Close the modal
           (
-            document.getElementById("add-employee-modal") as HTMLDialogElement
+            document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
         })
         .catch((err) => {
@@ -127,7 +127,7 @@ function Employees() {
 
         // Close the modal
         (
-          document.getElementById("delete-employee-modal") as HTMLDialogElement
+          document.getElementById("delete-modal") as HTMLDialogElement
         )?.close();
       })
       .catch((err) => {
@@ -136,7 +136,7 @@ function Employees() {
       });
   };
 
-  const getExmployees = () => {
+  const getEmployees = () => {
     setIsLoading(true);
     axios
       .get(api)
@@ -154,7 +154,7 @@ function Employees() {
     // Reset the form and close the modal
 
     const modal = document.getElementById(
-      "add-employee-modal"
+      "add-edit-modal"
     ) as HTMLDialogElement;
     modal.close();
 
@@ -184,7 +184,7 @@ function Employees() {
               setCurrentEmployee(null); // Clear current employee
               (
                 document.getElementById(
-                  "add-employee-modal"
+                  "add-edit-modal"
                 ) as HTMLDialogElement
               )?.showModal();
             }}
@@ -250,7 +250,7 @@ function Employees() {
                               setCurrentEmployee(employee); // Set the employee to be edited
                               (
                                 document.getElementById(
-                                  "add-employee-modal"
+                                  "add-edit-modal"
                                 ) as HTMLDialogElement
                               )?.showModal();
                             }}
@@ -278,7 +278,7 @@ function Employees() {
                               // Show the delete modal
                               (
                                 document.getElementById(
-                                  "delete-employee-modal"
+                                  "delete-modal"
                                 ) as HTMLDialogElement
                               )?.showModal();
                             }}
@@ -334,7 +334,7 @@ function Employees() {
           </table>
         </div>
 
-        <dialog id="delete-employee-modal" className="modal">
+        <dialog id="delete-modal" className="modal">
           <div className="modal-box">
             <form method="dialog">
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -354,7 +354,7 @@ function Employees() {
           </div>
         </dialog>
 
-        <dialog id="add-employee-modal" className="modal">
+        <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
             {/* <form method="dialog"> */}
             <button
