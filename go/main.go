@@ -61,5 +61,9 @@ func main() {
 		employees.UpdateEmployee(db, c)
 	})
 
+	// router.GET("/licenses", func(c *gin.Context) {
+	// 	licences.GetLicenses(db, c)
+	// })
+
 	router.Run("localhost:8080")
 }
