@@ -7,7 +7,7 @@ import {
   EmailIcon,
   PhoneIcon,
 } from "../../utils/SvgIcons";
-import { showToast } from "../../utils/Utilities";
+import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import axios from "axios";
 
 function Employees() {
@@ -256,7 +256,7 @@ function Employees() {
 
                       <td>{employee.firstName}</td>
                       <td>{employee.lastName}</td>
-                      <td>{employee.phone1}</td>
+                      <td>{formatPhoneNumber(employee.phone1)}</td>
                       <td>{employee.email}</td>
                       <td className="">
                         <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">

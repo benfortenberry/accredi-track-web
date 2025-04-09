@@ -6,6 +6,7 @@ require (
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-sql-driver/mysql v1.9.2
+	github.com/speps/go-hashids v2.0.0+incompatible
 )
 
 require (

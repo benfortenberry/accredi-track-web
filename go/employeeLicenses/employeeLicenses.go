@@ -196,20 +196,6 @@ func Put(db *sql.DB, c *gin.Context) {
 		return
 	}
 
-	// // Check if any rows were affected
-	// rowsAffected, err := result.RowsAffected()
-	// if err != nil {
-	// 	fmt.Println("Error: ", err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
-	// 	return
-	// }
-
-	// if rowsAffected == 0 {
-	// 	fmt.Println("!!!! Error: ")
-	// 	c.JSON(http.StatusNotFound, gin.H{"error": "employee license not found"})
-	// 	return
-	// }
-
 	var updatedLicense EmployeeLicense
 	getQuery := `
 		 SELECT el.id,

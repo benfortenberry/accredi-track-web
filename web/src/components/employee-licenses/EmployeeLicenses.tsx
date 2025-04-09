@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  AddIcon,
-  EditIcon,
-  DeleteIcon,
-} from "../../utils/SvgIcons";
-import { showToast } from "../../utils/Utilities";
+import { AddIcon, EditIcon, DeleteIcon } from "../../utils/SvgIcons";
+import { showToast, formatDate } from "../../utils/Utilities";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
@@ -135,7 +131,6 @@ function EmployeeLicenses() {
     const formData = new FormData(event.currentTarget);
     const employeeLicenseId = formData.get("employeeLicenseId") as string;
 
-    console.log("!!!", employeeLicenseId);
     // Send a DELETE request to the API
     axios
       .delete(`${api}/${employeeLicenseId}`)
@@ -333,8 +328,8 @@ function EmployeeLicenses() {
                       </td>
 
                       <td>{employeeLicense.licenseName}</td>
-                      <td>{employeeLicense.issueDate}</td>
-                      <td>{employeeLicense.expDate}</td>
+                      <td>{formatDate(employeeLicense.issueDate || "")}</td>
+                      <td>{formatDate(employeeLicense.expDate || "")}</td>
                     </tr>
                   );
                 })}

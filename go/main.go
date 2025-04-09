@@ -39,6 +39,13 @@ func main() {
 	}
 	fmt.Println("Connected!")
 
+	encoding.initHashids()
+
+	// hd := hashids.NewData()
+	// hd.Salt = "your-salt" // Use a strong, unique salt
+	// hd.MinLength = 8      // Minimum length of the generated hash
+	// h, _ := hashids.NewWithData(hd)
+
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{

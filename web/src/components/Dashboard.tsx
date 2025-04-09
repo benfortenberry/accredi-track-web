@@ -3,7 +3,7 @@ import React from "react";
 function Dashboard() {
   return (
     <div className="stats shadow">
-      <div className="stat">
+      {/* <div className="stat">
         <div className="stat-figure text-secondary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +64,7 @@ function Dashboard() {
         <div className="stat-title">New Registers</div>
         <div className="stat-value">1,200</div>
         <div className="stat-desc">↘︎ 90 (14%)</div>
-      </div>
+      </div> */}
     </div>
   );
 }
