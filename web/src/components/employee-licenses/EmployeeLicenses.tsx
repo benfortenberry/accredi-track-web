@@ -201,6 +201,13 @@ function EmployeeLicenses() {
       });
   };
 
+  const getStatus = (expDate?: string): string => {
+    if (!expDate) return "No Expiration Date";
+    const today = new Date();
+    const expirationDate = new Date(expDate);
+    return expirationDate < today ? "Expired" : "Active";
+  };
+
   const handleCloseModal = () => {
     // Reset the form and close the modal
 
@@ -329,7 +336,17 @@ function EmployeeLicenses() {
 
                       <td>{employeeLicense.licenseName}</td>
                       <td>{formatDate(employeeLicense.issueDate || "")}</td>
-                      <td>{formatDate(employeeLicense.expDate || "")}</td>
+                      <td>
+                        {formatDate(employeeLicense.expDate || "")}
+
+                        <div
+                          className={`status status-xl text-center ml-3 mb-1 ${
+                            getStatus(employeeLicense.expDate) === "Active"
+                              ? "status-success"
+                              : "status-error"
+                          }`}
+                        ></div>
+                      </td>
                     </tr>
                   );
                 })}
