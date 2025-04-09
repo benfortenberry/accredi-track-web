@@ -11,6 +11,7 @@ import (
 	employees "github.com/benfortenberry/accredi-track/employees"
 	encoding "github.com/benfortenberry/accredi-track/encoding"
 	licenses "github.com/benfortenberry/accredi-track/licenses"
+	middleware "github.com/benfortenberry/accredi-track/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -59,7 +60,7 @@ func main() {
 	}))
 
 	// employee routes
-	router.GET("/employees", func(c *gin.Context) {
+	router.GET("/employees", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employees.Get(db, c)
 	})
 
