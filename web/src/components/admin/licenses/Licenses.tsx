@@ -11,7 +11,7 @@ function Licenses() {
     name: string;
   }
 
-  const [license, setLicense] = useState<License[]>([]);
+  const [licenses, setLicense] = useState<License[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -131,8 +131,6 @@ function Licenses() {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
   } else if (isLoading) {
     return <h1 className="text-xl font-bold mb-4">Loading...</h1>;
-  } else if (license.length === 0) {
-    return <h1 className="text-xl font-bold mb-4">no licenses found</h1>;
   } else {
     return (
       <div>
@@ -153,64 +151,71 @@ function Licenses() {
             <AddIcon />
           </button>
         </h2>
-        <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-          <table className="table table-fixed">
-            <thead>
-              <tr>
-                <th className="w-50"></th>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {license?.map((license, i) => {
-                return (
-                  <tr key={i}>
-                    <td>
-                      <ul className="menu menu-horizontal bg-base-200  rounded-box">
-                        <li>
-                          <a
-                            onClick={() => {
-                              setIsEditing(true); // Set to edit mode
-                              setCurrentLicense(license);
-                              (
-                                document.getElementById(
-                                  "add-edit-modal"
-                                ) as HTMLDialogElement
-                              )?.showModal();
-                            }}
-                          >
-                            <EditIcon />
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            onClick={() => {
-                              const licneseIdInput = document.getElementById(
-                                "licenseIdToDelete"
-                              ) as HTMLInputElement;
-                              licneseIdInput.value = license.id.toString();
 
-                              // Show the delete modal
-                              (
-                                document.getElementById(
-                                  "delete-modal"
-                                ) as HTMLDialogElement
-                              )?.showModal();
-                            }}
-                          >
-                            <DeleteIcon />
-                          </a>
-                        </li>
-                      </ul>
-                    </td>
+        {licenses.length > 0 ? (
+          <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+            <table className="table table-fixed">
+              <thead>
+                <tr>
+                  <th className="w-50"></th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {licenses?.map((license, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>
+                        <ul className="menu menu-horizontal bg-base-200  rounded-box">
+                          <li>
+                            <a
+                              onClick={() => {
+                                setIsEditing(true); // Set to edit mode
+                                setCurrentLicense(license);
+                                (
+                                  document.getElementById(
+                                    "add-edit-modal"
+                                  ) as HTMLDialogElement
+                                )?.showModal();
+                              }}
+                            >
+                              <EditIcon />
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              onClick={() => {
+                                const licneseIdInput = document.getElementById(
+                                  "licenseIdToDelete"
+                                ) as HTMLInputElement;
+                                licneseIdInput.value = license.id.toString();
 
-                    <td>{license.name}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                                // Show the delete modal
+                                (
+                                  document.getElementById(
+                                    "delete-modal"
+                                  ) as HTMLDialogElement
+                                )?.showModal();
+                              }}
+                            >
+                              <DeleteIcon />
+                            </a>
+                          </li>
+                        </ul>
+                      </td>
+
+                      <td>{license.name}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <h3 className="text-center text-lg font-bold mt-4">
+            Add your first Licesne
+          </h3>
+        )}
 
         <dialog id="delete-modal" className="modal">
           <div className="modal-box">

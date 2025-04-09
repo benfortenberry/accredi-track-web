@@ -155,8 +155,6 @@ function Employees() {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
   } else if (isLoading) {
     return <h1 className="text-xl font-bold mb-4">Loading...</h1>;
-  } else if (employees.length === 0) {
-    return <h1 className="text-xl font-bold mb-4">no employees found</h1>;
   } else {
     return (
       <div>
@@ -178,110 +176,117 @@ function Employees() {
             <AddIcon />
           </button>
         </h2>
-        <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-          <table className="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>
-                  Status
-                  <div className="tooltip tooltip-right">
-                    <div className="tooltip-content text-left p-3 pt-5">
-                      <div className="status   status-success "></div> - All
-                      Licenses Current
-                      <br />
-                      <div className="status  status-error "></div> - Some or
-                      All Licences Expired
+
+        {employees.length > 0 ? (
+          <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>
+                    Status
+                    <div className="tooltip tooltip-right">
+                      <div className="tooltip-content text-left p-3 pt-5">
+                        <div className="status   status-success "></div> - All
+                        Licenses Current
+                        <br />
+                        <div className="status  status-error "></div> - Some or
+                        All Licences Expired
+                      </div>
+                      <button className="ml-2">
+                        <QuestionMarkIcon />
+                      </button>
                     </div>
-                    <button className="ml-2">
-                      <QuestionMarkIcon />
-                    </button>
-                  </div>
-                </th>
-                <th>Last Name</th>
-                <th>First Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees?.map((employee, i) => {
-                return (
-                  <tr key={i}>
-                    <td>
-                      <ul className="menu menu-horizontal bg-base-200  rounded-box">
-                        <li>
-                          <a
-                            onClick={() => {
-                              setIsEditing(true); // Set to edit mode
-                              setCurrentEmployee(employee); // Set the employee to be edited
-                              (
-                                document.getElementById(
-                                  "add-edit-modal"
-                                ) as HTMLDialogElement
-                              )?.showModal();
-                            }}
-                          >
-                            <EditIcon />
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            onClick={() => {
-                              // Set the employee ID in the hidden input field
-                              const employeeIdInput = document.getElementById(
-                                "employeeIdToDelete"
-                              ) as HTMLInputElement;
-                              employeeIdInput.value = employee.id.toString();
-
-                              // Show the delete modal
-                              (
-                                document.getElementById(
-                                  "delete-modal"
-                                ) as HTMLDialogElement
-                              )?.showModal();
-                            }}
-                          >
-                            <DeleteIcon />
-                          </a>
-                        </li>
-                      </ul>
-                    </td>
-
-                    <td>
-                      <div className="status status-xl text-center ml-3 status-success "></div>
-                    </td>
-                    <td>{employee.lastName}</td>
-                    <td>{employee.firstName}</td>
-                    <td>{employee.phone1}</td>
-                    <td>{employee.email}</td>
-                    <td className="">
-                      <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
-                        <li>
-                          <a>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="size-5"
+                  </th>
+                  <th>Last Name</th>
+                  <th>First Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {employees?.map((employee, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>
+                        <ul className="menu menu-horizontal bg-base-200  rounded-box">
+                          <li>
+                            <a
+                              onClick={() => {
+                                setIsEditing(true); // Set to edit mode
+                                setCurrentEmployee(employee); // Set the employee to be edited
+                                (
+                                  document.getElementById(
+                                    "add-edit-modal"
+                                  ) as HTMLDialogElement
+                                )?.showModal();
+                              }}
                             >
-                              <path
-                                fillRule="evenodd"
-                                d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </a>
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                              <EditIcon />
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              onClick={() => {
+                                // Set the employee ID in the hidden input field
+                                const employeeIdInput = document.getElementById(
+                                  "employeeIdToDelete"
+                                ) as HTMLInputElement;
+                                employeeIdInput.value = employee.id.toString();
+
+                                // Show the delete modal
+                                (
+                                  document.getElementById(
+                                    "delete-modal"
+                                  ) as HTMLDialogElement
+                                )?.showModal();
+                              }}
+                            >
+                              <DeleteIcon />
+                            </a>
+                          </li>
+                        </ul>
+                      </td>
+
+                      <td>
+                        <div className="status status-xl text-center ml-3 status-success "></div>
+                      </td>
+                      <td>{employee.lastName}</td>
+                      <td>{employee.firstName}</td>
+                      <td>{employee.phone1}</td>
+                      <td>{employee.email}</td>
+                      <td className="">
+                        <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
+                          <li>
+                            <a>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                className="size-5"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </a>
+                          </li>
+                        </ul>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <h3 className="text-center text-lg font-bold mt-4">
+            Add your first employee
+          </h3>
+        )}
 
         <dialog id="delete-modal" className="modal">
           <div className="modal-box">
