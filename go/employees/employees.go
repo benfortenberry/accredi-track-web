@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/benfortenberry/accredi-track/encoding"
 	"github.com/gin-gonic/gin"
 )
 
 type Employee struct {
-	ID        int    `json:"id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Phone1    string `json:"phone1"`
-	Email     string `json:"email"`
+	ID         int    `json:"id"`
+	EmployeeID string `json:"employeeID"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	Phone1     string `json:"phone1"`
+	Email      string `json:"email"`
 }
 
 func Get(db *sql.DB, c *gin.Context) {
@@ -37,6 +39,11 @@ func Get(db *sql.DB, c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan employee data"})
 			return
 		}
+
+		encodedID := encoding.EncodeID(emp.ID)
+		emp.ID = 0                 // Clear the original ID
+		emp.EmployeeID = encodedID // Add the encoded ID to the response
+
 		employees = append(employees, emp)
 	}
 
@@ -49,9 +56,9 @@ func Get(db *sql.DB, c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, employees)
 }
 
-func GetSingle(db *sql.DB, c *gin.Context) {
+func GetSingle(db *sql.DB, id int, c *gin.Context) {
 	// Get the employee ID from the URL parameter
-	id := c.Param("id")
+	// id := c.Param("id")
 
 	// Prepare the SQL query to retrieve the employee
 	query := `

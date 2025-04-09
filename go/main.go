@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
 	employeeLicesnses "github.com/benfortenberry/accredi-track/employeeLicenses"
 	employees "github.com/benfortenberry/accredi-track/employees"
+	encoding "github.com/benfortenberry/accredi-track/encoding"
 	licenses "github.com/benfortenberry/accredi-track/licenses"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -39,7 +41,7 @@ func main() {
 	}
 	fmt.Println("Connected!")
 
-	encoding.initHashids()
+	encoding.InitHashids()
 
 	// hd := hashids.NewData()
 	// hd.Salt = "your-salt" // Use a strong, unique salt
@@ -63,7 +65,13 @@ func main() {
 	})
 
 	router.GET("/employee/:id", func(c *gin.Context) {
-		employees.GetSingle(db, c)
+		hash := c.Param("id")
+		id, err := encoding.DecodeID(hash)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+		employees.GetSingle(db, id, c)
 	})
 
 	router.POST("/employees", func(c *gin.Context) {
