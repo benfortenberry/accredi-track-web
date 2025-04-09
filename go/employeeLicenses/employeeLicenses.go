@@ -38,10 +38,6 @@ select
 	el.licenseId,
 	el.issueDate,
 	el.expDate,
-	e.firstName,
-	e.lastName,
-	e.phone1,
-	e.email,
 	l.name  as licenseName
 from
 	employeeLicenses el
@@ -63,8 +59,7 @@ left join licenses l on
 		var lic EmployeeLicense
 		if err := rows.Scan(
 			&lic.ID, &lic.EmployeeID, &lic.LicenseID,
-			&lic.IssueDate, &lic.ExpDate, &lic.FirstName,
-			&lic.LastName, &lic.Phone1, &lic.Email,
+			&lic.IssueDate, &lic.ExpDate,
 			&lic.LicenseName,
 		); err != nil {
 			fmt.Println("Error: ", err)

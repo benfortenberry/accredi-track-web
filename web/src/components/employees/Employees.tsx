@@ -19,6 +19,7 @@ function Employees() {
     lastName: string;
     phone1: string;
     email: string;
+    status: string;
   }
 
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -251,7 +252,13 @@ function Employees() {
                       </td>
 
                       <td>
-                        <div className="status status-xl text-center ml-3 status-success "></div>
+                        <div
+                          className={`status status-xl text-center ml-3 ${
+                            employee.status === "Active"
+                              ? "status-success"
+                              : "status-error"
+                          }`}
+                        ></div>
                       </td>
 
                       <td>{employee.firstName}</td>

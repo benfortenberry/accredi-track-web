@@ -5,22 +5,40 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/benfortenberry/accredi-track/encoding"
 	"github.com/gin-gonic/gin"
 )
 
 type Employee struct {
-	ID         int    `json:"id"`
-	EmployeeID string `json:"employeeID"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	Phone1     string `json:"phone1"`
-	Email      string `json:"email"`
+	ID        int    `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Phone1    string `json:"phone1"`
+	Email     string `json:"email"`
+	Status    string `json:"status"`
 }
 
 func Get(db *sql.DB, c *gin.Context) {
 	var employees []Employee
-	rows, err := db.Query("SELECT id, firstName, lastName,  phone1, email FROM employees where deleted IS NULL")
+	rows, err := db.Query(`
+	SELECT 
+    e.id AS employeeId,
+    e.firstName,
+    e.lastName,
+    e.phone1,
+    e.email,
+    CASE 
+        WHEN EXISTS (
+            SELECT 1 
+            FROM employeeLicenses el 
+            WHERE el.employeeId = e.id 
+              AND el.expDate < CURDATE() 
+              AND el.deleted IS NULL
+        ) THEN 'Expired'
+        ELSE 'Active'
+    END AS status
+FROM 
+    employees e
+where e.deleted is null`)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query employees"})
@@ -33,16 +51,16 @@ func Get(db *sql.DB, c *gin.Context) {
 		if err := rows.Scan(
 			&emp.ID, &emp.FirstName, &emp.LastName,
 
-			&emp.Phone1, &emp.Email,
+			&emp.Phone1, &emp.Email, &emp.Status,
 		); err != nil {
 			fmt.Println("Error: ", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan employee data"})
 			return
 		}
 
-		encodedID := encoding.EncodeID(emp.ID)
-		emp.ID = 0                 // Clear the original ID
-		emp.EmployeeID = encodedID // Add the encoded ID to the response
+		//encodedID := encoding.EncodeID(emp.ID)
+		// emp.ID = 0                 // Clear the original ID
+		//emp.EmployeeID = encodedID // Add the encoded ID to the response
 
 		employees = append(employees, emp)
 	}
@@ -56,9 +74,9 @@ func Get(db *sql.DB, c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, employees)
 }
 
-func GetSingle(db *sql.DB, id int, c *gin.Context) {
+func GetSingle(db *sql.DB, c *gin.Context) {
 	// Get the employee ID from the URL parameter
-	// id := c.Param("id")
+	id := c.Param("id")
 
 	// Prepare the SQL query to retrieve the employee
 	query := `

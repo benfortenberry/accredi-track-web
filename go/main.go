@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -65,13 +64,7 @@ func main() {
 	})
 
 	router.GET("/employee/:id", func(c *gin.Context) {
-		hash := c.Param("id")
-		id, err := encoding.DecodeID(hash)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-			return
-		}
-		employees.GetSingle(db, id, c)
+		employees.GetSingle(db, c)
 	})
 
 	router.POST("/employees", func(c *gin.Context) {
