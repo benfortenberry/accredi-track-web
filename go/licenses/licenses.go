@@ -13,7 +13,7 @@ type License struct {
 	Name string `json:"name"`
 }
 
-func GetLicenses(db *sql.DB, c *gin.Context) {
+func Get(db *sql.DB, c *gin.Context) {
 	var licenses []License
 	rows, err := db.Query("SELECT id, name FROM licenses where deleted IS NULL")
 	if err != nil {
@@ -44,7 +44,7 @@ func GetLicenses(db *sql.DB, c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, licenses)
 }
 
-func InsertLicense(db *sql.DB, c *gin.Context) {
+func Insert(db *sql.DB, c *gin.Context) {
 	var lic License
 	if err := c.BindJSON(&lic); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -80,7 +80,7 @@ func InsertLicense(db *sql.DB, c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "License inserted successfully", "id": id})
 }
 
-func DeleteLicense(db *sql.DB, c *gin.Context) {
+func Delete(db *sql.DB, c *gin.Context) {
 	// Get the ID from the URL parameter
 	id := c.Param("id")
 
@@ -116,7 +116,7 @@ func DeleteLicense(db *sql.DB, c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "License deleted successfully"})
 }
 
-func UpdateLicense(db *sql.DB, c *gin.Context) {
+func Update(db *sql.DB, c *gin.Context) {
 	// Get the ID from the URL parameter
 	id := c.Param("id")
 

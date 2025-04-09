@@ -50,32 +50,32 @@ func main() {
 	}))
 
 	router.GET("/employees", func(c *gin.Context) {
-		employees.GetEmployees(db, c)
+		employees.Get(db, c)
 	})
 	router.POST("/employees", func(c *gin.Context) {
-		employees.InsertEmployee(db, c)
+		employees.Post(db, c)
 	})
 	router.DELETE("/employees/:id", func(c *gin.Context) {
-		employees.DeleteEmployee(db, c)
+		employees.Delete(db, c)
 	})
 	router.PUT("/employees/:id", func(c *gin.Context) {
-		employees.UpdateEmployee(db, c)
+		employees.Put(db, c)
 	})
 
 	router.GET("/licenses", func(c *gin.Context) {
-		licenses.GetLicenses(db, c)
+		licenses.Get(db, c)
 	})
 
 	router.POST("/licenses", func(c *gin.Context) {
-		licenses.InsertLicense(db, c)
+		licenses.Insert(db, c)
 	})
 
 	router.PUT("/licenses/:id", func(c *gin.Context) {
-		licenses.UpdateLicense(db, c)
+		licenses.Update(db, c)
 	})
 
 	router.DELETE("/licenses/:id", func(c *gin.Context) {
-		licenses.DeleteLicense(db, c)
+		licenses.Delete(db, c)
 	})
 	router.Run("localhost:8080")
 }

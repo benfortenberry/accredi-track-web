@@ -16,7 +16,7 @@ type Employee struct {
 	Email     string `json:"email"`
 }
 
-func GetEmployees(db *sql.DB, c *gin.Context) {
+func Get(db *sql.DB, c *gin.Context) {
 	var employees []Employee
 	rows, err := db.Query("SELECT id, firstName, lastName,  phone1, email FROM employees where deleted IS NULL")
 	if err != nil {
@@ -49,7 +49,7 @@ func GetEmployees(db *sql.DB, c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, employees)
 }
 
-func InsertEmployee(db *sql.DB, c *gin.Context) {
+func Post(db *sql.DB, c *gin.Context) {
 	// Bind the JSON payload to an Employee struct
 	var emp Employee
 	if err := c.BindJSON(&emp); err != nil {
@@ -87,7 +87,7 @@ func InsertEmployee(db *sql.DB, c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Employee inserted successfully", "id": id})
 }
 
-func DeleteEmployee(db *sql.DB, c *gin.Context) {
+func Delete(db *sql.DB, c *gin.Context) {
 	// Get the employee ID from the URL parameter
 	id := c.Param("id")
 
@@ -123,7 +123,7 @@ func DeleteEmployee(db *sql.DB, c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Employee deleted successfully"})
 }
 
-func UpdateEmployee(db *sql.DB, c *gin.Context) {
+func Put(db *sql.DB, c *gin.Context) {
 	// Get the employee ID from the URL parameter
 	id := c.Param("id")
 
