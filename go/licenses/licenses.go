@@ -44,7 +44,7 @@ func Get(db *sql.DB, c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, licenses)
 }
 
-func Insert(db *sql.DB, c *gin.Context) {
+func Post(db *sql.DB, c *gin.Context) {
 	var lic License
 	if err := c.BindJSON(&lic); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -116,7 +116,7 @@ func Delete(db *sql.DB, c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "License deleted successfully"})
 }
 
-func Update(db *sql.DB, c *gin.Context) {
+func Put(db *sql.DB, c *gin.Context) {
 	// Get the ID from the URL parameter
 	id := c.Param("id")
 

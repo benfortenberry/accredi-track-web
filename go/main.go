@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	employeeLicesnses "github.com/benfortenberry/accredi-track/employeeLicenses"
 	employees "github.com/benfortenberry/accredi-track/employees"
 	licenses "github.com/benfortenberry/accredi-track/licenses"
 	"github.com/gin-contrib/cors"
@@ -49,6 +50,7 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// employee routes
 	router.GET("/employees", func(c *gin.Context) {
 		employees.Get(db, c)
 	})
@@ -62,20 +64,38 @@ func main() {
 		employees.Put(db, c)
 	})
 
+	// license routes
 	router.GET("/licenses", func(c *gin.Context) {
 		licenses.Get(db, c)
 	})
 
 	router.POST("/licenses", func(c *gin.Context) {
-		licenses.Insert(db, c)
+		licenses.Post(db, c)
 	})
 
 	router.PUT("/licenses/:id", func(c *gin.Context) {
-		licenses.Update(db, c)
+		licenses.Put(db, c)
 	})
 
 	router.DELETE("/licenses/:id", func(c *gin.Context) {
 		licenses.Delete(db, c)
+	})
+
+	// employee license routes
+	router.GET("/licenses", func(c *gin.Context) {
+		employeeLicesnses.Get(db, c)
+	})
+
+	router.POST("/licenses", func(c *gin.Context) {
+		employeeLicesnses.Post(db, c)
+	})
+
+	router.PUT("/licenses/:id", func(c *gin.Context) {
+		employeeLicesnses.Put(db, c)
+	})
+
+	router.DELETE("/licenses/:id", func(c *gin.Context) {
+		employeeLicesnses.Delete(db, c)
 	})
 	router.Run("localhost:8080")
 }
