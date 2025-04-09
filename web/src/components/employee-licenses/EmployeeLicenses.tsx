@@ -3,9 +3,6 @@ import {
   AddIcon,
   EditIcon,
   DeleteIcon,
-  QuestionMarkIcon,
-  EmailIcon,
-  PhoneIcon,
 } from "../../utils/SvgIcons";
 import { showToast } from "../../utils/Utilities";
 import axios from "axios";
@@ -19,8 +16,8 @@ function EmployeeLicenses() {
   const licenseApi = "http://localhost:8080/licenses";
 
   interface EmployeeLicense {
-    id: number;
-    employeeId: number;
+    id?: number;
+    employeeId?: number;
     firstName?: string;
     lastName?: string;
     phone1?: string;
@@ -28,7 +25,7 @@ function EmployeeLicenses() {
     licenseName?: string;
     licenseId?: number;
     issueDate?: string;
-    expDate: string;
+    expDate?: string;
   }
 
   interface EmployeeInfo {
@@ -150,7 +147,7 @@ function EmployeeLicenses() {
         setEmployeeLicenses((prevEmployeeLicenses) =>
           prevEmployeeLicenses.filter(
             (employeeLicense) =>
-              employeeLicense.id.toString() !== employeeLicenseId
+              employeeLicense?.id?.toString() !== employeeLicenseId
           )
         );
 
@@ -319,7 +316,7 @@ function EmployeeLicenses() {
                                     "employeeLicenseIdToDelete"
                                   ) as HTMLInputElement;
                                 employeeLicenseIdInput.value =
-                                  employeeLicense.id.toString();
+                                  employeeLicense?.id?.toString() || "";
 
                                 // Show the delete modal
                                 (
