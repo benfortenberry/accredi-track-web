@@ -82,19 +82,19 @@ func main() {
 	})
 
 	// employee license routes
-	router.GET("/licenses", func(c *gin.Context) {
+	router.GET("/employee-licenses", func(c *gin.Context) {
 		employeeLicesnses.Get(db, c)
 	})
 
-	router.POST("/licenses", func(c *gin.Context) {
+	router.POST("/employee-licenses", func(c *gin.Context) {
 		employeeLicesnses.Post(db, c)
 	})
 
-	router.PUT("/licenses/:id", func(c *gin.Context) {
+	router.PUT("/employee-licenses/:id", func(c *gin.Context) {
 		employeeLicesnses.Put(db, c)
 	})
 
-	router.DELETE("/licenses/:id", func(c *gin.Context) {
+	router.DELETE("/employee-licenses/:id", func(c *gin.Context) {
 		employeeLicesnses.Delete(db, c)
 	})
 	router.Run("localhost:8080")
