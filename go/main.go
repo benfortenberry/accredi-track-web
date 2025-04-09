@@ -54,6 +54,11 @@ func main() {
 	router.GET("/employees", func(c *gin.Context) {
 		employees.Get(db, c)
 	})
+
+	router.GET("/employee/:id", func(c *gin.Context) {
+		employees.GetSingle(db, c)
+	})
+
 	router.POST("/employees", func(c *gin.Context) {
 		employees.Post(db, c)
 	})

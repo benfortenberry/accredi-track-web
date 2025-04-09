@@ -49,6 +49,44 @@ func Get(db *sql.DB, c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, employees)
 }
 
+func GetSingle(db *sql.DB, c *gin.Context) {
+	// Get the employee ID from the URL parameter
+	id := c.Param("id")
+
+	// Prepare the SQL query to retrieve the employee
+	query := `
+        SELECT id, firstName, lastName, phone1, email
+        FROM employees
+        WHERE id = ? AND deleted IS NULL
+    `
+
+	// Create an Employee struct to hold the result
+	var emp Employee
+
+	// Execute the query
+	err := db.QueryRow(query, id).Scan(
+		&emp.ID,
+		&emp.FirstName,
+		&emp.LastName,
+		&emp.Phone1,
+		&emp.Email,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// If no rows are found, return a 404 error
+			c.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
+		} else {
+			// For other errors, return a 500 error
+			fmt.Println("Error: ", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve employee"})
+		}
+		return
+	}
+
+	// Respond with the employee data
+	c.JSON(http.StatusOK, emp)
+}
+
 func Post(db *sql.DB, c *gin.Context) {
 	// Bind the JSON payload to an Employee struct
 	var emp Employee
@@ -142,7 +180,7 @@ func Put(db *sql.DB, c *gin.Context) {
     `
 
 	// Execute the query
-	result, err := db.Exec(query,
+	_, err := db.Exec(query,
 		emp.FirstName, emp.LastName, emp.Phone1, emp.Email, id,
 	)
 	if err != nil {
@@ -151,18 +189,18 @@ func Put(db *sql.DB, c *gin.Context) {
 		return
 	}
 
-	// Check if any rows were affected
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
-		return
-	}
+	// // Check if any rows were affected
+	// rowsAffected, err := result.RowsAffected()
+	// if err != nil {
+	// 	fmt.Println("Error: ", err)
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
+	// 	return
+	// }
 
-	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
-		return
-	}
+	// if rowsAffected == 0 {
+	// 	c.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
+	// 	return
+	// }
 
 	// Query the updated employee data
 	var updatedEmployee Employee

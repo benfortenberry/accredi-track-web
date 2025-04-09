@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { AddIcon, DeleteIcon, EditIcon } from "../../../utils/SvgIcons";
-import { showToast } from "../../../utils/Utilities";
+import { AddIcon, DeleteIcon, EditIcon } from "../../utils/SvgIcons";
+import { showToast } from "../../utils/Utilities";
 
 function Licenses() {
   const api = "http://localhost:8080/licenses";
@@ -152,7 +152,7 @@ function Licenses() {
           </button>
         </h2>
 
-        {licenses.length > 0 ? (
+        {licenses && licenses.length > 0 ? (
           <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
             <table className="table table-fixed">
               <thead>

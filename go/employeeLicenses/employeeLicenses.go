@@ -9,6 +9,19 @@ import (
 )
 
 type EmployeeLicense struct {
+	ID          int    `json:"id"`
+	EmployeeID  int    `json:"employeeId"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Phone1      string `json:"phone1"`
+	Email       string `json:"email"`
+	LicenseName string `json:"licenseName"`
+	LicenseID   int    `json:"licenseId"`
+	IssueDate   string `json:"issueDate"`
+	ExpDate     string `json:"expDate"`
+}
+
+type EmployeeLicenseInsert struct {
 	ID         int    `json:"id"`
 	EmployeeID int    `json:"employeeId"`
 	LicenseID  int    `json:"licenseId"`
@@ -18,7 +31,27 @@ type EmployeeLicense struct {
 
 func Get(db *sql.DB, c *gin.Context) {
 	var employeeLicenses []EmployeeLicense
-	rows, err := db.Query("SELECT id, employeeId, licenseId, issueDate, expDate FROM employeeLicenses where deleted IS NULL")
+	rows, err := db.Query(`
+select
+	el.id,
+	el.employeeId ,
+	el.licenseId,
+	el.issueDate,
+	el.expDate,
+	e.firstName,
+	e.lastName,
+	e.phone1,
+	e.email,
+	l.name  as licenseName
+from
+	employeeLicenses el
+left join employees e on
+	el.employeeId = e.id
+left join licenses l on
+	el.licenseId = l.id
+	where el.deleted IS NULL
+
+	`)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query employee licenses"})
@@ -30,7 +63,9 @@ func Get(db *sql.DB, c *gin.Context) {
 		var lic EmployeeLicense
 		if err := rows.Scan(
 			&lic.ID, &lic.EmployeeID, &lic.LicenseID,
-			&lic.IssueDate, &lic.ExpDate,
+			&lic.IssueDate, &lic.ExpDate, &lic.FirstName,
+			&lic.LastName, &lic.Phone1, &lic.Email,
+			&lic.LicenseName,
 		); err != nil {
 			fmt.Println("Error: ", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan employee license data"})
@@ -49,7 +84,7 @@ func Get(db *sql.DB, c *gin.Context) {
 }
 
 func Post(db *sql.DB, c *gin.Context) {
-	var lic EmployeeLicense
+	var lic EmployeeLicenseInsert
 	if err := c.BindJSON(&lic); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
@@ -130,7 +165,7 @@ func Put(db *sql.DB, c *gin.Context) {
 	// Get the ID from the URL parameter
 	id := c.Param("id")
 
-	var lic EmployeeLicense
+	var lic EmployeeLicenseInsert
 	if err := c.BindJSON(&lic); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
@@ -139,16 +174,17 @@ func Put(db *sql.DB, c *gin.Context) {
 	// Prepare the SQL statement for updating
 	query := `
         UPDATE employeeLicenses
-		SET employeeId = ?,
+		SET 
 			licenseId = ?,
 			issueDate = ?,
 			expDate = ?
         WHERE id = ?
     `
 
+	fmt.Println(lic.LicenseID, lic.IssueDate, lic.ExpDate, id)
+
 	// Execute the query
-	result, err := db.Exec(query,
-		lic.EmployeeID,
+	_, err := db.Exec(query,
 		lic.LicenseID,
 		lic.IssueDate,
 		lic.ExpDate,
@@ -160,24 +196,39 @@ func Put(db *sql.DB, c *gin.Context) {
 		return
 	}
 
-	// Check if any rows were affected
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
-		return
-	}
+	// // Check if any rows were affected
+	// rowsAffected, err := result.RowsAffected()
+	// if err != nil {
+	// 	fmt.Println("Error: ", err)
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
+	// 	return
+	// }
 
-	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "employee license not found"})
-		return
-	}
+	// if rowsAffected == 0 {
+	// 	fmt.Println("!!!! Error: ")
+	// 	c.JSON(http.StatusNotFound, gin.H{"error": "employee license not found"})
+	// 	return
+	// }
 
 	var updatedLicense EmployeeLicense
 	getQuery := `
-		 SELECT id, employeeId, licenseId, issueDate, expDate
-		 FROM employeelLcenses
-		 WHERE id = ?
+		 SELECT el.id,
+	el.employeeId ,
+	el.licenseId,
+	el.issueDate,
+	el.expDate,
+	e.firstName,
+	e.lastName,
+	e.phone1,
+	e.email,
+	l.name as licenseName
+		from
+	employeeLicenses el
+left join employees e on
+	el.employeeId = e.id
+left join licenses l on
+	el.licenseId = l.id
+		 WHERE el.id = ? and el.deleted IS NULL
 	 `
 	err = db.QueryRow(getQuery, id).Scan(
 		&updatedLicense.ID,
@@ -185,6 +236,11 @@ func Put(db *sql.DB, c *gin.Context) {
 		&updatedLicense.LicenseID,
 		&updatedLicense.IssueDate,
 		&updatedLicense.ExpDate,
+		&updatedLicense.FirstName,
+		&updatedLicense.LastName,
+		&updatedLicense.Phone1,
+		&updatedLicense.Email,
+		&updatedLicense.LicenseName,
 	)
 	if err != nil {
 		fmt.Println("Error: ", err)

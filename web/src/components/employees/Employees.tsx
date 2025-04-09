@@ -6,8 +6,8 @@ import {
   QuestionMarkIcon,
   EmailIcon,
   PhoneIcon,
-} from "../../../utils/SvgIcons";
-import { showToast } from "../../../utils/Utilities";
+} from "../../utils/SvgIcons";
+import { showToast } from "../../utils/Utilities";
 import axios from "axios";
 
 function Employees() {
@@ -177,7 +177,7 @@ function Employees() {
           </button>
         </h2>
 
-        {employees.length > 0 ? (
+        {employees && employees.length > 0 ? (
           <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
             <table className="table">
               <thead>
@@ -198,8 +198,9 @@ function Employees() {
                       </button>
                     </div>
                   </th>
-                  <th>Last Name</th>
+
                   <th>First Name</th>
+                  <th>Last Name</th>
                   <th>Phone</th>
                   <th>Email</th>
                   <th></th>
@@ -252,14 +253,15 @@ function Employees() {
                       <td>
                         <div className="status status-xl text-center ml-3 status-success "></div>
                       </td>
-                      <td>{employee.lastName}</td>
+
                       <td>{employee.firstName}</td>
+                      <td>{employee.lastName}</td>
                       <td>{employee.phone1}</td>
                       <td>{employee.email}</td>
                       <td className="">
                         <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
                           <li>
-                            <a>
+                            <a href={`/employee/${employee.id}`}>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"

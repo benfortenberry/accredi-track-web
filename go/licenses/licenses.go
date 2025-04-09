@@ -134,7 +134,7 @@ func Put(db *sql.DB, c *gin.Context) {
     `
 
 	// Execute the query
-	result, err := db.Exec(query,
+	_, err := db.Exec(query,
 		lic.Name, id,
 	)
 	if err != nil {
@@ -144,17 +144,17 @@ func Put(db *sql.DB, c *gin.Context) {
 	}
 
 	// Check if any rows were affected
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
-		return
-	}
+	// rowsAffected, err := result.RowsAffected()
+	// if err != nil {
+	// 	fmt.Println("Error: ", err)
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
+	// 	return
+	// }
 
-	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "license not found"})
-		return
-	}
+	// if rowsAffected == 0 {
+	// 	c.JSON(http.StatusNotFound, gin.H{"error": "license not found"})
+	// 	return
+	// }
 
 	var updatedLicense License
 	getQuery := `
