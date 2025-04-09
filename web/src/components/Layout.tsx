@@ -12,17 +12,10 @@ function Layout() {
         <div className="flex-none">
           <ul className="menu  menu-horizontal px-1">
             <li>
-              <details>
-                <summary>Admin</summary>
-                <ul className="bg-base-100 bg-primary rounded-t-none p-2">
-                  <li>
-                    <a href="/employees">Employees</a>
-                  </li>
-                  <li>
-                    <a href="/license-types">Licenses</a>
-                  </li>
-                </ul>
-              </details>
+              <a href="/employees">Employees</a>
+            </li>
+            <li>
+              <a href="/licenses">Licenses</a>
             </li>
             <li>
               <a>

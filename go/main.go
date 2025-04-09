@@ -8,7 +8,7 @@ import (
 	"time"
 
 	employees "github.com/benfortenberry/accredi-track/employees"
-	licensetypes "github.com/benfortenberry/accredi-track/licenses-types"
+	licenses "github.com/benfortenberry/accredi-track/licenses"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
@@ -62,13 +62,20 @@ func main() {
 		employees.UpdateEmployee(db, c)
 	})
 
-	router.GET("/license-type", func(c *gin.Context) {
-		licensetypes.GetLicenseTypes(db, c)
+	router.GET("/licenses", func(c *gin.Context) {
+		licenses.GetLicenses(db, c)
 	})
 
-	router.POST("/license-type", func(c *gin.Context) {
-		licensetypes.InsertLicenseType(db, c)
+	router.POST("/licenses", func(c *gin.Context) {
+		licenses.InsertLicense(db, c)
 	})
 
+	router.PUT("/licenses/:id", func(c *gin.Context) {
+		licenses.UpdateLicense(db, c)
+	})
+
+	router.DELETE("/licenses/:id", func(c *gin.Context) {
+		licenses.DeleteLicense(db, c)
+	})
 	router.Run("localhost:8080")
 }
