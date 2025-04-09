@@ -1,51 +1,51 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	"github.com/form3tech-oss/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
+// AuthMiddleware validates the JWT
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Authorization header required"})
-			return
-		}
+		jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
+			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+				// Use the Auth0 public key to validate the token
+				audience := os.Getenv("AUTH0_AUDIENCE")
+				issuer := fmt.Sprintf("https://%s/", os.Getenv("AUTH0_DOMAIN"))
 
-		bearerToken := strings.Split(authHeader, " ")
-		if len(bearerToken) != 2 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Invalid token format"})
-			return
-		}
+				claims, ok := token.Claims.(jwt.MapClaims)
+				if !ok || !token.Valid {
+					return nil, fmt.Errorf("invalid token")
+				}
 
-		tokenString := bearerToken[1]
+				// Validate audience
+				if claims["aud"] != audience {
+					return nil, fmt.Errorf("invalid audience")
+				}
 
-		token, err := jwt.ParseWithClaims(tokenString, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-			// Replace this with your actual secret or public key logic
-			return []byte(os.Getenv("JWT_SECRET")), nil
+				// Validate issuer
+				if claims["iss"] != issuer {
+					return nil, fmt.Errorf("invalid issuer")
+				}
+
+				return []byte(os.Getenv("AUTH0_CLIENT_SECRET")), nil
+			},
+			SigningMethod: jwt.SigningMethodHS256,
 		})
+
+		err := jwtMiddleware.CheckJWT(c.Writer, c.Request)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
 			return
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Invalid token claims"})
-			return
-		}
-
-		if claims["aud"] != os.Getenv("AUTH0_AUDIENCE") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Invalid audience"})
-			return
-		}
-
-		c.Set("claims", claims)
 		c.Next()
 	}
 }
