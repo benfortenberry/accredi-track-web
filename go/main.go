@@ -34,8 +34,8 @@ func main() {
 	cfg := mysql.Config{
 		User:                 os.Getenv("DBUSER"),
 		Passwd:               os.Getenv("DBPASSWORD"),
-		Net:                  "tcp",
-		Addr:                 os.Getenv("DBADDR"),
+		Net:                  "cloudsql",
+		Addr:                 os.Getenv("INSTANCE_CONNECTION_NAME"), // Instance connection name
 		DBName:               os.Getenv("DBNAME"),
 		AllowNativePasswords: true,
 	}
