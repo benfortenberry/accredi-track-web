@@ -61,7 +61,7 @@ left join employees e on
 left join licenses l on
 	el.licenseId = l.id
 	where el.deleted IS NULL
-	and createdBy = ?
+	and el.createdBy = ?
 
 	`
 	rows, err := db.Query(query, userSubStr)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/benjamin.fortenberry/accredi-track/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,9 +19,17 @@ type Employee struct {
 
 func Get(db *sql.DB, c *gin.Context) {
 
-	userSubStr, ok := utils.GetUserSub(c)
+	userSub, exists := c.Get("userSub")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: userSub not found"})
+		return
+	}
+
+	// Convert userSub to a string
+	userSubStr, ok := userSub.(string)
 	if !ok {
-		// If userSub retrieval failed, the response is already sent by the utility
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse userSub"})
 		return
 	}
 
