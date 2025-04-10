@@ -22,11 +22,9 @@ var db *sql.DB
 
 func main() {
 
-	fmt.Println("starting up")
-	log.Fatalln("starting up log")
-
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
+		fmt.Println("env error")
 		log.Fatalf("Error loading .env file: %v", envErr)
 	}
 
@@ -37,10 +35,11 @@ func main() {
 		User:                 os.Getenv("DBUSER"),
 		Passwd:               os.Getenv("DBPASSWORD"),
 		Net:                  "tcp",
-		Addr:                 os.Getenv("INSTANCE_CONNECTION_NAME"), // Instance connection name
+		Addr:                 os.Getenv("DBADDR"),
 		DBName:               os.Getenv("DBNAME"),
 		AllowNativePasswords: true,
 	}
+
 	// Get a database handle.
 	var err error
 	db, err = sql.Open("mysql", cfg.FormatDSN())
