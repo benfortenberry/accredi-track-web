@@ -125,5 +125,12 @@ func main() {
 	router.DELETE("/employee-licenses/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employeeLicesnses.Delete(db, c)
 	})
+
+	// Health check endpoint
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "healthy",
+		})
+	})
 	router.Run("localhost:8080")
 }
