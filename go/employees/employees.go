@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/benjamin.fortenberry/accredi-track/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,8 +19,15 @@ type Employee struct {
 }
 
 func Get(db *sql.DB, c *gin.Context) {
+
+	userSubStr, ok := utils.GetUserSub(c)
+	if !ok {
+		// If userSub retrieval failed, the response is already sent by the utility
+		return
+	}
+
 	var employees []Employee
-	rows, err := db.Query(`
+	query := (`
 	SELECT 
     e.id AS employeeId,
     e.firstName,
@@ -38,7 +46,9 @@ func Get(db *sql.DB, c *gin.Context) {
     END AS status
 FROM 
     employees e
-where e.deleted is null`)
+where e.deleted is null and e.createdBy = ?`)
+	rows, err := db.Query(query, userSubStr)
+	fmt.Println("'!!!!'", userSub)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query employees"})
@@ -75,6 +85,21 @@ where e.deleted is null`)
 }
 
 func GetSingle(db *sql.DB, c *gin.Context) {
+
+	userSub, exists := c.Get("userSub")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: userSub not found"})
+		return
+	}
+
+	// Convert userSub to a string
+	userSubStr, ok := userSub.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse userSub"})
+		return
+	}
+
 	// Get the employee ID from the URL parameter
 	id := c.Param("id")
 
@@ -82,14 +107,14 @@ func GetSingle(db *sql.DB, c *gin.Context) {
 	query := `
         SELECT id, firstName, lastName, phone1, email
         FROM employees
-        WHERE id = ? AND deleted IS NULL
+        WHERE id = ? AND deleted IS NULL and createdBy = ?
     `
 
 	// Create an Employee struct to hold the result
 	var emp Employee
 
 	// Execute the query
-	err := db.QueryRow(query, id).Scan(
+	err := db.QueryRow(query, id, userSubStr).Scan(
 		&emp.ID,
 		&emp.FirstName,
 		&emp.LastName,
@@ -114,6 +139,21 @@ func GetSingle(db *sql.DB, c *gin.Context) {
 
 func Post(db *sql.DB, c *gin.Context) {
 	// Bind the JSON payload to an Employee struct
+
+	userSub, exists := c.Get("userSub")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: userSub not found"})
+		return
+	}
+
+	// Convert userSub to a string
+	userSubStr, ok := userSub.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse userSub"})
+		return
+	}
+
 	var emp Employee
 	if err := c.BindJSON(&emp); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -124,13 +164,13 @@ func Post(db *sql.DB, c *gin.Context) {
 	query := `
         INSERT INTO employees (
             firstName, lastName, 
-            phone1, email
-        ) VALUES (?, ?, ?, ?)
+            phone1, email, createdBy
+        ) VALUES (?, ?, ?, ?, ?)
     `
 
 	// Execute the query
 	result, err := db.Exec(query,
-		emp.FirstName, emp.LastName, emp.Phone1, emp.Email,
+		emp.FirstName, emp.LastName, emp.Phone1, emp.Email, userSubStr,
 	)
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -213,19 +253,6 @@ func Put(db *sql.DB, c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee"})
 		return
 	}
-
-	// // Check if any rows were affected
-	// rowsAffected, err := result.RowsAffected()
-	// if err != nil {
-	// 	fmt.Println("Error: ", err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve affected rows"})
-	// 	return
-	// }
-
-	// if rowsAffected == 0 {
-	// 	c.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
-	// 	return
-	// }
 
 	// Query the updated employee data
 	var updatedEmployee Employee

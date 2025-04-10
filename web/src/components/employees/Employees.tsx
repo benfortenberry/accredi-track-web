@@ -8,30 +8,13 @@ import {
   PhoneIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
-import axios from "axios";
-// import { useAuth0 } from "@auth0/auth0-react";
-// import axiosInstance, { setAuthToken } from "./utils/axiosInstance";
+import config from "../../config"; 
+import { httpClient, withAxios } from "../../utils/AxiosInstance";
+
 
 function Employees() {
-  const api = "http://localhost:8080/employees";
 
-  // const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     setAuthToken(getAccessTokenSilently);
-  //   }
-  // }, [isAuthenticated, getAccessTokenSilently]);
-
-
-  // const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     console.log("Setting Auth Token");
-  //     setAuthToken(getAccessTokenSilently);
-  //   }
-  // }, [isAuthenticated, getAccessTokenSilently]);
+  const api = `${config.apiBaseUrl}/employees`;
 
   interface Employee {
     id: number;
@@ -65,7 +48,7 @@ function Employees() {
     };
 
     if (isEditing && currentEmployee) {
-      axios
+      httpClient
         .put(`${api}/${currentEmployee.id}`, employeeData)
         .then((res) => {
           console.log("Employee updated successfully:", res.data);
@@ -91,7 +74,7 @@ function Employees() {
         });
     } else {
       // Send a POST request to the API
-      axios
+      httpClient
         .post(api, employeeData)
         .then((res) => {
           console.log("Employee added successfully:", res.data);
@@ -123,7 +106,7 @@ function Employees() {
     const employeeId = formData.get("employeeId") as string;
 
     // Send a DELETE request to the API
-    axios
+    httpClient
       .delete(`${api}/${employeeId}`)
       .then((res) => {
         console.log("Employee deleted successfully:", res.data);
@@ -147,7 +130,7 @@ function Employees() {
 
   const getEmployees = () => {
     setIsLoading(true);
-    axios
+    httpClient
       .get(api)
       .then((res) => {
         setEmployees(res.data);
@@ -419,4 +402,4 @@ function Employees() {
   }
 }
 
-export default Employees;
+export default withAxios(Employees);

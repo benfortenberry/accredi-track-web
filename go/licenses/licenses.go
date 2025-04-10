@@ -9,13 +9,31 @@ import (
 )
 
 type License struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	CreatedBy string `json:"createdBy"`
 }
 
 func Get(db *sql.DB, c *gin.Context) {
+
+	userSub, exists := c.Get("userSub")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: userSub not found"})
+		return
+	}
+
+	// Convert userSub to a string
+	userSubStr, ok := userSub.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse userSub"})
+		return
+	}
+
 	var licenses []License
-	rows, err := db.Query("SELECT id, name FROM licenses where deleted IS NULL")
+
+	query := `SELECT id, name FROM licenses where deleted IS NULL and createdBy =?`
+	rows, err := db.Query(query, userSubStr)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query licenses"})
@@ -45,6 +63,21 @@ func Get(db *sql.DB, c *gin.Context) {
 }
 
 func Post(db *sql.DB, c *gin.Context) {
+
+	userSub, exists := c.Get("userSub")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: userSub not found"})
+		return
+	}
+
+	// Convert userSub to a string
+	userSubStr, ok := userSub.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse userSub"})
+		return
+	}
+
 	var lic License
 	if err := c.BindJSON(&lic); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -54,13 +87,13 @@ func Post(db *sql.DB, c *gin.Context) {
 	// Prepare the SQL statement for inserting
 	query := `
         INSERT INTO licenses(
-            name
-        ) VALUES (?)
+            name, createdBy
+        ) VALUES (?, ?)
     `
 
 	// Execute the query
 	result, err := db.Exec(query,
-		lic.Name,
+		lic.Name, userSubStr,
 	)
 	if err != nil {
 		fmt.Println("Error: ", err)

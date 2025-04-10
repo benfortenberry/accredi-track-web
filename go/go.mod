@@ -11,6 +11,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/PuerkitoBio/rehttp v1.4.0 // indirect
 	github.com/auth0/go-auth0 v1.19.0 // indirect
 	github.com/auth0/go-jwt-middleware v1.0.1 // indirect

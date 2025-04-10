@@ -8,8 +8,10 @@ createRoot(document.getElementById("root")!).render(
   <Auth0Provider
     domain="thumbsupsolutions.auth0.com"
     clientId="RwAsIDcSImAUQsefyBpCH8FWvxe4wSLL"
+    
     authorizationParams={{
       redirect_uri: window.location.origin,
+      audience: "https://accredi-track/api", // Ensure this matches your API audience
     }}
   >
     <StrictMode>

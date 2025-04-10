@@ -15,15 +15,24 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
 
 func main() {
+
+	envErr := godotenv.Load(".env")
+	if envErr != nil {
+		log.Fatalf("Error loading .env file: %v", envErr)
+	}
+
+	defer db.Close()
+
 	// Capture connection properties.
 	cfg := mysql.Config{
 		User:   os.Getenv("DBUSER"),
-		Passwd: os.Getenv("DBPASS"),
+		Passwd: os.Getenv("DBPASSWORD"),
 		Net:    "tcp",
 		Addr:   "127.0.0.1:3306",
 		DBName: "main",
@@ -64,51 +73,51 @@ func main() {
 		employees.Get(db, c)
 	})
 
-	router.GET("/employee/:id", func(c *gin.Context) {
+	router.GET("/employee/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employees.GetSingle(db, c)
 	})
 
-	router.POST("/employees", func(c *gin.Context) {
+	router.POST("/employees", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employees.Post(db, c)
 	})
-	router.DELETE("/employees/:id", func(c *gin.Context) {
+	router.DELETE("/employees/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employees.Delete(db, c)
 	})
-	router.PUT("/employees/:id", func(c *gin.Context) {
+	router.PUT("/employees/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employees.Put(db, c)
 	})
 
 	// license routes
-	router.GET("/licenses", func(c *gin.Context) {
+	router.GET("/licenses", middleware.AuthMiddleware(), func(c *gin.Context) {
 		licenses.Get(db, c)
 	})
 
-	router.POST("/licenses", func(c *gin.Context) {
+	router.POST("/licenses", middleware.AuthMiddleware(), func(c *gin.Context) {
 		licenses.Post(db, c)
 	})
 
-	router.PUT("/licenses/:id", func(c *gin.Context) {
+	router.PUT("/licenses/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		licenses.Put(db, c)
 	})
 
-	router.DELETE("/licenses/:id", func(c *gin.Context) {
+	router.DELETE("/licenses/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		licenses.Delete(db, c)
 	})
 
 	// employee license routes
-	router.GET("/employee-licenses", func(c *gin.Context) {
+	router.GET("/employee-licenses", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employeeLicesnses.Get(db, c)
 	})
 
-	router.POST("/employee-licenses", func(c *gin.Context) {
+	router.POST("/employee-licenses", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employeeLicesnses.Post(db, c)
 	})
 
-	router.PUT("/employee-licenses/:id", func(c *gin.Context) {
+	router.PUT("/employee-licenses/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employeeLicesnses.Put(db, c)
 	})
 
-	router.DELETE("/employee-licenses/:id", func(c *gin.Context) {
+	router.DELETE("/employee-licenses/:id", middleware.AuthMiddleware(), func(c *gin.Context) {
 		employeeLicesnses.Delete(db, c)
 	})
 	router.Run("localhost:8080")

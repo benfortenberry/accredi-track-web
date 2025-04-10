@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { AddIcon, DeleteIcon, EditIcon } from "../../utils/SvgIcons";
 import { showToast } from "../../utils/Utilities";
+import config from "../../config";
+import { httpClient, withAxios } from "../../utils/AxiosInstance";
 
 function Licenses() {
-  const api = "http://localhost:8080/licenses";
+  const api = `${config.apiBaseUrl}/licenses`;
 
   interface License {
     id: number;
@@ -31,7 +32,7 @@ function Licenses() {
     };
 
     if (isEditing && currentLicense) {
-      axios
+      httpClient
         .put(`${api}/${currentLicense.id}`, licenseData)
         .then((res) => {
           console.log("License updated successfully:", res.data);
@@ -53,7 +54,7 @@ function Licenses() {
         });
     } else {
       // Send a POST request to the API
-      axios
+      httpClient
         .post(api, licenseData)
         .then((res) => {
           console.log("License added successfully:", res.data);
@@ -81,7 +82,7 @@ function Licenses() {
     const licenseId = formData.get("licenseId") as string;
 
     // Send a DELETE request to the API
-    axios
+    httpClient
       .delete(`${api}/${licenseId}`)
       .then((res) => {
         console.log("License deleted successfully:", res.data);
@@ -102,7 +103,7 @@ function Licenses() {
 
   const getLicenses = () => {
     setIsLoading(true);
-    axios
+    httpClient
       .get(api)
       .then((res) => {
         setLicense(res.data);
@@ -257,7 +258,7 @@ function Licenses() {
                   className=""
                   name="name"
                   placeholder="License Name"
-                  defaultValue={currentLicense?.name || ""} // Populate when editing
+                  defaultValue={currentLicense?.name || ""}
                 />
               </label>
               <p className="validator-hint  hidden mt-1 mb-2">Required</p>
@@ -273,4 +274,4 @@ function Licenses() {
   }
 }
 
-export default Licenses;
+export default withAxios(Licenses);

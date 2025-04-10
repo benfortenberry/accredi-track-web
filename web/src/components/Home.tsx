@@ -3,7 +3,6 @@ import LoginButton from "./auth0/LoginButton";
 import LogoutButton from "./auth0/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 
-
 function Home() {
   const { user, isAuthenticated, isLoading } = useAuth0();
 

@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { AddIcon, EditIcon, DeleteIcon } from "../../utils/SvgIcons";
 import { showToast, formatDate } from "../../utils/Utilities";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import config from "../../config";
+import { httpClient, withAxios } from "../../utils/AxiosInstance";
 
 function EmployeeLicenses() {
   const { id } = useParams<{ id: string }>();
   const employeeId = parseInt(id || "0", 10);
-  const api = "http://localhost:8080/employee-licenses";
-  const employeeApi = "http://localhost:8080/employee";
-  const licenseApi = "http://localhost:8080/licenses";
+
+  const api = `${config.apiBaseUrl}/employee-licenses`;
+  const employeeApi = `${config.apiBaseUrl}/employee`;
+  const licenseApi = `${config.apiBaseUrl}/licenses`;
 
   interface EmployeeLicense {
     id?: number;
@@ -68,7 +70,7 @@ function EmployeeLicenses() {
     };
 
     if (isEditing && currentEmployeeLicense) {
-      axios
+      httpClient
         .put(`${api}/${currentEmployeeLicense.id}`, employeeLicenseData)
         .then((res) => {
           console.log("Employee License updated successfully:", res.data);
@@ -99,7 +101,7 @@ function EmployeeLicenses() {
         });
     } else {
       // Send a POST request to the API
-      axios
+      httpClient
         .post(api, employeeLicenseData)
         .then((res) => {
           console.log("Employee License added successfully:", res.data);
@@ -132,7 +134,7 @@ function EmployeeLicenses() {
     const employeeLicenseId = formData.get("employeeLicenseId") as string;
 
     // Send a DELETE request to the API
-    axios
+    httpClient
       .delete(`${api}/${employeeLicenseId}`)
       .then((res) => {
         console.log("Employee License deleted successfully:", res.data);
@@ -159,7 +161,7 @@ function EmployeeLicenses() {
   };
 
   const getEmployee = (employeeId: number) => {
-    axios
+    httpClient
       .get(`${employeeApi}/${employeeId}`) // Replace with your API endpoint
       .then((res) => {
         setEmployee(res.data); // Set the employee details in state
@@ -175,7 +177,7 @@ function EmployeeLicenses() {
 
   const getLicenses = () => {
     setIsLoading(true);
-    axios
+    httpClient
       .get(licenseApi)
       .then((res) => {
         setLicense(res.data);
@@ -189,7 +191,7 @@ function EmployeeLicenses() {
 
   const getEmployeeLicenses = () => {
     setIsLoading(true);
-    axios
+    httpClient
       .get(api)
       .then((res) => {
         setEmployeeLicenses(res.data);
@@ -464,4 +466,4 @@ function EmployeeLicenses() {
   }
 }
 
-export default EmployeeLicenses;
+export default withAxios(EmployeeLicenses);
