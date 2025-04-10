@@ -22,6 +22,8 @@ var db *sql.DB
 
 func main() {
 
+	fmt.Println("starting !!!")
+
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
 		fmt.Println("env error")
@@ -34,8 +36,8 @@ func main() {
 	cfg := mysql.Config{
 		User:                 os.Getenv("DBUSER"),
 		Passwd:               os.Getenv("DBPASSWORD"),
-		Net:                  "cloudsql",
-		Addr:                 os.Getenv("INSTANCE_CONNECTION_NAME"), // Instance connection name
+		Net:                  "tcp",
+		Addr:                 os.Getenv("DBADDR"),
 		DBName:               os.Getenv("DBNAME"),
 		AllowNativePasswords: true,
 	}
