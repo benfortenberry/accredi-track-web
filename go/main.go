@@ -22,6 +22,8 @@ var db *sql.DB
 
 func main() {
 
+	fmt.Println("starting up")
+
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
 		log.Fatalf("Error loading .env file: %v", envErr)
