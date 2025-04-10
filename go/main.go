@@ -22,7 +22,7 @@ var db *sql.DB
 
 func main() {
 
-	fmt.Println("starting !!!")
+	fmt.Println("starting !!! 1111")
 
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
