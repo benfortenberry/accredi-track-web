@@ -23,6 +23,7 @@ var db *sql.DB
 func main() {
 
 	fmt.Println("starting up")
+	log.Fatalln("starting up log")
 
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
