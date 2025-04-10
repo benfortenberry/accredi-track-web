@@ -31,11 +31,12 @@ func main() {
 
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   os.Getenv("DBUSER"),
-		Passwd: os.Getenv("DBPASSWORD"),
-		Net:    "tcp",
-		Addr:   "127.0.0.1:3306",
-		DBName: "main",
+		User:                 os.Getenv("DBUSER"),
+		Passwd:               os.Getenv("DBPASSWORD"),
+		Net:                  "tcp",
+		Addr:                 os.Getenv("DBADDR"),
+		DBName:               os.Getenv("DBNAME"),
+		AllowNativePasswords: true,
 	}
 	// Get a database handle.
 	var err error
