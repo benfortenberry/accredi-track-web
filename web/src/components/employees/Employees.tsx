@@ -9,9 +9,29 @@ import {
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import axios from "axios";
+// import { useAuth0 } from "@auth0/auth0-react";
+// import axiosInstance, { setAuthToken } from "./utils/axiosInstance";
 
 function Employees() {
   const api = "http://localhost:8080/employees";
+
+  // const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     setAuthToken(getAccessTokenSilently);
+  //   }
+  // }, [isAuthenticated, getAccessTokenSilently]);
+
+
+  // const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     console.log("Setting Auth Token");
+  //     setAuthToken(getAccessTokenSilently);
+  //   }
+  // }, [isAuthenticated, getAccessTokenSilently]);
 
   interface Employee {
     id: number;
@@ -22,7 +42,6 @@ function Employees() {
     status: string;
   }
 
-  
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
