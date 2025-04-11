@@ -292,66 +292,67 @@ function EmployeeLicenses() {
                 </tr>
               </thead>
               <tbody>
-                {employeeLicenses?.map((employeeLicense, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>
-                        <ul className="menu menu-horizontal bg-base-200  rounded-box">
-                          <li>
-                            <a
-                              onClick={() => {
-                                setIsEditing(true);
-                                setCurrentEmployeeLicense(employeeLicense);
-                                (
-                                  document.getElementById(
-                                    "add-edit-modal"
-                                  ) as HTMLDialogElement
-                                )?.showModal();
-                              }}
-                            >
-                              <EditIcon />
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              onClick={() => {
-                                const employeeLicenseIdInput =
-                                  document.getElementById(
-                                    "employeeLicenseIdToDelete"
-                                  ) as HTMLInputElement;
-                                employeeLicenseIdInput.value =
-                                  employeeLicense?.id?.toString() || "";
+                {employeeLicenses &&
+                  employeeLicenses?.map((employeeLicense, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>
+                          <ul className="menu menu-horizontal bg-base-200  rounded-box">
+                            <li>
+                              <a
+                                onClick={() => {
+                                  setIsEditing(true);
+                                  setCurrentEmployeeLicense(employeeLicense);
+                                  (
+                                    document.getElementById(
+                                      "add-edit-modal"
+                                    ) as HTMLDialogElement
+                                  )?.showModal();
+                                }}
+                              >
+                                <EditIcon />
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                onClick={() => {
+                                  const employeeLicenseIdInput =
+                                    document.getElementById(
+                                      "employeeLicenseIdToDelete"
+                                    ) as HTMLInputElement;
+                                  employeeLicenseIdInput.value =
+                                    employeeLicense?.id?.toString() || "";
 
-                                // Show the delete modal
-                                (
-                                  document.getElementById(
-                                    "delete-modal"
-                                  ) as HTMLDialogElement
-                                )?.showModal();
-                              }}
-                            >
-                              <DeleteIcon />
-                            </a>
-                          </li>
-                        </ul>
-                      </td>
+                                  // Show the delete modal
+                                  (
+                                    document.getElementById(
+                                      "delete-modal"
+                                    ) as HTMLDialogElement
+                                  )?.showModal();
+                                }}
+                              >
+                                <DeleteIcon />
+                              </a>
+                            </li>
+                          </ul>
+                        </td>
 
-                      <td>{employeeLicense.licenseName}</td>
-                      <td>{formatDate(employeeLicense.issueDate || "")}</td>
-                      <td>
-                        {formatDate(employeeLicense.expDate || "")}
+                        <td>{employeeLicense.licenseName}</td>
+                        <td>{formatDate(employeeLicense.issueDate || "")}</td>
+                        <td>
+                          {formatDate(employeeLicense.expDate || "")}
 
-                        <div
-                          className={`status status-xl text-center ml-3 mb-1 ${
-                            getStatus(employeeLicense.expDate) === "Active"
-                              ? "status-success"
-                              : "status-error"
-                          }`}
-                        ></div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                          <div
+                            className={`status status-xl text-center ml-3 mb-1 ${
+                              getStatus(employeeLicense.expDate) === "Active"
+                                ? "status-success"
+                                : "status-error"
+                            }`}
+                          ></div>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -406,6 +407,24 @@ function EmployeeLicenses() {
             </h3>
 
             <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
+              {!licenses && (
+                <div role="alert" className="alert alert-warning">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 shrink-0 stroke-current"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                  <span>Must add licenses first.</span>
+                </div>
+              )}
               <select
                 name="licenseId"
                 id="licenseId"
@@ -422,11 +441,12 @@ function EmployeeLicenses() {
                 <option value="" disabled>
                   Select a license
                 </option>
-                {licenses.map((license) => (
-                  <option key={license.id} value={license.id}>
-                    {license.name}
-                  </option>
-                ))}
+                {licenses &&
+                  licenses.map((license) => (
+                    <option key={license.id} value={license.id}>
+                      {license.name}
+                    </option>
+                  ))}
               </select>
 
               <fieldset className="fieldset">
