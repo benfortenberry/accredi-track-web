@@ -7,6 +7,7 @@ import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
 
+import HealthCheck from "./components/HealthCheck";
 
 function App() {
 
@@ -21,6 +22,8 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route index element={<Home />} />
           </Route>
+
+          <Route path="/health" element={<HealthCheck />} />
         </Routes>
       </BrowserRouter>
     </div>
