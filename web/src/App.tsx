@@ -6,21 +6,9 @@ import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
-import React, { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 
 
 function App() {
-
-  // const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     setAuthToken(getAccessTokenSilently);
-  //   }
-  // }, [isAuthenticated, getAccessTokenSilently]);
-
-
 
   return (
     <div className="container mx-auto">

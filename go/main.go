@@ -53,7 +53,7 @@ func main() {
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
-	fmt.Println("Connected!")
+	fmt.Println("Connected! 11111")
 
 	encoding.InitHashids()
 
