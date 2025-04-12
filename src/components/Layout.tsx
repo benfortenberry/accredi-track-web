@@ -3,10 +3,10 @@ import LogoutButton from "./auth0/LogoutButton";
 
 function Layout() {
   return (
-    <div className="">
-      <div className="navbar bg-primary  bg-base-100 shadow-sm">
+    <div>
+      <div className="navbar  bg-base-200 ">
         <div className="flex-1">
-          <a href="/" className="btn btn-ghost text-xl">
+          <a href="/dashboard" className="btn btn-ghost text-xl">
             AccrediTrack
           </a>
         </div>

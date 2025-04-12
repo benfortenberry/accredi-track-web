@@ -161,7 +161,11 @@ function Employees() {
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
   } else if (isLoading) {
-    return <h1 className="text-xl font-bold mb-4">Loading...</h1>;
+    return (
+      <h1 className="text-center">
+        <span className="loading loading-dots loading-xl"></span>
+      </h1>
+    );
   } else {
     return (
       <div>
@@ -193,7 +197,7 @@ function Employees() {
                   <th>
                     Status
                     <div className="tooltip tooltip-right">
-                      <div className="tooltip-content text-left p-3 pt-5">
+                      <div className="tooltip-content text-left p-2 pt-3">
                         <div className="status   status-success "></div> - All
                         Licenses Current
                         <br />
@@ -394,7 +398,7 @@ function Employees() {
                 Enter valid email address
               </div>
 
-              <button className="btn float-right btn-success mt-2">
+              <button className="btn float-right btn-primary mt-2">
                 {isEditing ? "Save" : "Add"}
               </button>
             </form>

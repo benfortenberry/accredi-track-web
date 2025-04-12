@@ -228,7 +228,11 @@ function EmployeeLicenses() {
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
   } else if (isLoading) {
-    return <h1 className="text-xl font-bold mb-4">Loading...</h1>;
+    return (
+      <h1 className="text-center">
+        <span className="loading loading-dots loading-xl"></span>
+      </h1>
+    );
   } else {
     return (
       <div>
@@ -478,7 +482,7 @@ function EmployeeLicenses() {
                 <p className="validator-hint  hidden mt-1 mb-2">Required</p>
               </fieldset>
 
-              <button className="btn float-right btn-success mt-2">
+              <button className="btn float-right btn-primary mt-2">
                 {isEditing ? "Save" : "Add"}
               </button>
             </form>
