@@ -8,11 +8,14 @@ import {
   PhoneIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
-import config from "../../config"; 
+import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
-
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Employees() {
+  const { user, isAuthenticated } = useAuth0();
+
+  console.log(user, isAuthenticated);
 
   const api = `${config.apiBaseUrl}/employees`;
 
@@ -162,7 +165,7 @@ function Employees() {
   } else {
     return (
       <div>
-        <div id="toast-container" className="fixed top-4 right-4 z-50"></div>
+        <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
 
         <h2 className="text-xl font-bold mb-4">
           {" "}

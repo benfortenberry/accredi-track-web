@@ -6,24 +6,53 @@ import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
+import ProtectedRoute from "./components/auth0/ProtectedRoute";
+import NotFound from "./components/NotFound";
 
 import HealthCheck from "./components/HealthCheck";
 
 function App() {
-
   return (
     <div className="container mx-auto">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route path="employees" element={<Employees />} />
-            <Route path="licenses" element={<Licenses />} />
-            <Route path="employee/:id" element={<EmployeeLicenses />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route index element={<Home />} />
+            <Route
+              path="employees"
+              element={
+                <ProtectedRoute>
+                  <Employees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="licenses"
+              element={
+                <ProtectedRoute>
+                  <Licenses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="employee/:id"
+              element={
+                <ProtectedRoute>
+                  <EmployeeLicenses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
           </Route>
-
+          <Route index element={<Home />} />
           <Route path="/health" element={<HealthCheck />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

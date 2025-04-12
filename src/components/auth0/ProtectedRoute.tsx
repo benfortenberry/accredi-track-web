@@ -1,0 +1,19 @@
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+
+function ProtectedRoute({ children }: { children: React.ReactElement }) {
+    const { isAuthenticated, isLoading } = useAuth0();
+
+    if (isLoading) {
+        return <div>Loading...</div>; // Show a loading state while checking authentication
+    }
+
+    if (!isAuthenticated) {
+        return <Navigate to="/" replace />; // Redirect to home if not authenticated
+    }
+
+    return children; // Render the protected component if authenticated
+}
+
+export default ProtectedRoute;

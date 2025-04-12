@@ -33,7 +33,6 @@ export const formatPhoneNumber = (phone: string): string => {
   return formatted;
 };
 
-
 export const formatDate = (date: string): string => {
   // Convert the input to a Date object
   const parsedDate = typeof date === "string" ? new Date(date) : date;

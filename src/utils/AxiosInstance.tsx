@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect } from 'react';
+import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from "react";
 
 const httpClient = axios.create();
 
@@ -9,17 +9,16 @@ const AddTokenInterceptor = () => {
 
   useEffect(() => {
     const interceptor = httpClient.interceptors.request.use(
-      async config => {
+      async (config) => {
         try {
           const accessToken = await getAccessTokenSilently();
-          config.headers.Authorization = `Bearer ${accessToken}`; 
-          console.log('token', accessToken)
+          config.headers.Authorization = `Bearer ${accessToken}`;
         } catch (e) {
           // Handle error (e.g., token could not be retrieved)
         }
         return config;
       },
-      error => Promise.reject(error)
+      (error) => Promise.reject(error)
     );
 
     return () => {

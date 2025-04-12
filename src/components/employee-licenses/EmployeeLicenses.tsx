@@ -232,7 +232,10 @@ function EmployeeLicenses() {
   } else {
     return (
       <div>
-        <div id="toast-container" className="fixed top-4 right-4 z-50"></div>
+        <div
+          id="toast-container "
+          className="fixed bottom-4 right-4 z-50"
+        ></div>
 
         <button
           className="btn btn-circle float-right"
