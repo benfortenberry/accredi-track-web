@@ -10,12 +10,12 @@ import {
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
-import { useAuth0 } from "@auth0/auth0-react";
+// import { useAuth0 } from "@auth0/auth0-react";
 
 function Employees() {
-  const { user, isAuthenticated } = useAuth0();
+  // const { user, isAuthenticated } = useAuth0();
 
-  console.log(user, isAuthenticated);
+  // console.log(user, isAuthenticated);
 
   const api = `${config.apiBaseUrl}/employees`;
 
