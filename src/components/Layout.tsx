@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
-import { GearIcon } from "../utils/SvgIcons";
+// import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   return (
     <div className="container mx-auto">

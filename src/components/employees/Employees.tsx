@@ -36,9 +36,8 @@ function Employees() {
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault(); 
 
-    // Create a new employee object from the form inputs
     const formData = new FormData(event.currentTarget);
     const employeeData = {
       firstName: formData.get("firstName") as string,
@@ -57,13 +56,11 @@ function Employees() {
             document.getElementById("addEmployeeForm") as HTMLFormElement
           )?.reset();
 
-          // Update the employee list
           setEmployees((prevEmployees) =>
             prevEmployees.map((employee) =>
               employee.id === currentEmployee.id ? res.data : employee
             )
           );
-          // Close the modal
           (
             document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
@@ -73,20 +70,16 @@ function Employees() {
           showToast("Failed to update employee. Please try again.", "error");
         });
     } else {
-      // Send a POST request to the API
       httpClient
         .post(api, employeeData)
         .then((res) => {
           console.log("Employee added successfully:", res.data);
           showToast("Employee added successfully!", "success");
-          // Optionally, refresh the employee list
           getEmployees();
 
-          // event.currentTarget.reset();
           (
             document.getElementById("addEmployeeForm") as HTMLFormElement
           )?.reset();
-          // Close the modal
           (
             document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
@@ -99,27 +92,23 @@ function Employees() {
   };
 
   const handleDelete = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
 
-    // Get the employee ID to delete (you can pass it as a hidden input in the form or store it in state)
     const formData = new FormData(event.currentTarget);
     const employeeId = formData.get("employeeId") as string;
 
-    // Send a DELETE request to the API
     httpClient
       .delete(`${api}/${employeeId}`)
       .then((res) => {
         console.log("Employee deleted successfully:", res.data);
         showToast("Employee deleted successfully", "success");
-        // Refresh the employee list
-        //getExmployees();
+      
         setEmployees((prevEmployees) =>
           prevEmployees.filter(
             (employee) => employee.id.toString() !== employeeId
           )
         );
 
-        // Close the modal
         (document.getElementById("delete-modal") as HTMLDialogElement)?.close();
       })
       .catch((err) => {
@@ -143,7 +132,6 @@ function Employees() {
   };
 
   const handleCloseModal = () => {
-    // Reset the form and close the modal
 
     const modal = document.getElementById(
       "add-edit-modal"
@@ -155,8 +143,8 @@ function Employees() {
       form.reset();
     }
 
-    setCurrentEmployee(null); // Clear the current employee
-    setIsEditing(false); // Reset to add mode
+    setCurrentEmployee(null);
+    setIsEditing(false);
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
@@ -177,8 +165,8 @@ function Employees() {
           <button
             className="btn btn-circle float-right"
             onClick={() => {
-              setIsEditing(false); // Set to add mode
-              setCurrentEmployee(null); // Clear current employee
+              setIsEditing(false);
+              setCurrentEmployee(null); 
               (
                 document.getElementById("add-edit-modal") as HTMLDialogElement
               )?.showModal();
@@ -226,8 +214,8 @@ function Employees() {
                           <li>
                             <a
                               onClick={() => {
-                                setIsEditing(true); // Set to edit mode
-                                setCurrentEmployee(employee); // Set the employee to be edited
+                                setIsEditing(true);
+                                setCurrentEmployee(employee); 
                                 (
                                   document.getElementById(
                                     "add-edit-modal"
@@ -241,13 +229,11 @@ function Employees() {
                           <li>
                             <a
                               onClick={() => {
-                                // Set the employee ID in the hidden input field
                                 const employeeIdInput = document.getElementById(
                                   "employeeIdToDelete"
                                 ) as HTMLInputElement;
                                 employeeIdInput.value = employee.id.toString();
 
-                                // Show the delete modal
                                 (
                                   document.getElementById(
                                     "delete-modal"
@@ -323,7 +309,7 @@ function Employees() {
                     className=""
                     name="lastName"
                     placeholder="Last Name"
-                    defaultValue={currentEmployee?.lastName || ""} // Populate when editing
+                    defaultValue={currentEmployee?.lastName || ""} 
                   />
                 </label>
                 <p className="validator-hint  hidden mt-1 mb-2">Required</p>
@@ -335,7 +321,7 @@ function Employees() {
                     className="grow"
                     name="firstName"
                     placeholder="First Name"
-                    defaultValue={currentEmployee?.firstName || ""} // Populate when editing
+                    defaultValue={currentEmployee?.firstName || ""} 
                   />
                 </label>
                 <p className="validator-hint hidden mt-1 mb-2">Required</p>
@@ -352,7 +338,7 @@ function Employees() {
                     minLength={10}
                     maxLength={10}
                     title="Must be 10 digits"
-                    defaultValue={currentEmployee?.phone1 || ""} // Populate when editing
+                    defaultValue={currentEmployee?.phone1 || ""}
                   />
                 </label>
                 <p className="validator-hint hidden mt-1 mb-2">
@@ -366,7 +352,7 @@ function Employees() {
                     name="email"
                     placeholder="Email Address"
                     required
-                    defaultValue={currentEmployee?.email || ""} // Populate when editing
+                    defaultValue={currentEmployee?.email || ""} 
                   />
                 </label>
                 <div className="validator-hint hidden mt-1 mb-2">

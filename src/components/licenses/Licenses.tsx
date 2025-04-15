@@ -24,9 +24,8 @@ function Licenses() {
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault(); 
 
-    // Create a new object from the form inputs
     const formData = new FormData(event.currentTarget);
     const licenseData = {
       name: formData.get("name") as string,
@@ -40,11 +39,9 @@ function Licenses() {
           showToast("License updated successfully!", "success");
           (document.getElementById("addEditForm") as HTMLFormElement)?.reset();
 
-          // Update the list
           setLicense((prevLicense) =>
             prevLicense.map((lic) => (lic.id === lic.id ? res.data : lic))
           );
-          // Close the modal
           (
             document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
@@ -54,18 +51,14 @@ function Licenses() {
           showToast("Failed to update License. Please try again.", "error");
         });
     } else {
-      // Send a POST request to the API
       httpClient
         .post(api, licenseData)
         .then((res) => {
           console.log("License added successfully:", res.data);
           showToast("License added successfully!", "success");
-          // refresh the list
           getLicenses();
 
-          // event.currentTarget.reset();
           (document.getElementById("addEditForm") as HTMLFormElement)?.reset();
-          // Close the modal
           (document.getElementById("add-modal") as HTMLDialogElement)?.close();
         })
         .catch((err) => {
@@ -76,24 +69,20 @@ function Licenses() {
   };
 
   const handleDelete = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
 
-    // Get the ID to delete (you can pass it as a hidden input in the form or store it in state)
     const formData = new FormData(event.currentTarget);
     const licenseId = formData.get("licenseId") as string;
 
-    // Send a DELETE request to the API
     httpClient
       .delete(`${api}/${licenseId}`)
       .then((res) => {
         console.log("License deleted successfully:", res.data);
         showToast("License deleted successfully", "success");
-        // Refresh the  list
         setLicense((prevLicense) =>
           prevLicense.filter((license) => license.id.toString() !== licenseId)
         );
 
-        // Close the modal
         (document.getElementById("delete-modal") as HTMLDialogElement)?.close();
       })
       .catch((err) => {
@@ -117,8 +106,6 @@ function Licenses() {
   };
 
   const handleCloseModal = () => {
-    // Reset the form and close the modal
-
     const modal = document.getElementById(
       "add-edit-modal"
     ) as HTMLDialogElement;
@@ -129,8 +116,8 @@ function Licenses() {
       form.reset();
     }
 
-    setCurrentLicense(null); // Clear the current
-    setIsEditing(false); // Reset to add mode
+    setCurrentLicense(null); 
+    setIsEditing(false); 
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
@@ -150,8 +137,8 @@ function Licenses() {
           <button
             className="btn btn-circle float-right"
             onClick={() => {
-              setIsEditing(false); // Set to add mode
-              setCurrentLicense(null); // Clear current
+              setIsEditing(false);
+              setCurrentLicense(null); 
               (
                 document.getElementById("add-edit-modal") as HTMLDialogElement
               )?.showModal();
@@ -179,7 +166,7 @@ function Licenses() {
                           <li>
                             <a
                               onClick={() => {
-                                setIsEditing(true); // Set to edit mode
+                                setIsEditing(true); 
                                 setCurrentLicense(license);
                                 (
                                   document.getElementById(
@@ -199,7 +186,6 @@ function Licenses() {
                                 ) as HTMLInputElement;
                                 licneseIdInput.value = license.id.toString();
 
-                                // Show the delete modal
                                 (
                                   document.getElementById(
                                     "delete-modal"

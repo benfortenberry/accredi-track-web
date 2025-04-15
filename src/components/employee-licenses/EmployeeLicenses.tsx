@@ -374,13 +374,13 @@ function EmployeeLicenses() {
               ✕
             </button>
 
-            {employeeLicenses.length < 3 ||
+            {employeeLicenses && employeeLicenses.length < 3 ||
               (isEditing && (
                 <h3 className="font-bold text-lg">
                   {isEditing ? "Edit Employee License" : "Add Employee License"}
                 </h3>
               ))}
-            {(employeeLicenses.length < 3 || isEditing) && (
+            {(employeeLicenses && employeeLicenses.length < 3 || isEditing) && (
               <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
                 {!licenses && (
                   <div role="alert" className="alert alert-warning">
@@ -398,7 +398,7 @@ function EmployeeLicenses() {
                   onChange={(e) =>
                     setCurrentEmployeeLicense((prev) => ({
                       ...prev,
-                      licenseId: parseInt(e.target.value, 10), // Update licenseId in state
+                      licenseId: parseInt(e.target.value, 10), 
                     }))
                   }
                 >
@@ -445,7 +445,7 @@ function EmployeeLicenses() {
               </form>
             )}
 
-            {employeeLicenses.length >= 3 && !isEditing && (
+            {employeeLicenses && employeeLicenses.length >= 3 && !isEditing && (
               <p>Become a PRO subscriber to add more employee licenses.</p>
             )}
           </div>
