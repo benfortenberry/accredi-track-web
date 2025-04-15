@@ -3,6 +3,7 @@ import { AddIcon, DeleteIcon, EditIcon } from "../../utils/SvgIcons";
 import { showToast } from "../../utils/Utilities";
 import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
+import DeleteModal from "../modals/DeleteModal";
 
 function Licenses() {
   const api = `${config.apiBaseUrl}/licenses`;
@@ -124,7 +125,10 @@ function Licenses() {
     modal.close();
 
     const form = document.getElementById("addEditForm") as HTMLFormElement;
-    form.reset();
+    if (form) {
+      form.reset();
+    }
+
     setCurrentLicense(null); // Clear the current
     setIsEditing(false); // Reset to add mode
   };
@@ -222,25 +226,7 @@ function Licenses() {
           </h3>
         )}
 
-        <dialog id="delete-modal" className="modal">
-          <div className="modal-box">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            <h3 className="font-bold text-lg my-5">
-              Are you sure you wish to delete this license?
-            </h3>
-
-            <form id="deleteForm" onSubmit={handleDelete}>
-              <input type="hidden" name="licenseId" id="licenseIdToDelete" />
-              <button className="btn float-right btn-error mt-2">
-                Yes, delete
-              </button>
-            </form>
-          </div>
-        </dialog>
+        <DeleteModal delete={handleDelete} label="license" text="license" />
 
         <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
@@ -250,27 +236,34 @@ function Licenses() {
             >
               ✕
             </button>
-            <h3 className="font-bold text-lg">
-              {isEditing ? "Edit License" : "Add License"}
-            </h3>
+            {licenses.length < 5 ||
+              (isEditing && (
+                <h3 className="font-bold text-lg">
+                  {isEditing ? "Edit License" : "Add License"}
+                </h3>
+              ))}
+            {(licenses.length < 5 || isEditing) && (
+              <form id="addEditForm" onSubmit={handleSubmit}>
+                <label className="input validator mt-2">
+                  <input
+                    type="text"
+                    required
+                    className=""
+                    name="name"
+                    placeholder="License Name"
+                    defaultValue={currentLicense?.name || ""}
+                  />
+                </label>
+                <p className="validator-hint  hidden mt-1 mb-2">Required</p>
 
-            <form id="addEditForm" onSubmit={handleSubmit}>
-              <label className="input validator mt-2">
-                <input
-                  type="text"
-                  required
-                  className=""
-                  name="name"
-                  placeholder="License Name"
-                  defaultValue={currentLicense?.name || ""}
-                />
-              </label>
-              <p className="validator-hint  hidden mt-1 mb-2">Required</p>
-
-              <button className="btn float-right btn-primary mt-2">
-                {isEditing ? "Save" : "Add"}
-              </button>
-            </form>
+                <button className="btn float-right btn-primary mt-2">
+                  {isEditing ? "Save" : "Add"}
+                </button>
+              </form>
+            )}
+            {licenses.length >= 5 && !isEditing && (
+              <p>Become a PRO subscriber to add more licenses.</p>
+            )}
           </div>
         </dialog>
       </div>

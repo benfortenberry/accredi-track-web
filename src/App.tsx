@@ -14,7 +14,7 @@ import HealthCheck from "./components/HealthCheck";
 
 function App() {
   return (
-    <div className="container mx-auto">
+    <div className="">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>

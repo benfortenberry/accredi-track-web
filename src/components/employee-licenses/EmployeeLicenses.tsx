@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-import { AddIcon, EditIcon, DeleteIcon } from "../../utils/SvgIcons";
+import {
+  AddIcon,
+  EditIcon,
+  DeleteIcon,
+  BackIcon,
+  WarningIcon,
+} from "../../utils/SvgIcons";
 import { showToast, formatDate } from "../../utils/Utilities";
 import { useParams } from "react-router-dom";
 import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
+import DeleteModal from "../modals/DeleteModal";
 
 function EmployeeLicenses() {
   const { id } = useParams<{ id: string }>();
@@ -139,8 +146,7 @@ function EmployeeLicenses() {
       .then((res) => {
         console.log("Employee License deleted successfully:", res.data);
         showToast("Employee License deleted successfully", "success");
-        // Refresh the employee list
-        //getExmployees();
+
         setEmployeeLicenses((prevEmployeeLicenses) =>
           prevEmployeeLicenses.filter(
             (employeeLicense) =>
@@ -162,7 +168,7 @@ function EmployeeLicenses() {
 
   const getEmployee = (employeeId: number) => {
     httpClient
-      .get(`${employeeApi}/${employeeId}`) // Replace with your API endpoint
+      .get(`${employeeApi}/${employeeId}`)
       .then((res) => {
         setEmployee(res.data); // Set the employee details in state
       })
@@ -221,9 +227,12 @@ function EmployeeLicenses() {
     const form = document.getElementById(
       "addEmployeeLicenseForm"
     ) as HTMLFormElement;
-    form.reset();
+    if (form) {
+      form.reset();
+    }
+
     setCurrentEmployeeLicense(null);
-    setIsEditing(false); // Reset to add mode
+    setIsEditing(false);
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
@@ -244,11 +253,7 @@ function EmployeeLicenses() {
         <button
           className="btn btn-circle float-right"
           onClick={() => {
-            setIsEditing(false); // Set to add mode
-            //   let blankEmployeeLicense: EmployeeLicense = {
-            //     employeeId: employeeId,
-
-            //   };
+            setIsEditing(false);
             setCurrentEmployeeLicense(null);
             (
               document.getElementById("add-edit-modal") as HTMLDialogElement
@@ -259,31 +264,13 @@ function EmployeeLicenses() {
         </button>
 
         <a className=" float-left mr-3 mt-1" href="/employees">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
+          <BackIcon />
         </a>
         <h2 className="text-xl font-bold mb-4">
           {employee
             ? `Licenses For ${employee.firstName} ${employee.lastName}`
             : "Loading Employee..."}
         </h2>
-
-        {/* <small className="mb-4">
-          {" "}
-          {employee ? `${employee.phone1} - ${employee.email}` : ""}
-        </small> */}
 
         {employeeLicenses && employeeLicenses.length > 0 ? (
           <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
@@ -369,29 +356,7 @@ function EmployeeLicenses() {
           </h3>
         )}
 
-        <dialog id="delete-modal" className="modal">
-          <div className="modal-box">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            <h3 className="font-bold text-lg my-5">
-              Are you sure you wish to delete this employee license?
-            </h3>
-
-            <form id="deleteEmployeeLicenseForm" onSubmit={handleDelete}>
-              <input
-                type="hidden"
-                name="employeeLicenseId"
-                id="employeeLicenseIdToDelete"
-              />
-              <button className="btn float-right btn-error mt-2">
-                Yes, delete
-              </button>
-            </form>
-          </div>
-        </dialog>
+        <DeleteModal delete={handleDelete} label="employeeLicense" text="employee license" />
 
         <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
@@ -409,83 +374,80 @@ function EmployeeLicenses() {
               ✕
             </button>
 
-            <h3 className="font-bold text-lg">
-              {isEditing ? "Edit Employee License" : "Add Employee License"}
-            </h3>
+            {employeeLicenses.length < 3 ||
+              (isEditing && (
+                <h3 className="font-bold text-lg">
+                  {isEditing ? "Edit Employee License" : "Add Employee License"}
+                </h3>
+              ))}
+            {(employeeLicenses.length < 3 || isEditing) && (
+              <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
+                {!licenses && (
+                  <div role="alert" className="alert alert-warning">
+                    <WarningIcon />
 
-            <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
-              {!licenses && (
-                <div role="alert" className="alert alert-warning">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 shrink-0 stroke-current"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <span>Must add licenses first.</span>
-                </div>
-              )}
-              <select
-                name="licenseId"
-                id="licenseId"
-                required
-                className="select mt-3"
-                value={currentEmployeeLicense?.licenseId || ""}
-                onChange={(e) =>
-                  setCurrentEmployeeLicense((prev) => ({
-                    ...prev,
-                    licenseId: parseInt(e.target.value, 10), // Update licenseId in state
-                  }))
-                }
-              >
-                <option value="" disabled>
-                  Select a license
-                </option>
-                {licenses &&
-                  licenses.map((license) => (
-                    <option key={license.id} value={license.id}>
-                      {license.name}
-                    </option>
-                  ))}
-              </select>
-
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Issue Date</legend>
-                <input
-                  type="date"
-                  className="input validator"
+                    <span>Must add licenses first.</span>
+                  </div>
+                )}
+                <select
+                  name="licenseId"
+                  id="licenseId"
                   required
-                  name="issueDate"
-                  placeholder="Issue Date"
-                  defaultValue={currentEmployeeLicense?.issueDate || ""}
-                />
-                <p className="validator-hint  hidden mt-1 mb-2">Required</p>
-              </fieldset>
+                  className="select mt-3"
+                  value={currentEmployeeLicense?.licenseId || ""}
+                  onChange={(e) =>
+                    setCurrentEmployeeLicense((prev) => ({
+                      ...prev,
+                      licenseId: parseInt(e.target.value, 10), // Update licenseId in state
+                    }))
+                  }
+                >
+                  <option value="" disabled>
+                    Select a license
+                  </option>
+                  {licenses &&
+                    licenses.map((license) => (
+                      <option key={license.id} value={license.id}>
+                        {license.name}
+                      </option>
+                    ))}
+                </select>
 
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Expiration Date</legend>
-                <input
-                  type="date"
-                  className="input validator"
-                  required
-                  name="expDate"
-                  placeholder="Expiration Date"
-                  defaultValue={currentEmployeeLicense?.expDate || ""}
-                />
-                <p className="validator-hint  hidden mt-1 mb-2">Required</p>
-              </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Issue Date</legend>
+                  <input
+                    type="date"
+                    className="input validator"
+                    required
+                    name="issueDate"
+                    placeholder="Issue Date"
+                    defaultValue={currentEmployeeLicense?.issueDate || ""}
+                  />
+                  <p className="validator-hint  hidden mt-1 mb-2">Required</p>
+                </fieldset>
 
-              <button className="btn float-right btn-primary mt-2">
-                {isEditing ? "Save" : "Add"}
-              </button>
-            </form>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Expiration Date</legend>
+                  <input
+                    type="date"
+                    className="input validator"
+                    required
+                    name="expDate"
+                    placeholder="Expiration Date"
+                    defaultValue={currentEmployeeLicense?.expDate || ""}
+                  />
+                  <p className="validator-hint  hidden mt-1 mb-2">Required</p>
+                </fieldset>
+
+                <button className="btn float-right btn-primary mt-2">
+                  {isEditing ? "Save" : "Add"}
+                </button>
+              </form>
+            )}
+
+            {employeeLicenses.length >= 3 && !isEditing && (
+              <p>Become a PRO subscriber to add more employee licenses.</p>
+            )}
           </div>
         </dialog>
       </div>

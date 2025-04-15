@@ -6,17 +6,14 @@ import {
   QuestionMarkIcon,
   EmailIcon,
   PhoneIcon,
+  RightArrowIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
-// import { useAuth0 } from "@auth0/auth0-react";
+import DeleteModal from "../modals/DeleteModal";
 
 function Employees() {
-  // const { user, isAuthenticated } = useAuth0();
-
-  // console.log(user, isAuthenticated);
-
   const api = `${config.apiBaseUrl}/employees`;
 
   interface Employee {
@@ -31,8 +28,8 @@ function Employees() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false); // Tracks if the modal is in edit mode
-  const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null); // Stores the employee being edited
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
 
   useEffect(() => {
     getEmployees();
@@ -154,7 +151,10 @@ function Employees() {
     modal.close();
 
     const form = document.getElementById("addEmployeeForm") as HTMLFormElement;
-    form.reset();
+    if (form) {
+      form.reset();
+    }
+
     setCurrentEmployee(null); // Clear the current employee
     setIsEditing(false); // Reset to add mode
   };
@@ -279,18 +279,7 @@ function Employees() {
                         <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
                           <li>
                             <a href={`/employee/${employee.id}`}>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                className="size-5"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
+                              <RightArrowIcon />
                             </a>
                           </li>
                         </ul>
@@ -307,25 +296,7 @@ function Employees() {
           </h3>
         )}
 
-        <dialog id="delete-modal" className="modal">
-          <div className="modal-box">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            <h3 className="font-bold text-lg my-5">
-              Are you sure you wish to delete this employee?
-            </h3>
-
-            <form id="deleteEmployeeForm" onSubmit={handleDelete}>
-              <input type="hidden" name="employeeId" id="employeeIdToDelete" />
-              <button className="btn float-right btn-error mt-2">
-                Yes, delete
-              </button>
-            </form>
-          </div>
-        </dialog>
+        <DeleteModal delete={handleDelete} label="employee" text="employee" />
 
         <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
@@ -336,72 +307,81 @@ function Employees() {
               ✕
             </button>
 
-            <h3 className="font-bold text-lg">
-              {isEditing ? "Edit Employee" : "Add Employee"}
-            </h3>
+            {employees.length <= 4 ||
+              (isEditing && (
+                <h3 className="font-bold text-lg">
+                  {isEditing ? "Edit Employee" : "Add Employee"}
+                </h3>
+              ))}
 
-            <form id="addEmployeeForm" onSubmit={handleSubmit}>
-              <label className="input validator mt-2">
-                <input
-                  type="text"
-                  required
-                  className=""
-                  name="lastName"
-                  placeholder="Last Name"
-                  defaultValue={currentEmployee?.lastName || ""} // Populate when editing
-                />
-              </label>
-              <p className="validator-hint  hidden mt-1 mb-2">Required</p>
+            {(employees.length <= 4 || isEditing) && (
+              <form id="addEmployeeForm" onSubmit={handleSubmit}>
+                <label className="input validator mt-2">
+                  <input
+                    type="text"
+                    required
+                    className=""
+                    name="lastName"
+                    placeholder="Last Name"
+                    defaultValue={currentEmployee?.lastName || ""} // Populate when editing
+                  />
+                </label>
+                <p className="validator-hint  hidden mt-1 mb-2">Required</p>
 
-              <label className="input validator mt-2 ">
-                <input
-                  type="text"
-                  required
-                  className="grow"
-                  name="firstName"
-                  placeholder="First Name"
-                  defaultValue={currentEmployee?.firstName || ""} // Populate when editing
-                />
-              </label>
-              <p className="validator-hint hidden mt-1 mb-2">Required</p>
+                <label className="input validator mt-2 ">
+                  <input
+                    type="text"
+                    required
+                    className="grow"
+                    name="firstName"
+                    placeholder="First Name"
+                    defaultValue={currentEmployee?.firstName || ""} // Populate when editing
+                  />
+                </label>
+                <p className="validator-hint hidden mt-1 mb-2">Required</p>
 
-              <label className="input validator mt-2">
-                <PhoneIcon />
-                <input
-                  type="tel"
-                  className="tabular-nums"
-                  name="phone1"
-                  required
-                  placeholder="Phone Number"
-                  pattern="[0-9]*"
-                  minLength={10}
-                  maxLength={10}
-                  title="Must be 10 digits"
-                  defaultValue={currentEmployee?.phone1 || ""} // Populate when editing
-                />
-              </label>
-              <p className="validator-hint hidden mt-1 mb-2">
-                Must be 10 digits
-              </p>
+                <label className="input validator mt-2">
+                  <PhoneIcon />
+                  <input
+                    type="tel"
+                    className="tabular-nums"
+                    name="phone1"
+                    required
+                    placeholder="Phone Number"
+                    pattern="[0-9]*"
+                    minLength={10}
+                    maxLength={10}
+                    title="Must be 10 digits"
+                    defaultValue={currentEmployee?.phone1 || ""} // Populate when editing
+                  />
+                </label>
+                <p className="validator-hint hidden mt-1 mb-2">
+                  Must be 10 digits
+                </p>
 
-              <label className="input validator mt-2">
-                <EmailIcon />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  required
-                  defaultValue={currentEmployee?.email || ""} // Populate when editing
-                />
-              </label>
-              <div className="validator-hint hidden mt-1 mb-2">
-                Enter valid email address
-              </div>
+                <label className="input validator mt-2">
+                  <EmailIcon />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    required
+                    defaultValue={currentEmployee?.email || ""} // Populate when editing
+                  />
+                </label>
+                <div className="validator-hint hidden mt-1 mb-2">
+                  Enter valid email address
+                </div>
 
-              <button className="btn float-right btn-primary mt-2">
-                {isEditing ? "Save" : "Add"}
-              </button>
-            </form>
+                <button className="btn float-right btn-primary mt-2">
+                  {isEditing ? "Save" : "Add"}
+                </button>
+              </form>
+            )}
+
+            {employees.length >= 5 && !isEditing && (
+              <p>Become a PRO subscriber to add more employees.</p>
+            )}
           </div>
         </dialog>
       </div>
