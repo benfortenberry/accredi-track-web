@@ -1,33 +1,95 @@
+import { useEffect, useState } from "react";
+
+import config from "../config";
+import { httpClient, withAxios } from "../utils/AxiosInstance";
+
 function Dashboard() {
-  return (
-    <div className="flex justify-center items-center">
-    <div className="stats shadow">
-      <div className="stat place-items-center">
-        <div className="stat-title">Active Users</div>
-        <div className="stat-value text-white">4,200</div>
-        <div className="stat-desc text-success">↗︎ 200 (5%)</div>
-      </div>
+  const api = `${config.apiBaseUrl}/metrics`;
 
-      <div className="stat place-items-center">
-        <div className="stat-title">Expiring Licenses</div>
-        <div className="stat-value text-white">120</div>
-        <div className="stat-desc text-white">Next 30 Days</div>
-      </div>
+  interface Metrics {
+    totalEmployees: number;
+    expiredCount: number;
+    expiringSoon: number
+  }
 
-      <div className="stat place-items-center">
-        <div className="stat-title">Compliance Rate</div>
-        <div className="stat-value text-white">95%</div>
-        <div className="stat-desc text-error">↗︎ 3% from last month</div>
-      </div>
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-      <div className="stat place-items-center">
-        <div className="stat-title">Notifications Sent</div>
-        <div className="stat-value text-white">1,500</div>
-        <div className="stat-desc text-white">This Month</div>
+  useEffect(() => {
+    getMetrics();
+  }, []);
+
+  const getMetrics = () => {
+    setIsLoading(true);
+    httpClient
+      .get(api)
+      .then((res) => {
+        setMetrics(res.data);
+        console.log(metrics)
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setError("Failed to fetch employees");
+      });
+  };
+
+  if (error) {
+    return <h1 className="text-xl font-bold mb-4">{error}</h1>;
+  } else if (isLoading) {
+    return (
+      <h1 className="text-center">
+        <span className="loading loading-dots loading-xl"></span>
+      </h1>
+    );
+  } else {
+    return (
+      <div>
+        <div className="grid sm:grid-cols-3 xs:grid-cols-2  gap-4">
+          <div className="stat place-items-center">
+            <div className="stat-title">Active Employees</div>
+            {/* {metrics?.totalEmployees} */}
+            <div className="stat-value text-white"> {metrics?.totalEmployees}</div>
+            <div className="stat-desc text-white">&nbsp;</div>
+          </div>
+
+          <div className="stat place-items-center">
+            <div className="stat-title">Expiring Soon</div>
+            <div className="stat-value text-white">{metrics?.expiringSoon}</div>
+            <div className="stat-desc text-white">Next 30 Days</div>
+          </div>
+
+          <div className="stat place-items-center">
+            <div className="stat-title">Expired Licenses</div>
+            <div className="stat-value text-white">{metrics?.expiredCount}</div>
+            <div className="stat-desc text-white">&nbsp;</div>
+          </div>
+        </div>
+
+        <div className="grid  sm:grid-cols-3 xs:grid-cols-2 gap-4">
+          <div className="stat place-items-center">
+            <div className="stat-title">Compliance Rate</div>
+            {/* <div className="skeleton h-15 mt-3 w-full"></div> */}
+            <div className="stat-value text-white">95%</div>
+
+            <div className="stat-desc text-error">&nbsp;</div>
+          </div>
+
+          <div className="stat place-items-center">
+            <div className="stat-title">Avg License Per Employees</div>
+            <div className="stat-value text-white">3.04</div>
+            <div className="stat-desc text-white">&nbsp;</div>
+          </div>
+
+          <div className="stat place-items-center">
+            <div className="stat-title">Notifications Sent</div>
+            <div className="stat-value text-white">40</div>
+            <div className="stat-desc text-white">This Month</div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  );
+    );
+  }
 }
-
-export default Dashboard;
+export default withAxios(Dashboard);

@@ -3,3 +3,10 @@
 @plugin "daisyui" {
     themes: corporate --default, night --prefersdark;
   }
+
+
+  .login-button{
+    position: absolute;
+    right: 0;
+    top:0;
+  }

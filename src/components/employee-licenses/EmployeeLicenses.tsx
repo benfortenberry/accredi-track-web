@@ -60,7 +60,7 @@ function EmployeeLicenses() {
 
   useEffect(() => {
     getEmployee(employeeId);
-    getEmployeeLicenses();
+    getEmployeeLicenses(employeeId);
     getLicenses();
   }, []);
 
@@ -114,7 +114,7 @@ function EmployeeLicenses() {
           console.log("Employee License added successfully:", res.data);
           showToast("Employee License added successfully!", "success");
 
-          getEmployeeLicenses();
+          getEmployeeLicenses(employeeId);
 
           (
             document.getElementById("addEmployeeLicenseForm") as HTMLFormElement
@@ -195,10 +195,10 @@ function EmployeeLicenses() {
       });
   };
 
-  const getEmployeeLicenses = () => {
+  const getEmployeeLicenses = (employeeId: number) => {
     setIsLoading(true);
     httpClient
-      .get(api)
+      .get(`${api}/${employeeId}`)
       .then((res) => {
         setEmployeeLicenses(res.data);
         setIsLoading(false);
