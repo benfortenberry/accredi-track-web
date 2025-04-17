@@ -1,5 +1,4 @@
 import LoginButton from "./auth0/LoginButton";
-import GetStarted from "./auth0/GetStartedButton";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
