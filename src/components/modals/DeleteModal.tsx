@@ -8,7 +8,7 @@ function DeleteModal(props: any) {
           </button>
         </form>
         <h3 className="font-bold text-lg my-5">
-          Are you sure you wish to delete this {props.text}?
+         {props.text}
         </h3>
 
         <form id="deleteForm" onSubmit={props.delete}>

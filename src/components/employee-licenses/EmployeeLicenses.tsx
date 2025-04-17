@@ -7,13 +7,16 @@ import {
   WarningIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatDate } from "../../utils/Utilities";
-import { useParams } from "react-router-dom";
 import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 function EmployeeLicenses() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const referral = searchParams.get("r");
+
   const employeeId = parseInt(id || "0", 10);
 
   const api = `${config.apiBaseUrl}/employee-licenses`;
@@ -54,6 +57,8 @@ function EmployeeLicenses() {
   const [isEditing, setIsEditing] = useState(false);
   const [employee, setEmployee] = useState<EmployeeInfo | null>(null); // State to store employee details
   const [licenses, setLicense] = useState<License[]>([]);
+
+  const navigate = useNavigate();
 
   const [currentEmployeeLicense, setCurrentEmployeeLicense] =
     useState<EmployeeLicense | null>(null);
@@ -200,7 +205,9 @@ function EmployeeLicenses() {
     httpClient
       .get(`${api}/${employeeId}`)
       .then((res) => {
-        setEmployeeLicenses(res.data);
+        if (res.data) {
+          setEmployeeLicenses(res.data);
+        }
         setIsLoading(false);
       })
       .catch(() => {
@@ -214,6 +221,15 @@ function EmployeeLicenses() {
     const today = new Date();
     const expirationDate = new Date(expDate);
     return expirationDate < today ? "Expired" : "Active";
+  };
+
+  const handleGoBack = () => {
+    console.log(referral);
+    if (referral) {
+      navigate("/license-types");
+    } else {
+      navigate("/employees");
+    }
   };
 
   const handleCloseModal = () => {
@@ -263,12 +279,12 @@ function EmployeeLicenses() {
           <AddIcon />
         </button>
 
-        <a className=" float-left mr-3 mt-1" href="/employees">
+        <a className="float-left mr-3 mt-1" onClick={handleGoBack}>
           <BackIcon />
         </a>
         <h2 className="text-xl font-bold mb-4">
           {employee
-            ? `Licenses For ${employee.firstName} ${employee.lastName}`
+            ? `Licenses for ${employee.firstName} ${employee.lastName}`
             : "Loading Employee..."}
         </h2>
 
@@ -278,7 +294,7 @@ function EmployeeLicenses() {
               <thead>
                 <tr>
                   <th></th>
-                  <th>License</th>
+                  <th>License Type</th>
                   <th>Issue Date</th>
                   <th>Exp Date</th>
 
@@ -356,7 +372,11 @@ function EmployeeLicenses() {
           </h3>
         )}
 
-        <DeleteModal delete={handleDelete} label="employeeLicense" text="employee license" />
+        <DeleteModal
+          delete={handleDelete}
+          label="employeeLicense"
+          text="Are you sure you wish to delete this license?"
+        />
 
         <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
@@ -374,16 +394,17 @@ function EmployeeLicenses() {
               ✕
             </button>
 
-            {employeeLicenses && employeeLicenses.length < 3 ||
+            {(employeeLicenses && employeeLicenses.length < 3) ||
               (isEditing && (
                 <h3 className="font-bold text-lg">
                   {isEditing ? "Edit Employee License" : "Add Employee License"}
                 </h3>
               ))}
-            {(employeeLicenses && employeeLicenses.length < 3 || isEditing) && (
+            {((employeeLicenses && employeeLicenses.length < 3) ||
+              isEditing) && (
               <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
                 {!licenses && (
-                  <div role="alert" className="alert alert-warning">
+                  <div role="alert" className="alert mt-3 alert-warning">
                     <WarningIcon />
 
                     <span>Must add licenses first.</span>
@@ -398,7 +419,7 @@ function EmployeeLicenses() {
                   onChange={(e) =>
                     setCurrentEmployeeLicense((prev) => ({
                       ...prev,
-                      licenseId: parseInt(e.target.value, 10), 
+                      licenseId: parseInt(e.target.value, 10),
                     }))
                   }
                 >

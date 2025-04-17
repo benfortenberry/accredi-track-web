@@ -27,7 +27,7 @@ function App() {
               }
             />
             <Route
-              path="licenses"
+              path="license-types"
               element={
                 <ProtectedRoute>
                   <Licenses />

@@ -23,6 +23,7 @@ function Employees() {
     phone1: string;
     email: string;
     status: string;
+    licenseCount: number;
   }
 
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -36,7 +37,7 @@ function Employees() {
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); 
+    event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const employeeData = {
@@ -102,7 +103,7 @@ function Employees() {
       .then((res) => {
         console.log("Employee deleted successfully:", res.data);
         showToast("Employee deleted successfully", "success");
-      
+
         setEmployees((prevEmployees) =>
           prevEmployees.filter(
             (employee) => employee.id.toString() !== employeeId
@@ -122,7 +123,9 @@ function Employees() {
     httpClient
       .get(api)
       .then((res) => {
-        setEmployees(res.data);
+        if (res.data) {
+          setEmployees(res.data);
+        }
         setIsLoading(false);
       })
       .catch(() => {
@@ -132,7 +135,6 @@ function Employees() {
   };
 
   const handleCloseModal = () => {
-
     const modal = document.getElementById(
       "add-edit-modal"
     ) as HTMLDialogElement;
@@ -166,7 +168,7 @@ function Employees() {
             className="btn btn-circle float-right"
             onClick={() => {
               setIsEditing(false);
-              setCurrentEmployee(null); 
+              setCurrentEmployee(null);
               (
                 document.getElementById("add-edit-modal") as HTMLDialogElement
               )?.showModal();
@@ -202,6 +204,7 @@ function Employees() {
                   <th>Last Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  <th>License(s)</th>
                   <th></th>
                 </tr>
               </thead>
@@ -215,7 +218,7 @@ function Employees() {
                             <a
                               onClick={() => {
                                 setIsEditing(true);
-                                setCurrentEmployee(employee); 
+                                setCurrentEmployee(employee);
                                 (
                                   document.getElementById(
                                     "add-edit-modal"
@@ -261,6 +264,7 @@ function Employees() {
                       <td>{employee.lastName}</td>
                       <td>{formatPhoneNumber(employee.phone1)}</td>
                       <td>{employee.email}</td>
+                      <td>{employee.licenseCount}</td>
                       <td className="">
                         <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
                           <li>
@@ -282,7 +286,11 @@ function Employees() {
           </h3>
         )}
 
-        <DeleteModal delete={handleDelete} label="employee" text="employee" />
+        <DeleteModal
+          delete={handleDelete}
+          label="employee"
+          text="Are you sure you wish to delete this employee? All employee licenses will be deleted as well."
+        />
 
         <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
@@ -293,14 +301,13 @@ function Employees() {
               ✕
             </button>
 
-            {employees.length <= 4 ||
-              (isEditing && (
-                <h3 className="font-bold text-lg">
-                  {isEditing ? "Edit Employee" : "Add Employee"}
-                </h3>
-              ))}
+            {((employees && employees.length <= 4) || isEditing) && (
+              <h3 className="font-bold text-lg">
+                {isEditing ? "Edit Employee" : "Add Employee"}
+              </h3>
+            )}
 
-            {(employees.length <= 4 || isEditing) && (
+            {((employees && employees.length <= 4) || isEditing) && (
               <form id="addEmployeeForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2">
                   <input
@@ -309,7 +316,7 @@ function Employees() {
                     className=""
                     name="lastName"
                     placeholder="Last Name"
-                    defaultValue={currentEmployee?.lastName || ""} 
+                    defaultValue={currentEmployee?.lastName || ""}
                   />
                 </label>
                 <p className="validator-hint  hidden mt-1 mb-2">Required</p>
@@ -321,7 +328,7 @@ function Employees() {
                     className="grow"
                     name="firstName"
                     placeholder="First Name"
-                    defaultValue={currentEmployee?.firstName || ""} 
+                    defaultValue={currentEmployee?.firstName || ""}
                   />
                 </label>
                 <p className="validator-hint hidden mt-1 mb-2">Required</p>
@@ -352,7 +359,7 @@ function Employees() {
                     name="email"
                     placeholder="Email Address"
                     required
-                    defaultValue={currentEmployee?.email || ""} 
+                    defaultValue={currentEmployee?.email || ""}
                   />
                 </label>
                 <div className="validator-hint hidden mt-1 mb-2">
@@ -365,7 +372,7 @@ function Employees() {
               </form>
             )}
 
-            {employees.length >= 5 && !isEditing && (
+            {employees && employees.length >= 5 && !isEditing && (
               <p>Become a PRO subscriber to add more employees.</p>
             )}
           </div>

@@ -7,13 +7,22 @@ import DeleteModal from "../modals/DeleteModal";
 
 function Licenses() {
   const api = `${config.apiBaseUrl}/licenses`;
+  const employeeApi = `${config.apiBaseUrl}/employee`;
 
   interface License {
     id: number;
     name: string;
+    inUseBy: string;
+  }
+
+  interface Employee {
+    id: number;
+    firstName: string;
+    lastName: string;
   }
 
   const [licenses, setLicense] = useState<License[]>([]);
+  const [employeeNames, setEmployeeNames] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +33,7 @@ function Licenses() {
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); 
+    event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const licenseData = {
@@ -91,12 +100,60 @@ function Licenses() {
       });
   };
 
+  const checkInUse = (license: License) => {
+    if (license.inUseBy) {
+      const employeeIdArray = JSON.parse(license.inUseBy);
+      const uniqueArray = employeeIdArray.reduce(
+        (accumulator: any, current: any) => {
+          if (!accumulator.includes(current)) {
+            accumulator.push(current);
+          }
+          return accumulator;
+        },
+        []
+      );
+
+      setEmployeeNames([]);
+      uniqueArray.forEach(async function (number: number) {
+        await httpClient
+          .get(`${employeeApi}/${number}`)
+          .then((res) => {
+            employeeNames.push(res.data);
+            setEmployeeNames((prevItems) => [...prevItems, res.data]);
+          })
+          .catch((err) => {
+            console.error("Error fetching employee details:", err);
+            showToast(
+              "Failed to fetch employee details. Please try again.",
+              "error"
+            );
+          });
+      });
+
+      (
+        document.getElementById("in-use-modal") as HTMLDialogElement
+      )?.showModal();
+    } else {
+      const licneseIdInput = document.getElementById(
+        "licenseIdToDelete"
+      ) as HTMLInputElement;
+      licneseIdInput.value = license.id.toString();
+
+      (
+        document.getElementById("delete-modal") as HTMLDialogElement
+      )?.showModal();
+    }
+  };
+
   const getLicenses = () => {
     setIsLoading(true);
     httpClient
       .get(api)
       .then((res) => {
-        setLicense(res.data);
+        if (res.data) {
+          setLicense(res.data);
+        }
+
         setIsLoading(false);
       })
       .catch(() => {
@@ -116,8 +173,8 @@ function Licenses() {
       form.reset();
     }
 
-    setCurrentLicense(null); 
-    setIsEditing(false); 
+    setCurrentLicense(null);
+    setIsEditing(false);
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
@@ -131,14 +188,13 @@ function Licenses() {
     return (
       <div>
         <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
-
         <h2 className="text-xl font-bold mb-4">
-          Licenses
+          License Types
           <button
             className="btn btn-circle float-right"
             onClick={() => {
               setIsEditing(false);
-              setCurrentLicense(null); 
+              setCurrentLicense(null);
               (
                 document.getElementById("add-edit-modal") as HTMLDialogElement
               )?.showModal();
@@ -147,7 +203,6 @@ function Licenses() {
             <AddIcon />
           </button>
         </h2>
-
         {licenses && licenses.length > 0 ? (
           <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
             <table className="table table-fixed">
@@ -166,7 +221,7 @@ function Licenses() {
                           <li>
                             <a
                               onClick={() => {
-                                setIsEditing(true); 
+                                setIsEditing(true);
                                 setCurrentLicense(license);
                                 (
                                   document.getElementById(
@@ -181,16 +236,7 @@ function Licenses() {
                           <li>
                             <a
                               onClick={() => {
-                                const licneseIdInput = document.getElementById(
-                                  "licenseIdToDelete"
-                                ) as HTMLInputElement;
-                                licneseIdInput.value = license.id.toString();
-
-                                (
-                                  document.getElementById(
-                                    "delete-modal"
-                                  ) as HTMLDialogElement
-                                )?.showModal();
+                                checkInUse(license);
                               }}
                             >
                               <DeleteIcon />
@@ -208,11 +254,37 @@ function Licenses() {
           </div>
         ) : (
           <h3 className="text-center text-lg font-bold mt-4">
-            Add your first Licesne
+            Add your first Licesne Type
           </h3>
         )}
+        <DeleteModal delete={handleDelete} label="license" text="Are you sure you wish to delete this license type?" />
+        <dialog id="in-use-modal" className="modal">
+          <div className="modal-box">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+            <h3 className="font-bold text-lg mb-3">
+              License Type cannot be deleted
+            </h3>
 
-        <DeleteModal delete={handleDelete} label="license" text="license" />
+            <p>This license type is currently in use by:</p>
+            <ul>
+              {employeeNames &&
+                employeeNames.map((emp) => (
+                  <li key={emp.id}>
+                  <a className="btn btn-link pl-0" href={`employee/${emp.id}?r=l`}>
+                   {emp.firstName} {emp.lastName}
+                   </a>
+                  </li>
+                ))}
+            </ul>
+
+            <br />
+            <p> Delete from those employee(s) and try again.</p>
+          </div>
+        </dialog>
 
         <dialog id="add-edit-modal" className="modal">
           <div className="modal-box">
@@ -222,13 +294,12 @@ function Licenses() {
             >
               ✕
             </button>
-            {licenses.length < 5 ||
-              (isEditing && (
-                <h3 className="font-bold text-lg">
-                  {isEditing ? "Edit License" : "Add License"}
-                </h3>
-              ))}
-            {(licenses.length < 5 || isEditing) && (
+            {((licenses && licenses.length < 5) || isEditing) && (
+              <h3 className="font-bold text-lg">
+                {isEditing ? "Edit License Type" : "Add License Type"}
+              </h3>
+            )}
+            {((licenses && licenses.length < 5) || isEditing) && (
               <form id="addEditForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2">
                   <input
@@ -247,8 +318,8 @@ function Licenses() {
                 </button>
               </form>
             )}
-            {licenses.length >= 5 && !isEditing && (
-              <p>Become a PRO subscriber to add more licenses.</p>
+            {licenses && licenses.length >= 5 && !isEditing && (
+              <p>Become a PRO subscriber to add more license types.</p>
             )}
           </div>
         </dialog>

@@ -9,7 +9,10 @@ function Dashboard() {
   interface Metrics {
     totalEmployees: number;
     expiredCount: number;
-    expiringSoon: number
+    expiringSoon: number;
+    complianceRate: number;
+    licenseAvg: number;
+    notificationCount: number;
   }
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -26,12 +29,12 @@ function Dashboard() {
       .get(api)
       .then((res) => {
         setMetrics(res.data);
-        console.log(metrics)
+        console.log(metrics);
         setIsLoading(false);
       })
       .catch(() => {
         setIsLoading(false);
-        setError("Failed to fetch employees");
+        setError("Failed to fetch dashboard");
       });
   };
 
@@ -50,7 +53,10 @@ function Dashboard() {
           <div className="stat place-items-center">
             <div className="stat-title">Active Employees</div>
             {/* {metrics?.totalEmployees} */}
-            <div className="stat-value text-white"> {metrics?.totalEmployees}</div>
+            <div className="stat-value text-white">
+              {" "}
+              {metrics?.totalEmployees}
+            </div>
             <div className="stat-desc text-white">&nbsp;</div>
           </div>
 
@@ -70,21 +76,22 @@ function Dashboard() {
         <div className="grid  sm:grid-cols-3 xs:grid-cols-2 gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Compliance Rate</div>
-            {/* <div className="skeleton h-15 mt-3 w-full"></div> */}
-            <div className="stat-value text-white">95%</div>
+            <div className="stat-value text-white">
+              {metrics?.complianceRate}%
+            </div>
 
             <div className="stat-desc text-error">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Avg License Per Employees</div>
-            <div className="stat-value text-white">3.04</div>
+            <div className="stat-value text-white">{metrics?.licenseAvg}</div>
             <div className="stat-desc text-white">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Notifications Sent</div>
-            <div className="stat-value text-white">40</div>
+            <div className="stat-value text-white">{metrics?.notificationCount}</div>
             <div className="stat-desc text-white">This Month</div>
           </div>
         </div>
