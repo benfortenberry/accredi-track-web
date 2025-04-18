@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import config from "../config";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
+import LicenseTypeChart from "./charts/LicenseTypeChart";
 
 function Dashboard() {
   const api = `${config.apiBaseUrl}/metrics`;
@@ -15,26 +16,78 @@ function Dashboard() {
     notificationCount: number;
   }
 
+  interface LicenseCount {
+    count: number;
+    licenseName: string;
+  }
+
+  interface LicenseChartData {
+    labels: Array<string>;
+    datasets: Array<object>;
+  }
+
+
+
   const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [, setLicenseCounts] = useState<LicenseCount[]>([]);
+  const [licenseChartData, setLicenseChartData] = useState<LicenseChartData>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getMetrics();
+    getLicenseCounts();
   }, []);
 
   const getMetrics = () => {
-    setIsLoading(true);
     httpClient
       .get(api)
       .then((res) => {
         setMetrics(res.data);
-        console.log(metrics);
         setIsLoading(false);
       })
       .catch(() => {
         setIsLoading(false);
         setError("Failed to fetch dashboard");
+      });
+  };
+
+  const getLicenseCounts = () => {
+    httpClient
+      .get(api + "/license-chart-data")
+      .then((res) => {
+
+        setLicenseCounts(() => {
+          const newCount =res.data
+          const labels = newCount.map((row: { licenseName: any; }) => row.licenseName)
+
+         const datasets = [
+            {
+              label: 'Valid',
+              data: newCount.map((row: { count: any; }) => row.count),
+              backgroundColor: 'rgba(53, 162, 235, 0.5)',
+            },
+            {
+              label: 'Expired',
+              data: newCount.map((row: { count: any; }) => row.count),
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }
+          ]
+
+          
+
+          setLicenseChartData({labels, datasets})
+          return newCount;
+        });
+
+
+
+     
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setError("Failed to fetch License Chart Data");
       });
   };
 
@@ -49,6 +102,7 @@ function Dashboard() {
   } else {
     return (
       <div>
+        <LicenseTypeChart data={licenseChartData} />
         <div className="grid sm:grid-cols-3 xs:grid-cols-2  gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Active Employees</div>
@@ -91,7 +145,9 @@ function Dashboard() {
 
           <div className="stat place-items-center">
             <div className="stat-title">Notifications Sent</div>
-            <div className="stat-value text-white">{metrics?.notificationCount}</div>
+            <div className="stat-value text-white">
+              {metrics?.notificationCount}
+            </div>
             <div className="stat-desc text-white">This Month</div>
           </div>
         </div>

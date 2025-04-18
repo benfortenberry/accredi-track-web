@@ -309,6 +309,20 @@ function Employees() {
 
             {((employees && employees.length <= 4) || isEditing) && (
               <form id="addEmployeeForm" onSubmit={handleSubmit}>
+               
+                <label className="input validator mt-2 ">
+                  <input
+                    type="text"
+                    required
+                    className="grow"
+                    name="firstName"
+                    placeholder="First Name"
+                    defaultValue={currentEmployee?.firstName || ""}
+                  />
+                </label>
+                <p className="validator-hint hidden mt-1 mb-2">Required</p>
+
+
                 <label className="input validator mt-2">
                   <input
                     type="text"
@@ -321,17 +335,6 @@ function Employees() {
                 </label>
                 <p className="validator-hint  hidden mt-1 mb-2">Required</p>
 
-                <label className="input validator mt-2 ">
-                  <input
-                    type="text"
-                    required
-                    className="grow"
-                    name="firstName"
-                    placeholder="First Name"
-                    defaultValue={currentEmployee?.firstName || ""}
-                  />
-                </label>
-                <p className="validator-hint hidden mt-1 mb-2">Required</p>
 
                 <label className="input validator mt-2">
                   <PhoneIcon />
