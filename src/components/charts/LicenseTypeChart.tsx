@@ -24,18 +24,29 @@ import {
     scales: {
         y: {
             ticks: {
-                precision: 0
+                precision: 0,
+                color: "white", 
+            }
+        },
+        x: {
+            ticks: {
+                color: "white", 
             }
         }
     },
     plugins: {
       legend: {
         position: 'top' as const,
-        display: true
+        display: true,
+        color: "white",
+        labels: {
+            color: "white",
+        }
       },
       title: {
-        display: false,
-        text: 'Chart.js Bar Chart',
+        display: true,
+        color: 'white',
+        text: 'License Status by Type',
       },
     },
   };

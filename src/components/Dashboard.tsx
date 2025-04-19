@@ -26,8 +26,6 @@ function Dashboard() {
     datasets: Array<object>;
   }
 
-
-
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [, setLicenseCounts] = useState<LicenseCount[]>([]);
   const [licenseChartData, setLicenseChartData] = useState<LicenseChartData>();
@@ -37,6 +35,8 @@ function Dashboard() {
   useEffect(() => {
     getMetrics();
     getLicenseCounts();
+    
+    
   }, []);
 
   const getMetrics = () => {
@@ -52,43 +52,57 @@ function Dashboard() {
       });
   };
 
-  const getLicenseCounts = () => {
-    httpClient
+  const getLicenseCounts = async () => {
+
+    let expiredCount: LicenseCount[];
+
+
+        await httpClient
+      .get(api + "/license-chart-data-expired")
+      .then((res) => {
+        expiredCount = res.data;
+      })
+      .catch(() => {
+        setError("Failed to fetch License Chart Data");
+      });
+
+
+    await httpClient
       .get(api + "/license-chart-data")
       .then((res) => {
+        setLicenseCounts(res.data);
+          setLicenseCounts(() => {
+            const licenseCounts = res.data;
+            const labels = licenseCounts.map(
+              (row: { licenseName: any }) => row.licenseName
+            );
 
-        setLicenseCounts(() => {
-          const newCount =res.data
-          const labels = newCount.map((row: { licenseName: any; }) => row.licenseName)
+            const datasets = [
+              {
+                label: "Valid",
+                data: licenseCounts.map((row: { count: any }) => row.count),
+                backgroundColor: "rgb(59, 187, 247)",
+              },
+              {
+                label: "Expired",
+                data: expiredCount.map((row: { count: any }) => row.count),
+                backgroundColor: "rgb(251, 112, 133)",
+              },
+            ];
 
-         const datasets = [
-            {
-              label: 'Valid',
-              data: newCount.map((row: { count: any; }) => row.count),
-              backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            },
-            {
-              label: 'Expired',
-              data: newCount.map((row: { count: any; }) => row.count),
-              backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            }
-          ]
+            setLicenseChartData({ labels, datasets });
+            return licenseCounts;
+          });
 
-          
-
-          setLicenseChartData({labels, datasets})
-          return newCount;
-        });
-
-
-
-     
-        setIsLoading(false);
+          setIsLoading(false);
+        
       })
       .catch(() => {
         setIsLoading(false);
         setError("Failed to fetch License Chart Data");
       });
+
+    setIsLoading(false);
   };
 
   if (error) {
@@ -102,13 +116,20 @@ function Dashboard() {
   } else {
     return (
       <div>
-        <LicenseTypeChart data={licenseChartData} />
+        <div className="grid overflow-x-auto lg:grid-cols-2 gap-4">
+          <div className="pr-20 pl-20   pt-5 text-center  h-75">
+            {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
+          </div>
+          <div className="col-span-1 pr-20 pl-20 text-center  h-75  pt-5 ">
+            {/* <LicenseTypeChart data={licenseChartData} /> */}
+          </div>
+        </div>
+
         <div className="grid sm:grid-cols-3 xs:grid-cols-2  gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Active Employees</div>
             {/* {metrics?.totalEmployees} */}
             <div className="stat-value text-white">
-              {" "}
               {metrics?.totalEmployees}
             </div>
             <div className="stat-desc text-white">&nbsp;</div>
