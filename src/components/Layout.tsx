@@ -12,7 +12,6 @@ function Layout() {
             <img src={logo} alt="AccrediTrack Logo" className="w-12 mx-auto hidden dark:block" />
             <img src={logoDark} alt="AccrediTrack Logo" className="w-12 mx-auto  block dark:hidden" />
           </a>
-
           
         </div>
         <div className="flex-none">

@@ -5,7 +5,7 @@ import Employees from "./components/employees/Employees";
 import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
-import Stripe from "./components/stripe/Stripe";
+import Payment from "./components/stripe/Payment";
 import Home from "./components/Home";
 import ProtectedRoute from "./components/auth0/ProtectedRoute";
 import NotFound from "./components/NotFound";
@@ -55,7 +55,7 @@ function App() {
               path="payment"
               element={
                 <ProtectedRoute>
-                  <Stripe />
+                  <Payment />
                 </ProtectedRoute>
               }
             />
