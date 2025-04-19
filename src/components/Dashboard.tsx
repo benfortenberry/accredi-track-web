@@ -35,8 +35,6 @@ function Dashboard() {
   useEffect(() => {
     getMetrics();
     getLicenseCounts();
-    
-    
   }, []);
 
   const getMetrics = () => {
@@ -53,11 +51,9 @@ function Dashboard() {
   };
 
   const getLicenseCounts = async () => {
-
     let expiredCount: LicenseCount[];
 
-
-        await httpClient
+    await httpClient
       .get(api + "/license-chart-data-expired")
       .then((res) => {
         expiredCount = res.data;
@@ -66,36 +62,34 @@ function Dashboard() {
         setError("Failed to fetch License Chart Data");
       });
 
-
     await httpClient
       .get(api + "/license-chart-data")
       .then((res) => {
         setLicenseCounts(res.data);
-          setLicenseCounts(() => {
-            const licenseCounts = res.data;
-            const labels = licenseCounts.map(
-              (row: { licenseName: any }) => row.licenseName
-            );
+        setLicenseCounts(() => {
+          const licenseCounts = res.data;
+          const labels = licenseCounts.map(
+            (row: { licenseName: any }) => row.licenseName
+          );
 
-            const datasets = [
-              {
-                label: "Valid",
-                data: licenseCounts.map((row: { count: any }) => row.count),
-                backgroundColor: "rgb(59, 187, 247)",
-              },
-              {
-                label: "Expired",
-                data: expiredCount.map((row: { count: any }) => row.count),
-                backgroundColor: "rgb(251, 112, 133)",
-              },
-            ];
+          const datasets = [
+            {
+              label: "Valid",
+              data: licenseCounts.map((row: { count: any }) => row.count),
+              backgroundColor: "rgb(59, 187, 247)",
+            },
+            {
+              label: "Expired",
+              data: expiredCount.map((row: { count: any }) => row.count),
+              backgroundColor: "rgb(251, 112, 133)",
+            },
+          ];
 
-            setLicenseChartData({ labels, datasets });
-            return licenseCounts;
-          });
+          setLicenseChartData({ labels, datasets });
+          return licenseCounts;
+        });
 
-          setIsLoading(false);
-        
+        setIsLoading(false);
       })
       .catch(() => {
         setIsLoading(false);
@@ -129,47 +123,41 @@ function Dashboard() {
           <div className="stat place-items-center">
             <div className="stat-title">Active Employees</div>
             {/* {metrics?.totalEmployees} */}
-            <div className="stat-value text-white">
-              {metrics?.totalEmployees}
-            </div>
-            <div className="stat-desc text-white">&nbsp;</div>
+            <div className="stat-value">{metrics?.totalEmployees}</div>
+            <div className="stat-desc ">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Expiring Soon</div>
-            <div className="stat-value text-white">{metrics?.expiringSoon}</div>
-            <div className="stat-desc text-white">Next 30 Days</div>
+            <div className="stat-value ">{metrics?.expiringSoon}</div>
+            <div className="stat-desc ">Next 30 Days</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Expired Licenses</div>
-            <div className="stat-value text-white">{metrics?.expiredCount}</div>
-            <div className="stat-desc text-white">&nbsp;</div>
+            <div className="stat-value ">{metrics?.expiredCount}</div>
+            <div className="stat-desc ">&nbsp;</div>
           </div>
         </div>
 
         <div className="grid  sm:grid-cols-3 xs:grid-cols-2 gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Compliance Rate</div>
-            <div className="stat-value text-white">
-              {metrics?.complianceRate}%
-            </div>
+            <div className="stat-value ">{metrics?.complianceRate}%</div>
 
             <div className="stat-desc text-error">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Avg License Per Employees</div>
-            <div className="stat-value text-white">{metrics?.licenseAvg}</div>
-            <div className="stat-desc text-white">&nbsp;</div>
+            <div className="stat-value ">{metrics?.licenseAvg}</div>
+            <div className="stat-desc ">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Notifications Sent</div>
-            <div className="stat-value text-white">
-              {metrics?.notificationCount}
-            </div>
-            <div className="stat-desc text-white">This Month</div>
+            <div className="stat-value ">{metrics?.notificationCount}</div>
+            <div className="stat-desc ">This Month</div>
           </div>
         </div>
       </div>

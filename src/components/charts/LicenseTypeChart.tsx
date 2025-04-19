@@ -25,12 +25,12 @@ import {
         y: {
             ticks: {
                 precision: 0,
-                color: "white", 
+                color: "black", 
             }
         },
         x: {
             ticks: {
-                color: "white", 
+                color: "black", 
             }
         }
     },
@@ -38,14 +38,14 @@ import {
       legend: {
         position: 'top' as const,
         display: true,
-        color: "white",
+        color: "black",
         labels: {
-            color: "white",
+            color: "black",
         }
       },
       title: {
         display: true,
-        color: 'white',
+        color: 'black',
         text: 'License Status by Type',
       },
     },

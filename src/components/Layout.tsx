@@ -1,14 +1,16 @@
 import { Outlet } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
 import logo from "../assets/logo_white2.png";
+import logoDark from "../assets/logo_black2.png";
 // import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   return (
     <div className="container mx-auto">
       <div className="navbar  bg-base-200 ">
         <div className="flex-1">
-          <a href="/dashboard" className="btn btn-ghost text-xl">
-            <img src={logo} alt="AccrediTrack Logo" className="w-12 mx-auto" />
+          <a href="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
+            <img src={logo} alt="AccrediTrack Logo" className="w-12 mx-auto hidden dark:block" />
+            <img src={logoDark} alt="AccrediTrack Logo" className="w-12 mx-auto  block dark:hidden" />
           </a>
 
           
