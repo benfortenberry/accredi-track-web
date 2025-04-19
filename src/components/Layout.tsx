@@ -27,7 +27,7 @@ function Layout() {
               <a href="/license-types">License Types</a>
             </li>
             <li className="hidden md:block " >
-              <a className="btn btn-secondary mx-2 btn-sm" href="/licenses">
+              <a className="btn btn-secondary mx-2 btn-sm" href="/payment">
                 go PRO
               </a>
             </li>
@@ -69,7 +69,7 @@ function Layout() {
               </li>
              
               <li>
-              <a className="btn btn-secondary">go PRO</a>
+              <a href='/payment' className="btn btn-secondary">go PRO</a>
               </li>
              
             </ul>

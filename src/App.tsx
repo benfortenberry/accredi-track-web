@@ -5,6 +5,7 @@ import Employees from "./components/employees/Employees";
 import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
+import Stripe from "./components/stripe/Stripe";
 import Home from "./components/Home";
 import ProtectedRoute from "./components/auth0/ProtectedRoute";
 import NotFound from "./components/NotFound";
@@ -50,7 +51,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
+             <Route
+              path="payment"
+              element={
+                <ProtectedRoute>
+                  <Stripe />
+                </ProtectedRoute>
+              }
+            />
           </Route>
+          
           <Route index element={<Home />} />
           <Route path="/health" element={<HealthCheck />} />
           <Route path="/login" element={<LoginPrompt />} />
