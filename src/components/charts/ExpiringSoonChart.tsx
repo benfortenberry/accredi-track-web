@@ -2,18 +2,20 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
     Legend,
   } from 'chart.js';
-  import { Bar } from 'react-chartjs-2';
+  import { Line } from 'react-chartjs-2';
 
   ChartJS.register(
     CategoryScale,
     LinearScale,
-    BarElement,
     Title,
+    PointElement,
+    LineElement,
     Tooltip,
     Legend
   );
@@ -37,7 +39,7 @@ import {
     plugins: {
       legend: {
         position: 'top' as const,
-        display: true,
+        display: false,
         color: "#171b2f",
         labels: {
             color: "#171b2f",
@@ -46,16 +48,18 @@ import {
       title: {
         display: true,
         color: '#171b2f',
-        text: 'License Status by Type',
+        text: 'Expiring Next 5 Months',
       },
     },
   };
 
-function LicenseTypeChart(props: any) {
+function ExpiringSoonChart(props: any) {
+
+    
     return (
-        <Bar options={options} data={props.data} />
+        <Line options={options} data={props.data} />
     );
   }
   
-  export default LicenseTypeChart;
+  export default ExpiringSoonChart;
   

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import config from "../config";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
+import ExpiringSoonChart from "./charts/ExpiringSoonChart";
 
 function Dashboard() {
   const api = `${config.apiBaseUrl}/metrics`;
@@ -21,24 +22,32 @@ function Dashboard() {
     licenseName: string;
   }
 
-  interface LicenseChartData {
+  interface ExpiringSoon {
+    count: number;
+    month: string;
+  }
+
+  interface ChartData {
     labels: Array<string>;
     datasets: Array<object>;
   }
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [, setLicenseCounts] = useState<LicenseCount[]>([]);
-  const [licenseChartData, setLicenseChartData] = useState<LicenseChartData>();
+  const [, setExpiringSoonLCounts] = useState<ExpiringSoon[]>([]);
+  const [licenseChartData, setLicenseChartData] = useState<ChartData>();
+  const [expiringSoonChartData, setLExpiringSoonChartData] = useState<ChartData>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getMetrics();
     getLicenseCounts();
+    getExpiringSoon()
   }, []);
 
-  const getMetrics = () => {
-    httpClient
+  const getMetrics = async () => {
+    await httpClient
       .get(api)
       .then((res) => {
         setMetrics(res.data);
@@ -65,7 +74,7 @@ function Dashboard() {
     await httpClient
       .get(api + "/license-chart-data")
       .then((res) => {
-        setLicenseCounts(res.data);
+        // setLicenseCounts(res.data);
         setLicenseCounts(() => {
           const licenseCounts = res.data;
           const labels = licenseCounts.map(
@@ -99,6 +108,40 @@ function Dashboard() {
     setIsLoading(false);
   };
 
+  const getExpiringSoon = async() => {
+    await httpClient
+    .get(api + "/license-chart-data-expiring-soon")
+    .then((res) => {
+      // setLicenseCounts(res.data);
+      setExpiringSoonLCounts(() => {
+        const expiringSoonCounts = res.data;
+        const labels = expiringSoonCounts.map(
+          (row: { month: any }) => row.month
+        );
+
+        const datasets = [
+          {
+            label: "Valid",
+            data: expiringSoonCounts.map((row: { count: any }) => row.count),
+            backgroundColor: "rgb(59, 187, 247)",
+          },
+          
+        ];
+
+        setLExpiringSoonChartData({ labels, datasets });
+        return expiringSoonCounts;
+      });
+
+      setIsLoading(false);
+    })
+    .catch(() => {
+      setIsLoading(false);
+      setError("Failed to fetch License Chart Data");
+    });
+
+  setIsLoading(false);
+  }
+
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
   } else if (isLoading) {
@@ -115,7 +158,7 @@ function Dashboard() {
             {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
           </div>
           <div className="col-span-1 pr-20 pl-20 text-center  h-75  pt-5 ">
-            {/* <LicenseTypeChart data={licenseChartData} /> */}
+          {expiringSoonChartData &&  <ExpiringSoonChart data={expiringSoonChartData} /> }
           </div>
         </div>
 

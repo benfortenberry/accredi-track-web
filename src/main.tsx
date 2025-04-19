@@ -14,8 +14,8 @@ createRoot(document.getElementById("root")!).render(
       audience: "https://accredi-track/api", // Ensure this matches your API audience
     }}
   >
-    <StrictMode>
+    {/* <StrictMode> */}
       <App />
-    </StrictMode>
+    {/* </StrictMode> */}
   </Auth0Provider>
 );
