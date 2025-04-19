@@ -9,12 +9,12 @@ import {
   RightArrowIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
-import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
 
 function Employees() {
-  const api = `${config.apiBaseUrl}/employees`;
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const api = `${API_BASE_URL}/employees`;
 
   interface Employee {
     id: number;

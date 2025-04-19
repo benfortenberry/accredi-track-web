@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
-import config from "../config";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
 
 function Dashboard() {
-  const api = `${config.apiBaseUrl}/metrics`;
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+
+  const api = `${API_BASE_URL}/metrics`;
 
   interface Metrics {
     totalEmployees: number;

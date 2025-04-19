@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { AddIcon, DeleteIcon, EditIcon } from "../../utils/SvgIcons";
 import { showToast } from "../../utils/Utilities";
-import config from "../../config";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
 
 function Licenses() {
-  const api = `${config.apiBaseUrl}/licenses`;
-  const employeeApi = `${config.apiBaseUrl}/employee`;
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const api = `${API_BASE_URL}/licenses`;
+  const employeeApi = `${API_BASE_URL}/employee`;
 
   interface License {
     id: number;

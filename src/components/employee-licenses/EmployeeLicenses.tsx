@@ -7,21 +7,23 @@ import {
   WarningIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatDate } from "../../utils/Utilities";
-import config from "../../config";
+
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 function EmployeeLicenses() {
+  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const referral = searchParams.get("r");
 
   const employeeId = parseInt(id || "0", 10);
 
-  const api = `${config.apiBaseUrl}/employee-licenses`;
-  const employeeApi = `${config.apiBaseUrl}/employee`;
-  const licenseApi = `${config.apiBaseUrl}/licenses`;
+  const api = `${API_BASE_URL}/employee-licenses`;
+  const employeeApi = `${API_BASE_URL}/employee`;
+  const licenseApi = `${API_BASE_URL}/licenses`;
 
   interface EmployeeLicense {
     id?: number;
