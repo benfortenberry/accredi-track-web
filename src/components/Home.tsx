@@ -26,8 +26,8 @@ function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white">
       <header className="w-full bg-gradient text-white py-12 text-center">
-        <LoginButton  />
-     
+        <LoginButton />
+
         <div className="fade-in">
           <img
             src={logo}
@@ -184,7 +184,6 @@ function Home() {
               </div>
 
               <ul role="list" className="mb-8 space-y-4 text-left">
-               
                 <li className="flex items-center space-x-3">
                   <svg
                     className="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
@@ -213,9 +212,7 @@ function Home() {
                       clip-rule="evenodd"
                     ></path>
                   </svg>
-                  <span>
-                   Unlimited License Types
-                  </span>
+                  <span>Unlimited License Types</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <svg
@@ -230,9 +227,7 @@ function Home() {
                       clip-rule="evenodd"
                     ></path>
                   </svg>
-                  <span>
-                   Unlimited Employee Licenses
-                  </span>
+                  <span>Unlimited Employee Licenses</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <svg
@@ -249,7 +244,6 @@ function Home() {
                   </svg>
                   <span>Automated notifications</span>
                 </li>
-                
               </ul>
               <GetStartedButton />
             </div>

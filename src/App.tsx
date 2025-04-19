@@ -5,7 +5,7 @@ import Employees from "./components/employees/Employees";
 import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
-import Payment from "./components/stripe/Payment";
+import Payment from "./components/payment/Payment";
 import Home from "./components/Home";
 import ProtectedRoute from "./components/auth0/ProtectedRoute";
 import NotFound from "./components/NotFound";
@@ -51,14 +51,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-             <Route
-              path="payment"
-              element={
-                <ProtectedRoute>
-                  <Payment />
-                </ProtectedRoute>
-              }
-            />
+     
           </Route>
           
           <Route index element={<Home />} />

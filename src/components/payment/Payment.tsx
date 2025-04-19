@@ -25,7 +25,7 @@ const Payment = () => {
     });
   }
 
-  return <button onClick={handleCheckout}>Checkout</button>;
+  return  <button className="btn btn-secondary btn-sm" onClick={handleCheckout}>go PRO</button>;
 };
 
 export default Payment;
