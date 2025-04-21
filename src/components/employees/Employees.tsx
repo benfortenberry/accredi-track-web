@@ -161,9 +161,8 @@ function Employees() {
       <div>
         <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
 
-        <h2 className="text-xl font-bold mb-4">
-          {" "}
-          Employees{" "}
+        <h2 className="text-xl font-bold mb-4 ml-2">
+          Employees
           <button
             className="btn btn-circle float-right"
             onClick={() => {

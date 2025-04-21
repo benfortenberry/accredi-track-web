@@ -5,13 +5,13 @@ import Employees from "./components/employees/Employees";
 import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
-import Payment from "./components/payment/Payment";
 import Home from "./components/Home";
 import ProtectedRoute from "./components/auth0/ProtectedRoute";
 import NotFound from "./components/NotFound";
 import LoginPrompt from "./components/LoginPrompt";
 import Terms from "./components/Terms";
 import HealthCheck from "./components/HealthCheck";
+import Settings from "./components/Settings";
 
 function App() {
   return (
@@ -51,9 +51,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
-     
+
+            <Route
+              path="settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
           </Route>
-          
+
           <Route index element={<Home />} />
           <Route path="/health" element={<HealthCheck />} />
           <Route path="/login" element={<LoginPrompt />} />

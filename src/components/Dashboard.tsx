@@ -3,11 +3,15 @@ import { useEffect, useState } from "react";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Dashboard() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
   const api = `${API_BASE_URL}/metrics`;
+  const userApi = `${API_BASE_URL}/user`;
+
+  const { getAccessTokenSilently } = useAuth0();
 
   interface Metrics {
     totalEmployees: number;
@@ -37,15 +41,30 @@ function Dashboard() {
   const [, setLicenseCounts] = useState<LicenseCount[]>([]);
   const [, setExpiringSoonLCounts] = useState<ExpiringSoon[]>([]);
   const [licenseChartData, setLicenseChartData] = useState<ChartData>();
-  const [expiringSoonChartData, setLExpiringSoonChartData] = useState<ChartData>();
+  const [expiringSoonChartData, setLExpiringSoonChartData] =
+    useState<ChartData>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getMetrics();
     getLicenseCounts();
-    getExpiringSoon()
+    getExpiringSoon();
+    logUser();
   }, []);
+
+  const logUser = async () => {
+    const accessToken = await getAccessTokenSilently();
+
+    await httpClient
+      .post(userApi, { token: accessToken })
+      .then((res) => {
+        console.log("use has logged in:", res.data);
+      })
+      .catch((err) => {
+        console.error("Error adding user:", err);
+      });
+  };
 
   const getMetrics = async () => {
     await httpClient
@@ -109,39 +128,38 @@ function Dashboard() {
     setIsLoading(false);
   };
 
-  const getExpiringSoon = async() => {
+  const getExpiringSoon = async () => {
     await httpClient
-    .get(api + "/license-chart-data-expiring-soon")
-    .then((res) => {
-      // setLicenseCounts(res.data);
-      setExpiringSoonLCounts(() => {
-        const expiringSoonCounts = res.data;
-        const labels = expiringSoonCounts.map(
-          (row: { month: any }) => row.month
-        );
+      .get(api + "/license-chart-data-expiring-soon")
+      .then((res) => {
+        // setLicenseCounts(res.data);
+        setExpiringSoonLCounts(() => {
+          const expiringSoonCounts = res.data;
+          const labels = expiringSoonCounts.map(
+            (row: { month: any }) => row.month
+          );
 
-        const datasets = [
-          {
-            label: "Valid",
-            data: expiringSoonCounts.map((row: { count: any }) => row.count),
-            backgroundColor: "rgb(59, 187, 247)",
-          },
-          
-        ];
+          const datasets = [
+            {
+              label: "Valid",
+              data: expiringSoonCounts.map((row: { count: any }) => row.count),
+              backgroundColor: "rgb(59, 187, 247)",
+            },
+          ];
 
-        setLExpiringSoonChartData({ labels, datasets });
-        return expiringSoonCounts;
+          setLExpiringSoonChartData({ labels, datasets });
+          return expiringSoonCounts;
+        });
+
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setError("Failed to fetch License Chart Data");
       });
 
-      setIsLoading(false);
-    })
-    .catch(() => {
-      setIsLoading(false);
-      setError("Failed to fetch License Chart Data");
-    });
-
-  setIsLoading(false);
-  }
+    setIsLoading(false);
+  };
 
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
@@ -159,7 +177,9 @@ function Dashboard() {
             {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
           </div>
           <div className="col-span-1 pr-20 pl-20 text-center  h-75  pt-5 ">
-          {expiringSoonChartData &&  <ExpiringSoonChart data={expiringSoonChartData} /> }
+            {expiringSoonChartData && (
+              <ExpiringSoonChart data={expiringSoonChartData} />
+            )}
           </div>
         </div>
 

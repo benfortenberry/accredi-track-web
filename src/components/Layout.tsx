@@ -2,11 +2,11 @@ import { Outlet } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
 import logo from "../assets/logo_white2.png";
 import logoDark from "../assets/logo_black2.png";
-import Payment from "./payment/Payment";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { httpClient, withAxios } from "../utils/AxiosInstance";
+import { GearIcon } from "../utils/SvgIcons";
 
-import { httpClient } from "../utils/AxiosInstance";
 // import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
@@ -14,97 +14,30 @@ function Layout() {
   const { getAccessTokenSilently } = useAuth0();
 
   const [token, setToken] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
 
-  let accessToken = "";
+  interface User {
+    userSub: string;
+    name: string;
+    inUseBy: string;
+  }
+
+
+
+
 
   useEffect(() => {
-    getLicenses();
+    getToken();
+    // getUser();
   }, []);
 
-  const getLicenses = async () => {
-    accessToken = await getAccessTokenSilently();
+
+  const getToken= async () => {
+    let accessToken = await getAccessTokenSilently();
     setToken(accessToken);
-    // accessToken = encodeURIComponent(accessToken);
-    // console.log(accessToken);
   };
 
-  const handleStripeCheckout = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
 
-    window.location.assign(api);
-    console.log("stripe checklout!");
-    // const formData = new FormData(event.currentTarget);
-    // httpClient
-    // .get(api)
-    // .then(() => {
-
-    // })
-    // .catch(() => {
-    // });
-    // const employeeLicenseData = {
-    //   employeeId,
-    //   licenseId: Number(formData.get("licenseId")),
-    //   issueDate: formData.get("issueDate") as string,
-    //   expDate: formData.get("expDate") as string,
-    // };
-
-    // if (isEditing && currentEmployeeLicense) {
-    //   httpClient
-    //     .put(`${api}/${currentEmployeeLicense.id}`, employeeLicenseData)
-    //     .then((res) => {
-    //       console.log("Employee License updated successfully:", res.data);
-    //       showToast("Employee License updated successfully!", "success");
-    //       (
-    //         document.getElementById("addEmployeeLicenseForm") as HTMLFormElement
-    //       )?.reset();
-
-    //       // Update the employee list
-    //       setEmployeeLicenses((prevEmployeeLicenses) =>
-    //         prevEmployeeLicenses.map((employeeLicense) =>
-    //           employeeLicense.id === currentEmployeeLicense.id
-    //             ? res.data
-    //             : employeeLicense
-    //         )
-    //       );
-    //       // Close the modal
-    //       (
-    //         document.getElementById("add-edit-modal") as HTMLDialogElement
-    //       )?.close();
-    //     })
-    //     .catch((err) => {
-    //       console.error("Error updating employee license:", err);
-    //       showToast(
-    //         "Failed to update employee license. Please try again.",
-    //         "error"
-    //       );
-    //     });
-    // } else {
-    //   // Send a POST request to the API
-    //   httpClient
-    //     .post(api, employeeLicenseData)
-    //     .then((res) => {
-    //       console.log("Employee License added successfully:", res.data);
-    //       showToast("Employee License added successfully!", "success");
-
-    //       getEmployeeLicenses(employeeId);
-
-    //       (
-    //         document.getElementById("addEmployeeLicenseForm") as HTMLFormElement
-    //       )?.reset();
-    //       // Close the modal
-    //       (
-    //         document.getElementById("add-edit-modal") as HTMLDialogElement
-    //       )?.close();
-    //     })
-    //     .catch((err) => {
-    //       console.error("Error adding employee license:", err);
-    //       showToast(
-    //         "An error happened when trying to add employee license.",
-    //         "error"
-    //       );
-    //     });
-    // }
-  };
 
   return (
     <div className="container mx-auto">
@@ -131,9 +64,8 @@ function Layout() {
             <li className="hidden md:block ">
               <a href="/employees">Employees</a>
             </li>
-            <li className="hidden md:block ">
-              <a href="/license-types">License Types</a>
-            </li>
+          
+           
             <li className="hidden md:block ">
               <form
                 className="pt-0 pb-0 pl-0 mx-2 pr-0"
@@ -143,6 +75,9 @@ function Layout() {
                 <button className="btn btn-secondary btn-sm ">go PRO</button>
                 <input type="hidden" name="token" value={token} />
               </form>
+            </li>
+            <li className="hidden md:block ">
+              <a href="/settings"><GearIcon /></a>
             </li>
 
             <li className="">
@@ -182,15 +117,26 @@ function Layout() {
                       Employees
                     </a>
                   </li>
+                 
+
                   <li>
-                    <a href="/license-types" className="btn btn-ghost">
-                      License Types
+                    <a href="/settings" className="btn btn-ghost">
+                     Settings
                     </a>
                   </li>
 
-                  <li>
-                    <Payment />
-                  </li>
+                 
+                    <form
+                      className="pt-0 pb-0 pl-0 mx-2 pr-0"
+                      action={api}
+                      method="post"
+                    >
+                      <button className="btn btn-sm btn-secondary w-full ">
+                        go PRO
+                      </button>
+                      <input type="hidden" name="token" value={token} />
+                    </form>
+                 
                 </ul>
               </div>
             </li>
@@ -208,4 +154,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default withAxios(Layout);
