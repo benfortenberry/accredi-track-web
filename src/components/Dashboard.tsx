@@ -41,6 +41,7 @@ function Dashboard() {
   const [, setLicenseCounts] = useState<LicenseCount[]>([]);
   const [, setExpiringSoonLCounts] = useState<ExpiringSoon[]>([]);
   const [licenseChartData, setLicenseChartData] = useState<ChartData>();
+  // const [noData, setNoData] = useState(false);
   const [expiringSoonChartData, setLExpiringSoonChartData] =
     useState<ChartData>();
   const [isLoading, setIsLoading] = useState(true);
@@ -88,41 +89,59 @@ function Dashboard() {
         expiredCount = res.data;
       })
       .catch(() => {
-        setError("Failed to fetch License Chart Data");
+        setError("Failed to fetch License Chart Data 1");
       });
 
     await httpClient
       .get(api + "/license-chart-data")
       .then((res) => {
         // setLicenseCounts(res.data);
+        //if (res && res.data && res.data.length) {
         setLicenseCounts(() => {
           const licenseCounts = res.data;
-          const labels = licenseCounts.map(
-            (row: { licenseName: any }) => row.licenseName
-          );
+        
+          let labels = [];
+          let datasets = [];
 
-          const datasets = [
-            {
+          if (res && res.data && res.data.length) {
+
+             labels = licenseCounts.map(
+              (row: { licenseName: any }) => row.licenseName
+            );
+
+            datasets.push({
               label: "Valid",
               data: licenseCounts.map((row: { count: any }) => row.count),
               backgroundColor: "rgb(59, 187, 247)",
-            },
-            {
+            });
+          }
+
+          if (expiredCount && expiredCount.length) {
+
+            labels = expiredCount.map(
+              (row: { licenseName: any }) => row.licenseName
+            );
+
+            datasets.push({
               label: "Expired",
               data: expiredCount.map((row: { count: any }) => row.count),
               backgroundColor: "rgb(251, 112, 133)",
-            },
-          ];
+            });
+          }
 
           setLicenseChartData({ labels, datasets });
           return licenseCounts;
         });
-
+        // }
+        // else
+        // {
+        //   setNoData(true)
+        // }
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
         setIsLoading(false);
-        setError("Failed to fetch License Chart Data");
+        setError("Failed to fetch License Chart Data 2" + err);
       });
 
     setIsLoading(false);
@@ -155,7 +174,7 @@ function Dashboard() {
       })
       .catch(() => {
         setIsLoading(false);
-        setError("Failed to fetch License Chart Data");
+        setError("Failed to fetch License Chart Data 3");
       });
 
     setIsLoading(false);
@@ -173,11 +192,17 @@ function Dashboard() {
     return (
       <div>
         <div className="grid overflow-x-auto lg:grid-cols-2 gap-4">
+          {/* {noData && (
+            <h1 className="text-xl font-bold mb-4">
+              Metrics will be active when you add your first license.
+            </h1>
+          )} */}
+
           <div className="pr-20 pl-20   pt-5 text-center  h-75">
             {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
           </div>
           <div className="col-span-1 pr-20 pl-20 text-center  h-75  pt-5 ">
-            {expiringSoonChartData && (
+            {licenseChartData && expiringSoonChartData && (
               <ExpiringSoonChart data={expiringSoonChartData} />
             )}
           </div>

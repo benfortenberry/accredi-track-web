@@ -4,7 +4,6 @@ import logo from "../assets/logo_white2.png";
 import logoDark from "../assets/logo_black2.png";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { httpClient, withAxios } from "../utils/AxiosInstance";
 import { GearIcon } from "../utils/SvgIcons";
 
 // import { GearIcon } from "../utils/SvgIcons";
@@ -14,17 +13,6 @@ function Layout() {
   const { getAccessTokenSilently } = useAuth0();
 
   const [token, setToken] = useState<string>("");
-  const [user, setUser] = useState<User | null>(null);
-
-  interface User {
-    userSub: string;
-    name: string;
-    inUseBy: string;
-  }
-
-
-
-
 
   useEffect(() => {
     getToken();
@@ -94,13 +82,12 @@ function Layout() {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    {" "}
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
                       d="M4 6h16M4 12h8m-8 6h16"
-                    />{" "}
+                    />
                   </svg>
                 </div>
                 <ul
@@ -154,4 +141,4 @@ function Layout() {
   );
 }
 
-export default withAxios(Layout);
+export default Layout;
