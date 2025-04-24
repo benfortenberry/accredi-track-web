@@ -5,27 +5,46 @@ import logoDark from "../assets/logo_black2.png";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { GearIcon } from "../utils/SvgIcons";
+import { httpClient, withAxios } from "../utils/AxiosInstance";
 
 // import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/create-checkout-session`;
   const { getAccessTokenSilently } = useAuth0();
+  const userApi = `${API_BASE_URL}/user`;
 
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string>("");
+
+  interface User {
+    userSub: string;
+    email: string;
+    pro: boolean;
+  }
 
   useEffect(() => {
     getToken();
-    // getUser();
+    logUser();
   }, []);
 
-
-  const getToken= async () => {
+  const getToken = async () => {
     let accessToken = await getAccessTokenSilently();
     setToken(accessToken);
   };
 
+  const logUser = async () => {
+    const accessToken = await getAccessTokenSilently();
 
+    await httpClient
+      .post(userApi, { token: accessToken })
+      .then((res) => {
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.error("Error logging user:", err);
+      });
+  };
 
   return (
     <div className="container mx-auto">
@@ -52,20 +71,23 @@ function Layout() {
             <li className="hidden md:block ">
               <a href="/employees">Employees</a>
             </li>
-          
-           
+
+            {user && !user.pro && (
+              <li className="hidden md:block ">
+                <form
+                  className="pt-0 pb-0 pl-0 mx-2 pr-0"
+                  action={api}
+                  method="post"
+                >
+                  <button className="btn btn-secondary btn-sm ">go PRO</button>
+                  <input type="hidden" name="token" value={token} />
+                </form>
+              </li>
+            )}
             <li className="hidden md:block ">
-              <form
-                className="pt-0 pb-0 pl-0 mx-2 pr-0"
-                action={api}
-                method="post"
-              >
-                <button className="btn btn-secondary btn-sm ">go PRO</button>
-                <input type="hidden" name="token" value={token} />
-              </form>
-            </li>
-            <li className="hidden md:block ">
-              <a href="/settings"><GearIcon /></a>
+              <a href="/settings">
+                <GearIcon />
+              </a>
             </li>
 
             <li className="">
@@ -104,15 +126,14 @@ function Layout() {
                       Employees
                     </a>
                   </li>
-                 
 
                   <li>
                     <a href="/settings" className="btn btn-ghost">
-                     Settings
+                      Settings
                     </a>
                   </li>
 
-                 
+                  {user && !user.pro && (
                     <form
                       className="pt-0 pb-0 pl-0 mx-2 pr-0"
                       action={api}
@@ -123,7 +144,7 @@ function Layout() {
                       </button>
                       <input type="hidden" name="token" value={token} />
                     </form>
-                 
+                  )}
                 </ul>
               </div>
             </li>
@@ -141,4 +162,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default withAxios(Layout);

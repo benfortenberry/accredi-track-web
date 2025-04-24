@@ -3,15 +3,11 @@ import { useEffect, useState } from "react";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
-import { useAuth0 } from "@auth0/auth0-react";
 
 function Dashboard() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
   const api = `${API_BASE_URL}/metrics`;
-  const userApi = `${API_BASE_URL}/user`;
-
-  const { getAccessTokenSilently } = useAuth0();
 
   interface Metrics {
     totalEmployees: number;
@@ -51,21 +47,9 @@ function Dashboard() {
     getMetrics();
     getLicenseCounts();
     getExpiringSoon();
-    logUser();
+   
   }, []);
 
-  const logUser = async () => {
-    const accessToken = await getAccessTokenSilently();
-
-    await httpClient
-      .post(userApi, { token: accessToken })
-      .then((res) => {
-        console.log("use has logged in:", res.data);
-      })
-      .catch((err) => {
-        console.error("Error adding user:", err);
-      });
-  };
 
   const getMetrics = async () => {
     await httpClient
@@ -89,7 +73,7 @@ function Dashboard() {
         expiredCount = res.data;
       })
       .catch(() => {
-        setError("Failed to fetch License Chart Data 1");
+        setError("Failed to fetch License Chart Data");
       });
 
     await httpClient
@@ -141,7 +125,7 @@ function Dashboard() {
       })
       .catch((err) => {
         setIsLoading(false);
-        setError("Failed to fetch License Chart Data 2" + err);
+        setError("Failed to fetch License Chart Data");
       });
 
     setIsLoading(false);
@@ -174,7 +158,7 @@ function Dashboard() {
       })
       .catch(() => {
         setIsLoading(false);
-        setError("Failed to fetch License Chart Data 3");
+        setError("Failed to fetch License Chart Data");
       });
 
     setIsLoading(false);
