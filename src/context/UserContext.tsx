@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { httpClient, withAxiosDirect } from "../utils/AxiosInstance";
+import {  withAxiosDirect } from "../utils/AxiosInstance";
 
 interface UserContextType {
   user: any; // Replace `any` with a proper user type if available
