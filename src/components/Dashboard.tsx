@@ -47,9 +47,7 @@ function Dashboard() {
     getMetrics();
     getLicenseCounts();
     getExpiringSoon();
-   
   }, []);
-
 
   const getMetrics = async () => {
     await httpClient
@@ -83,13 +81,12 @@ function Dashboard() {
         //if (res && res.data && res.data.length) {
         setLicenseCounts(() => {
           const licenseCounts = res.data;
-        
+
           let labels = [];
           let datasets = [];
 
           if (res && res.data && res.data.length) {
-
-             labels = licenseCounts.map(
+            labels = licenseCounts.map(
               (row: { licenseName: any }) => row.licenseName
             );
 
@@ -101,7 +98,6 @@ function Dashboard() {
           }
 
           if (expiredCount && expiredCount.length) {
-
             labels = expiredCount.map(
               (row: { licenseName: any }) => row.licenseName
             );
@@ -123,7 +119,7 @@ function Dashboard() {
         // }
         setIsLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setIsLoading(false);
         setError("Failed to fetch License Chart Data");
       });

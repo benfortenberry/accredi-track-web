@@ -5,27 +5,18 @@ import logoDark from "../assets/logo_black2.png";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { GearIcon } from "../utils/SvgIcons";
-import { httpClient, withAxios } from "../utils/AxiosInstance";
-
+import { useUser } from "../context/UserContext";
 // import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/create-checkout-session`;
   const { getAccessTokenSilently } = useAuth0();
-  const userApi = `${API_BASE_URL}/user`;
+  const { user } = useUser();
 
-  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string>("");
-
-  interface User {
-    userSub: string;
-    email: string;
-    pro: boolean;
-  }
 
   useEffect(() => {
     getToken();
-    logUser();
   }, []);
 
   const getToken = async () => {
@@ -33,18 +24,7 @@ function Layout() {
     setToken(accessToken);
   };
 
-  const logUser = async () => {
-    const accessToken = await getAccessTokenSilently();
 
-    await httpClient
-      .post(userApi, { token: accessToken })
-      .then((res) => {
-        setUser(res.data);
-      })
-      .catch((err) => {
-        console.error("Error logging user:", err);
-      });
-  };
 
   return (
     <div className="container mx-auto">
@@ -162,4 +142,4 @@ function Layout() {
   );
 }
 
-export default withAxios(Layout);
+export default Layout;

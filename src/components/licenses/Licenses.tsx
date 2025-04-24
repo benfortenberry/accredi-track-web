@@ -3,11 +3,14 @@ import { AddIcon, DeleteIcon, EditIcon } from "../../utils/SvgIcons";
 import { showToast } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
+import { useUser } from "../../context/UserContext";
 
 function Licenses() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/licenses`;
   const employeeApi = `${API_BASE_URL}/employee`;
+
+  const { user } = useUser();
 
   interface License {
     id: number;
@@ -178,7 +181,7 @@ function Licenses() {
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
-  } else if (isLoading) {
+  } else if (isLoading || !user) {
     return (
       <h1 className="text-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -257,7 +260,11 @@ function Licenses() {
             Add your first Licesne Type
           </h3>
         )}
-        <DeleteModal delete={handleDelete} label="license" text="Are you sure you wish to delete this license type?" />
+        <DeleteModal
+          delete={handleDelete}
+          label="license"
+          text="Are you sure you wish to delete this license type?"
+        />
         <dialog id="in-use-modal" className="modal">
           <div className="modal-box">
             <form method="dialog">
@@ -274,9 +281,12 @@ function Licenses() {
               {employeeNames &&
                 employeeNames.map((emp) => (
                   <li key={emp.id}>
-                  <a className="btn btn-link pl-0" href={`employee/${emp.id}?r=l`}>
-                   {emp.firstName} {emp.lastName}
-                   </a>
+                    <a
+                      className="btn btn-link pl-0"
+                      href={`employee/${emp.id}?r=l`}
+                    >
+                      {emp.firstName} {emp.lastName}
+                    </a>
                   </li>
                 ))}
             </ul>
@@ -294,12 +304,12 @@ function Licenses() {
             >
               ✕
             </button>
-            {((licenses && licenses.length < 5) || isEditing) && (
+            {((licenses && licenses.length < 5) || isEditing || user.pro) && (
               <h3 className="font-bold text-lg">
                 {isEditing ? "Edit License Type" : "Add License Type"}
               </h3>
             )}
-            {((licenses && licenses.length < 5) || isEditing) && (
+            {((licenses && licenses.length < 5) || isEditing || user.pro) && (
               <form id="addEditForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2">
                   <input
@@ -318,7 +328,7 @@ function Licenses() {
                 </button>
               </form>
             )}
-            {licenses && licenses.length >= 5 && !isEditing && (
+            {licenses && licenses.length >= 5 && !isEditing && !user.pro && (
               <p>Become a PRO subscriber to add more license types.</p>
             )}
           </div>

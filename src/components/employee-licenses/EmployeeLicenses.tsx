@@ -11,6 +11,7 @@ import { showToast, formatDate } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
 
 function EmployeeLicenses() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
@@ -24,6 +25,8 @@ function EmployeeLicenses() {
   const api = `${API_BASE_URL}/employee-licenses`;
   const employeeApi = `${API_BASE_URL}/employee`;
   const licenseApi = `${API_BASE_URL}/licenses`;
+
+  const { user } = useUser();
 
   interface EmployeeLicense {
     id?: number;
@@ -254,7 +257,7 @@ function EmployeeLicenses() {
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
-  } else if (isLoading) {
+  } else if (isLoading || !user) {
     return (
       <h1 className="text-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -397,13 +400,15 @@ function EmployeeLicenses() {
             </button>
 
             {(employeeLicenses && employeeLicenses.length < 3) ||
+              user.pro ||
               (isEditing && (
                 <h3 className="font-bold text-lg">
                   {isEditing ? "Edit Employee License" : "Add Employee License"}
                 </h3>
               ))}
             {((employeeLicenses && employeeLicenses.length < 3) ||
-              isEditing) && (
+              isEditing ||
+              user.pro) && (
               <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
                 {!licenses && (
                   <div role="alert" className="alert mt-3 alert-warning">
@@ -468,9 +473,12 @@ function EmployeeLicenses() {
               </form>
             )}
 
-            {employeeLicenses && employeeLicenses.length >= 3 && !isEditing && (
-              <p>Become a PRO subscriber to add more employee licenses.</p>
-            )}
+            {employeeLicenses &&
+              employeeLicenses.length >= 3 &&
+              !isEditing &&
+              !user.pro && (
+                <p>Become a PRO subscriber to add more employee licenses.</p>
+              )}
           </div>
         </dialog>
       </div>

@@ -38,4 +38,24 @@ const withAxios = (WrappedComponent: any) => {
   );
 };
 
-export { httpClient, withAxios };
+const withAxiosDirect = (accessToken: string) => {
+  const instance = axios.create({
+    baseURL: import.meta.env.VITE_APP_API_URL, // Base API URL
+    headers: {
+      Authorization: `Bearer ${accessToken}`, // Add Authorization header
+    },
+  });
+
+  // Add interceptors if needed
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      console.error("Axios error:", error);
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+};
+
+export { httpClient, withAxios, withAxiosDirect };

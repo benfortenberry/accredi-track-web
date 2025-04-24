@@ -11,10 +11,13 @@ import {
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import DeleteModal from "../modals/DeleteModal";
+import { useUser } from "../../context/UserContext";
 
 function Employees() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/employees`;
+
+  const { user } = useUser();
 
   interface Employee {
     id: number;
@@ -150,7 +153,7 @@ function Employees() {
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
-  } else if (isLoading) {
+  } else if (isLoading || !user) {
     return (
       <h1 className="text-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -300,15 +303,18 @@ function Employees() {
               ✕
             </button>
 
-            {((employees && employees.length <= 4) || isEditing) && (
+            {((employees && employees.length <= 4) ||
+              isEditing ||
+              user.pro) && (
               <h3 className="font-bold text-lg">
                 {isEditing ? "Edit Employee" : "Add Employee"}
               </h3>
             )}
 
-            {((employees && employees.length <= 4) || isEditing) && (
+            {((employees && employees.length <= 4) ||
+              isEditing ||
+              user.pro) && (
               <form id="addEmployeeForm" onSubmit={handleSubmit}>
-               
                 <label className="input validator mt-2 ">
                   <input
                     type="text"
@@ -321,7 +327,6 @@ function Employees() {
                 </label>
                 <p className="validator-hint hidden mt-1 mb-2">Required</p>
 
-
                 <label className="input validator mt-2">
                   <input
                     type="text"
@@ -333,7 +338,6 @@ function Employees() {
                   />
                 </label>
                 <p className="validator-hint  hidden mt-1 mb-2">Required</p>
-
 
                 <label className="input validator mt-2">
                   <PhoneIcon />
@@ -374,7 +378,7 @@ function Employees() {
               </form>
             )}
 
-            {employees && employees.length >= 5 && !isEditing && (
+            {employees && employees.length >= 5 && !isEditing && !user.pro && (
               <p>Become a PRO subscriber to add more employees.</p>
             )}
           </div>
