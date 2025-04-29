@@ -13,7 +13,7 @@ const Settings = () => {
 
       {user && user.pro && (
         <a
-          href="https://billing.stripe.com/p/login/test_fZe7tLabo8NH8AocMM"
+          href="https://billing.stripe.com/p/login/3cs16Q1iyayi8JqdQQ"
           target="_blank"
           className="btn mx-2 btn-default"
         >

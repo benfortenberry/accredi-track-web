@@ -32,8 +32,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logUser = async () => {
     const accessToken = await getAccessTokenSilently();
-    console.log("!!!!", accessToken);
-
     const axiosInstance = withAxiosDirect(accessToken);
     const response = await axiosInstance.post(userApi, { token: accessToken });
     setUserData(response.data);
