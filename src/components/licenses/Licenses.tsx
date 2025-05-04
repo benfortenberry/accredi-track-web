@@ -257,7 +257,7 @@ function Licenses() {
           </div>
         ) : (
           <h3 className="text-center text-lg font-bold mt-4">
-            Add your first Licesne Type
+            Add your first License Type
           </h3>
         )}
         <DeleteModal
