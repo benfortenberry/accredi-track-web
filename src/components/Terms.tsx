@@ -42,12 +42,14 @@ function TermsOfService() {
           believe violates these Terms of Service or is harmful to other users.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-2">5. Subscription Cancellation</h2>
+        <h2 className="text-2xl font-semibold mb-2">
+          5. Subscription Cancellation
+        </h2>
         <p className="mb-4">
-          When a PRO subscription is cancelled, the user will have the ability to download
-          their data for 30 days. After this period, the data will be permanently deleted.
+          When a PRO subscription is cancelled, the user will have the ability
+          to download their data for 30 days. After this period, the data will
+          be permanently deleted.
         </p>
-
 
         <h2 className="text-2xl font-semibold mb-2">6. Changes to Terms</h2>
         <p className="mb-4">
