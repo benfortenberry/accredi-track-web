@@ -26,6 +26,10 @@ const Settings = () => {
     }
   };
 
+  const deleteAccount = async () => {
+    console.log("Deleting account...");
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4 ml-2">Settings</h2>
@@ -36,6 +40,10 @@ const Settings = () => {
 
       <a onClick={getEmployeeData} className="btn mx-2 btn-default">
         Export Data
+      </a>
+
+      <a onClick={deleteAccount} className="btn mx-2 btn-default">
+        Delete Account
       </a>
 
       {user && user.pro && (
