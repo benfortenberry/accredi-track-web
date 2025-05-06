@@ -7,7 +7,7 @@ import Licenses from "./components/licenses/Licenses";
 import EmployeeLicenses from "./components/employee-licenses/EmployeeLicenses";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
-import ComingSoon from "./components/ComingSoon";
+// import ComingSoon from "./components/ComingSoon";
 import ProtectedRoute from "./components/auth0/ProtectedRoute";
 import NotFound from "./components/NotFound";
 import LoginPrompt from "./components/LoginPrompt";
