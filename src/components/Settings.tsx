@@ -1,10 +1,15 @@
 import { useUser } from "../context/UserContext";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
+import DeleteModal from "../components/modals/DeleteModal";
+import { showToast } from "../utils/Utilities";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Settings = () => {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/employee-data`;
+  const userApi = `${API_BASE_URL}/user`;
 
+  const { logout } = useAuth0();
   const { user } = useUser();
 
   const getEmployeeData = async () => {
@@ -27,7 +32,24 @@ const Settings = () => {
   };
 
   const deleteAccount = async () => {
-    console.log("Deleting account...");
+    const modal = document.getElementById("delete-modal") as HTMLDialogElement;
+    if (modal) {
+      modal.showModal();
+    }
+  };
+
+  const handleDelete = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    httpClient
+      .delete(`${userApi}/`)
+      .then(() => {
+        logout({ logoutParams: { returnTo: window.location.origin } });
+        //  window.location.href = "/";
+      })
+      .catch(() => {
+        showToast("Failed to delete account. Please try again.", "error");
+      });
   };
 
   return (
@@ -69,6 +91,12 @@ const Settings = () => {
           Manage PRO Subscription
         </a>
       )}
+
+      <DeleteModal
+        delete={handleDelete}
+        label="account"
+        text="Are you sure you wish to delete your account? All employee licenses will be deleted as well."
+      />
     </div>
   );
 };

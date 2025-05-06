@@ -7,13 +7,15 @@ function DeleteModal(props: any) {
             ✕
           </button>
         </form>
-        <h3 className="font-bold text-lg my-5">
-         {props.text}
-        </h3>
+        <h3 className="font-bold text-lg my-5">{props.text}</h3>
 
         <form id="deleteForm" onSubmit={props.delete}>
-          <input type="hidden" name={`${props.label}Id`} id={`${props.label}IdToDelete`}/>
-      
+          <input
+            type="hidden"
+            name={`${props.label}Id`}
+            id={`${props.label}IdToDelete`}
+          />
+
           <button className="btn float-right btn-error mt-2">
             Yes, delete
           </button>
