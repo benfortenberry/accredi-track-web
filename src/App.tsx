@@ -67,8 +67,8 @@ function App() {
               />
             </Route>
 
-            <Route path="/home" element={<Home />} />
-            <Route index element={<ComingSoon />} />
+            {/* <Route path="/home" element={<Home />} /> */}
+            <Route index element={<Home />} />
             <Route path="/health" element={<HealthCheck />} />
             <Route path="/login" element={<LoginPrompt />} />
             <Route path="/terms" element={<Terms />} />
