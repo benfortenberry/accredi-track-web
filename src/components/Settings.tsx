@@ -42,7 +42,7 @@ const Settings = () => {
     event.preventDefault();
 
     httpClient
-      .delete(`${userApi}/`)
+      .delete(`${userApi}`)
       .then(() => {
         logout({ logoutParams: { returnTo: window.location.origin } });
         //  window.location.href = "/";
@@ -95,7 +95,7 @@ const Settings = () => {
       <DeleteModal
         delete={handleDelete}
         label="account"
-        text="Are you sure you wish to delete your account? All employee licenses will be deleted as well."
+        text="Are you sure you wish to delete your account? All employee licenses will be deleted as well. Make sure to export your data before proceeding."
       />
     </div>
   );
