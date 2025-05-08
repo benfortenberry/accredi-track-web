@@ -305,7 +305,7 @@ function Employees() {
 
             {((employees && employees.length <= 4) ||
               isEditing ||
-              user.pro) && (
+              user.pro == 1) && (
               <h3 className="font-bold text-lg">
                 {isEditing ? "Edit Employee" : "Add Employee"}
               </h3>
@@ -313,7 +313,7 @@ function Employees() {
 
             {((employees && employees.length <= 4) ||
               isEditing ||
-              user.pro) && (
+              user.pro == 1) && (
               <form id="addEmployeeForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2 ">
                   <input
@@ -378,9 +378,12 @@ function Employees() {
               </form>
             )}
 
-            {employees && employees.length >= 5 && !isEditing && !user.pro && (
-              <p>Become a PRO subscriber to add more employees.</p>
-            )}
+            {employees &&
+              employees.length >= 5 &&
+              !isEditing &&
+              user.pro != 1 && (
+                <p>Become a PRO subscriber to add more employees.</p>
+              )}
           </div>
         </dialog>
       </div>

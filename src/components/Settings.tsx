@@ -68,7 +68,7 @@ const Settings = () => {
         Delete Account
       </a>
 
-      {user && user.pro && (
+      {user && user.pro == 1 && (
         <a
           href="https://billing.stripe.com/p/login/3cs16Q1iyayi8JqdQQ"
           target="_blank"

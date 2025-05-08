@@ -400,7 +400,7 @@ function EmployeeLicenses() {
             </button>
 
             {(employeeLicenses && employeeLicenses.length < 3) ||
-              user.pro ||
+              user.pro == 1 ||
               (isEditing && (
                 <h3 className="font-bold text-lg">
                   {isEditing ? "Edit Employee License" : "Add Employee License"}
@@ -408,7 +408,7 @@ function EmployeeLicenses() {
               ))}
             {((employeeLicenses && employeeLicenses.length < 3) ||
               isEditing ||
-              user.pro) && (
+              user.pro == 1) && (
               <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
                 {!licenses && (
                   <div role="alert" className="alert mt-3 alert-warning">
@@ -476,7 +476,7 @@ function EmployeeLicenses() {
             {employeeLicenses &&
               employeeLicenses.length >= 3 &&
               !isEditing &&
-              !user.pro && (
+              user.pro !=1 && (
                 <p>Become a PRO subscriber to add more employee licenses.</p>
               )}
           </div>

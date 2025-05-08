@@ -5,26 +5,20 @@ import logoDark from "../assets/logo_black2.png";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { GearIcon } from "../utils/SvgIcons";
-import { useUser } from "../context/UserContext";
-// import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/create-checkout-session`;
-  const { getAccessTokenSilently } = useAuth0();
-  const { user } = useUser();
+  const { user } = useAuth0();
 
-  const [token, setToken] = useState<string>("");
+  const [email, setEmail] = useState<string | undefined>("");
 
   useEffect(() => {
-    getToken();
+    getEmail();
   }, []);
 
-  const getToken = async () => {
-    let accessToken = await getAccessTokenSilently();
-    setToken(accessToken);
+  const getEmail = () => {
+    setEmail(user?.email);
   };
-
-
 
   return (
     <div className="container mx-auto">
@@ -52,7 +46,7 @@ function Layout() {
               <a href="/employees">Employees</a>
             </li>
 
-            {user && !user.pro && (
+            {user && user.pro != 1 && (
               <li className="hidden md:block ">
                 <form
                   className="pt-0 pb-0 pl-0 mx-2 pr-0"
@@ -60,7 +54,7 @@ function Layout() {
                   method="post"
                 >
                   <button className="btn btn-secondary btn-sm ">go PRO</button>
-                  <input type="hidden" name="token" value={token} />
+                  <input type="hidden" name="email" value={email} />
                 </form>
               </li>
             )}
@@ -113,7 +107,7 @@ function Layout() {
                     </a>
                   </li>
 
-                  {user && !user.pro && (
+                  {user && user.pro != 1 && (
                     <form
                       className="pt-0 pb-0 pl-0 mx-2 pr-0"
                       action={api}
@@ -122,7 +116,7 @@ function Layout() {
                       <button className="btn btn-sm btn-secondary w-full ">
                         go PRO
                       </button>
-                      <input type="hidden" name="token" value={token} />
+                      <input type="hidden" name="email" value={email} />
                     </form>
                   )}
                 </ul>

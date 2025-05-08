@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import {  withAxiosDirect } from "../utils/AxiosInstance";
+import { withAxiosDirect } from "../utils/AxiosInstance";
 
 interface UserContextType {
   user: any; // Replace `any` with a proper user type if available
@@ -11,7 +11,7 @@ interface UserContextType {
 interface User {
   userSub: string;
   email: string;
-  pro: boolean;
+  pro: number;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -33,7 +33,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const logUser = async () => {
     const accessToken = await getAccessTokenSilently();
     const axiosInstance = withAxiosDirect(accessToken);
-    const response = await axiosInstance.post(userApi, { token: accessToken });
+    const response = await axiosInstance.post(userApi, {
+      token: accessToken,
+      email: user?.email,
+    });
     setUserData(response.data);
   };
 

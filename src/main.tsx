@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")!).render(
     authorizationParams={{
       redirect_uri: window.location.origin,
       scope: 'openid email profile',
-      audience: "https://accredi-track/api", // Ensure this matches your API audience
+      audience:  import.meta.env.VITE_AUTH0_AUDIENCE, 
     }}
   >
     {/* <StrictMode> */}

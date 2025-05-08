@@ -304,12 +304,12 @@ function Licenses() {
             >
               ✕
             </button>
-            {((licenses && licenses.length < 5) || isEditing || user.pro) && (
+            {((licenses && licenses.length < 5) || isEditing || user.pro == 1) && (
               <h3 className="font-bold text-lg">
                 {isEditing ? "Edit License Type" : "Add License Type"}
               </h3>
             )}
-            {((licenses && licenses.length < 5) || isEditing || user.pro) && (
+            {((licenses && licenses.length < 5) || isEditing || user.pro == 1) && (
               <form id="addEditForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2">
                   <input
@@ -328,7 +328,7 @@ function Licenses() {
                 </button>
               </form>
             )}
-            {licenses && licenses.length >= 5 && !isEditing && !user.pro && (
+            {licenses && licenses.length >= 5 && !isEditing && user.pro != 1 && (
               <p>Become a PRO subscriber to add more license types.</p>
             )}
           </div>
