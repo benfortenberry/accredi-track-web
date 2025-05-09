@@ -1,4 +1,4 @@
-function CancelledModal(props: any) {
+function CancelledModal() {
   return (
     <dialog id="cancelled-modal" className="modal">
       <div className="modal-box">
