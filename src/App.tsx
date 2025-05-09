@@ -1,6 +1,6 @@
 import "./App.css";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import { UserProvider } from "./context/UserContext";
+
 import Layout from "./components/Layout";
 import Employees from "./components/employees/Employees";
 import Licenses from "./components/licenses/Licenses";
@@ -20,7 +20,7 @@ import Settings from "./components/Settings";
 function App() {
   return (
     <div className="">
-      <UserProvider>
+     
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -77,7 +77,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-      </UserProvider>
+   
     </div>
   );
 }

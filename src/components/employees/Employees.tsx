@@ -17,7 +17,7 @@ function Employees() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/employees`;
 
-  const { user } = useUser();
+  const { aUser } = useUser();
 
   interface Employee {
     id: number;
@@ -153,7 +153,7 @@ function Employees() {
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
-  } else if (isLoading || !user) {
+  } else if (isLoading || !aUser) {
     return (
       <h1 className="text-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -305,7 +305,7 @@ function Employees() {
 
             {((employees && employees.length <= 4) ||
               isEditing ||
-              user.pro == 1) && (
+              aUser.pro == 1) && (
               <h3 className="font-bold text-lg">
                 {isEditing ? "Edit Employee" : "Add Employee"}
               </h3>
@@ -313,7 +313,7 @@ function Employees() {
 
             {((employees && employees.length <= 4) ||
               isEditing ||
-              user.pro == 1) && (
+              aUser.pro == 1) && (
               <form id="addEmployeeForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2 ">
                   <input
@@ -381,7 +381,7 @@ function Employees() {
             {employees &&
               employees.length >= 5 &&
               !isEditing &&
-              user.pro != 1 && (
+              aUser.pro != 1 && (
                 <p>Become a PRO subscriber to add more employees.</p>
               )}
           </div>

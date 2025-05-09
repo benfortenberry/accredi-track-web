@@ -10,7 +10,7 @@ function Licenses() {
   const api = `${API_BASE_URL}/licenses`;
   const employeeApi = `${API_BASE_URL}/employee`;
 
-  const { user } = useUser();
+  const { aUser } = useUser();
 
   interface License {
     id: number;
@@ -181,7 +181,7 @@ function Licenses() {
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
-  } else if (isLoading || !user) {
+  } else if (isLoading || !aUser) {
     return (
       <h1 className="text-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -304,12 +304,12 @@ function Licenses() {
             >
               ✕
             </button>
-            {((licenses && licenses.length < 5) || isEditing || user.pro == 1) && (
+            {((licenses && licenses.length < 5) || isEditing || aUser.pro == 1) && (
               <h3 className="font-bold text-lg">
                 {isEditing ? "Edit License Type" : "Add License Type"}
               </h3>
             )}
-            {((licenses && licenses.length < 5) || isEditing || user.pro == 1) && (
+            {((licenses && licenses.length < 5) || isEditing || aUser.pro == 1) && (
               <form id="addEditForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2">
                   <input
@@ -328,7 +328,7 @@ function Licenses() {
                 </button>
               </form>
             )}
-            {licenses && licenses.length >= 5 && !isEditing && user.pro != 1 && (
+            {licenses && licenses.length >= 5 && !isEditing && aUser.pro != 1 && (
               <p>Become a PRO subscriber to add more license types.</p>
             )}
           </div>

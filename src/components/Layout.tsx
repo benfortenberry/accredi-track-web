@@ -1,21 +1,23 @@
 import { Outlet } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
+
 import logo from "../assets/logo_white2.png";
 import logoDark from "../assets/logo_black2.png";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
 function Layout() {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const api = `${API_BASE_URL}/create-checkout-session`;
   const { user } = useAuth0();
+  const { aUser } = useUser();
 
   const [email, setEmail] = useState<string | undefined>("");
 
   useEffect(() => {
     getEmail();
   }, []);
-
   const getEmail = () => {
     setEmail(user?.email);
   };
@@ -40,13 +42,13 @@ function Layout() {
         <div className="flex-none">
           <ul className="menu  menu-horizontal px-1">
             <li className="hidden md:block ">
-              <a href="/dashboard">Dashboard</a>
+              <a href="/dashboard">Dashboard {aUser?.pro}</a>
             </li>
             <li className="hidden md:block ">
               <a href="/employees">Employees</a>
             </li>
 
-            {user && user.pro != 1 && (
+            {aUser && aUser.pro != 1 && (
               <li className="hidden md:block ">
                 <form
                   className="pt-0 pb-0 pl-0 mx-2 pr-0"
@@ -107,7 +109,7 @@ function Layout() {
                     </a>
                   </li>
 
-                  {user && user.pro != 1 && (
+                  {aUser && aUser.pro != 1 && (
                     <form
                       className="pt-0 pb-0 pl-0 mx-2 pr-0"
                       action={api}

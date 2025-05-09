@@ -26,7 +26,7 @@ function EmployeeLicenses() {
   const employeeApi = `${API_BASE_URL}/employee`;
   const licenseApi = `${API_BASE_URL}/licenses`;
 
-  const { user } = useUser();
+  const { aUser } = useUser();
 
   interface EmployeeLicense {
     id?: number;
@@ -257,7 +257,7 @@ function EmployeeLicenses() {
   };
   if (error) {
     return <h1 className="text-xl font-bold mb-4">{error}</h1>;
-  } else if (isLoading || !user) {
+  } else if (isLoading || !aUser) {
     return (
       <h1 className="text-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -400,7 +400,7 @@ function EmployeeLicenses() {
             </button>
 
             {(employeeLicenses && employeeLicenses.length < 3) ||
-              user.pro == 1 ||
+              aUser.pro == 1 ||
               (isEditing && (
                 <h3 className="font-bold text-lg">
                   {isEditing ? "Edit Employee License" : "Add Employee License"}
@@ -408,7 +408,7 @@ function EmployeeLicenses() {
               ))}
             {((employeeLicenses && employeeLicenses.length < 3) ||
               isEditing ||
-              user.pro == 1) && (
+              aUser.pro == 1) && (
               <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
                 {!licenses && (
                   <div role="alert" className="alert mt-3 alert-warning">
@@ -476,7 +476,7 @@ function EmployeeLicenses() {
             {employeeLicenses &&
               employeeLicenses.length >= 3 &&
               !isEditing &&
-              user.pro !=1 && (
+              aUser.pro !=1 && (
                 <p>Become a PRO subscriber to add more employee licenses.</p>
               )}
           </div>

@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { withAxiosDirect } from "../utils/AxiosInstance";
+import CancelledModal from "../components/modals/CancelledModal";
 
 interface UserContextType {
-  user: any; // Replace `any` with a proper user type if available
+  aUser: any;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -21,14 +22,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<User>();
   const userApi = `${API_BASE_URL}/user`;
   const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
-    if (isAuthenticated && user) {
+    const storedUserData = sessionStorage.getItem("userData");
+    if (storedUserData) {
+      setUserData(JSON.parse(storedUserData));
+    }
+  }, []);
+
+  useEffect(() => {
+
+    if (isAuthenticated && user && !userData) {
       logUser();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user, userData]);
 
   const logUser = async () => {
     const accessToken = await getAccessTokenSilently();
@@ -38,13 +48,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       email: user?.email,
     });
     setUserData(response.data);
+    sessionStorage.setItem("userData", JSON.stringify(response.data)); // Save userData to sessionStorage
+    (
+      document.getElementById("cancelled-modal") as HTMLDialogElement
+    )?.showModal();
   };
 
   return (
     <UserContext.Provider
-      value={{ user: userData, isAuthenticated, isLoading }}
+      value={{ aUser: userData, isAuthenticated, isLoading }}
     >
       {children}
+      <CancelledModal />
     </UserContext.Provider>
   );
 };

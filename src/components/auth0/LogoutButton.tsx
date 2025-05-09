@@ -7,7 +7,11 @@ const LogoutButton = () => {
     <button
       className="btn  btn-sm"
       onClick={() =>
+      {
+        sessionStorage.removeItem("userData");
         logout({ logoutParams: { returnTo: window.location.origin } })
+      }
+     
       }
     >
       <LogoutIcon />
