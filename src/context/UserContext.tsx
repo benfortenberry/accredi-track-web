@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { withAxiosDirect } from "../utils/AxiosInstance";
+import { isCancelledOver30DaysAgo } from "../utils/Utilities";
 import CancelledModal from "../components/modals/CancelledModal";
 
 interface UserContextType {
@@ -34,7 +35,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-
     if (isAuthenticated && user && !userData) {
       logUser();
     }
@@ -49,9 +49,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     setUserData(response.data);
     sessionStorage.setItem("userData", JSON.stringify(response.data)); // Save userData to sessionStorage
-    (
-      document.getElementById("cancelled-modal") as HTMLDialogElement
-    )?.showModal();
+
+    if (response.data.pro ==2 &&  !isCancelledOver30DaysAgo(response.data.cancelled)  ) {
+      (
+        document.getElementById("cancelled-modal") as HTMLDialogElement
+      )?.showModal();
+    }
   };
 
   return (

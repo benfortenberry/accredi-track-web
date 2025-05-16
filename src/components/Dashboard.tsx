@@ -83,28 +83,28 @@ function Dashboard() {
           const licenseCounts = res.data;
 
           let labels = [];
-          let datasets = [];
+          const datasets = [];
 
           if (res && res.data && res.data.length) {
             labels = licenseCounts.map(
-              (row: { licenseName: any }) => row.licenseName
+              (row: { licenseName: unknown }) => row.licenseName
             );
 
             datasets.push({
               label: "Valid",
-              data: licenseCounts.map((row: { count: any }) => row.count),
+              data: licenseCounts.map((row: { count: unknown }) => row.count),
               backgroundColor: "rgb(59, 187, 247)",
             });
           }
 
           if (expiredCount && expiredCount.length) {
             labels = expiredCount.map(
-              (row: { licenseName: any }) => row.licenseName
+              (row: { licenseName: unknown }) => row.licenseName
             );
 
             datasets.push({
               label: "Expired",
-              data: expiredCount.map((row: { count: any }) => row.count),
+              data: expiredCount.map((row: { count: unknown }) => row.count),
               backgroundColor: "rgb(251, 112, 133)",
             });
           }
@@ -135,13 +135,13 @@ function Dashboard() {
         setExpiringSoonLCounts(() => {
           const expiringSoonCounts = res.data;
           const labels = expiringSoonCounts.map(
-            (row: { month: any }) => row.month
+            (row: { month: unknown }) => row.month
           );
 
           const datasets = [
             {
               label: "Valid",
-              data: expiringSoonCounts.map((row: { count: any }) => row.count),
+              data: expiringSoonCounts.map((row: { count: unknown }) => row.count),
               backgroundColor: "rgb(59, 187, 247)",
             },
           ];

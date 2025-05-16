@@ -42,7 +42,7 @@ function Layout() {
         <div className="flex-none">
           <ul className="menu  menu-horizontal px-1">
             <li className="hidden md:block ">
-              <a href="/dashboard">Dashboard {aUser?.pro}</a>
+              <a href="/dashboard">Dashboard </a>
             </li>
             <li className="hidden md:block ">
               <a href="/employees">Employees</a>

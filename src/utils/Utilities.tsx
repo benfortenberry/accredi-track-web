@@ -50,3 +50,14 @@ export const formatDate = (date: string): string => {
   // Return the formatted date as MM/DD/YYYY
   return `${month}/${day}/${year}`;
 };
+
+
+export function isCancelledOver30DaysAgo(cancelledDate: string | number): boolean {
+  if (!cancelledDate) return false;
+  const cancelled = typeof cancelledDate === "number"
+    ? new Date(cancelledDate)
+    : new Date(cancelledDate);
+  const now = new Date();
+  const days30Ago = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  return cancelled < days30Ago;
+}
