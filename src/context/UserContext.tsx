@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { withAxiosDirect } from "../utils/AxiosInstance";
 import { isCancelledOver30DaysAgo } from "../utils/Utilities";
 import CancelledModal from "../components/modals/CancelledModal";
+import FirstTimeUserModal from "../components/modals/FirstTimeUser";
 
 interface UserContextType {
   aUser: any;
@@ -55,6 +56,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         document.getElementById("cancelled-modal") as HTMLDialogElement
       )?.showModal();
     }
+
+     if (response.data.firstTime  ) {
+      (
+        document.getElementById("first-time-user-modal") as HTMLDialogElement
+      )?.showModal();
+    }
   };
 
   return (
@@ -63,6 +70,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     >
       {children}
       <CancelledModal />
+        <FirstTimeUserModal />
     </UserContext.Provider>
   );
 };
