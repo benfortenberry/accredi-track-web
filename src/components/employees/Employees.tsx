@@ -314,7 +314,7 @@ function Employees() {
             {((employees && employees.length <= 4) ||
               isEditing ||
               aUser.pro == 1) && (
-              <form id="addEmployeeForm" onSubmit={handleSubmit}>
+              <form autoComplete="off" id="addEmployeeForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2 ">
                   <input
                     type="text"

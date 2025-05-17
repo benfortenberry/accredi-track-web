@@ -310,7 +310,7 @@ function Licenses() {
               </h3>
             )}
             {((licenses && licenses.length < 5) || isEditing || aUser.pro == 1) && (
-              <form id="addEditForm" onSubmit={handleSubmit}>
+              <form autoComplete="off" id="addEditForm" onSubmit={handleSubmit}>
                 <label className="input validator mt-2">
                   <input
                     type="text"

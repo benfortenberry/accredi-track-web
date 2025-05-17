@@ -409,7 +409,7 @@ function EmployeeLicenses() {
             {((employeeLicenses && employeeLicenses.length < 3) ||
               isEditing ||
               aUser.pro == 1) && (
-              <form id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
+              <form autoComplete="off" id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
                 {!licenses && (
                   <div role="alert" className="alert mt-3 alert-warning">
                     <WarningIcon />
