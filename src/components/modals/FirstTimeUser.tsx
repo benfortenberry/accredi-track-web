@@ -36,6 +36,7 @@ function FirstTimeUserModal() {
         <video
           src={tutorialSteps[step].video}
           loop
+          muted
           autoPlay
           className="w-full rounded mb-4"
         />
