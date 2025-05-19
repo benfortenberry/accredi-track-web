@@ -16,6 +16,7 @@ import DeleteAccount from "./components/DeleteAccount";
 import Privacy from "./components/Privacy";
 import HealthCheck from "./components/HealthCheck";
 import Settings from "./components/Settings";
+import Support from "./components/Support";
 
 function App() {
   return (
@@ -62,6 +63,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                }
+              />
+
+               <Route
+                path="support"
+                element={
+                  <ProtectedRoute>
+                    <Support />
                   </ProtectedRoute>
                 }
               />

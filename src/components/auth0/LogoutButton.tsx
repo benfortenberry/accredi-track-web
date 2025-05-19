@@ -5,6 +5,7 @@ const LogoutButton = () => {
 
   return (
     <button
+    title="Logout"
       className="btn  btn-sm"
       onClick={() =>
       {

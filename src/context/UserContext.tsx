@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { withAxiosDirect } from "../utils/AxiosInstance";
 import { isCancelledOver30DaysAgo } from "../utils/Utilities";
 import CancelledModal from "../components/modals/CancelledModal";
-import FirstTimeUserModal from "../components/modals/FirstTimeUser";
+import FirstTimeUserModal from "../components/modals/FirstTimeUserModal";
 
 interface UserContextType {
   aUser: any;
