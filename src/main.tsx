@@ -10,6 +10,8 @@ createRoot(document.getElementById("root")!).render(
   <Auth0Provider
     domain="thumbsupsolutions.auth0.com"
     clientId="RwAsIDcSImAUQsefyBpCH8FWvxe4wSLL"
+    cacheLocation="localstorage"
+    useRefreshTokens={true}
     authorizationParams={{
       redirect_uri: window.location.origin,
       scope: 'openid email profile',

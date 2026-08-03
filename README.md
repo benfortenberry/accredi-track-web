@@ -1,54 +1,119 @@
-# React + TypeScript + Vite
+# AccrediTrack Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AccrediTrack Web is the frontend for the AccrediTrack credential and license tracking application.
 
-Currently, two official plugins are available:
+It is built with:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React
+- TypeScript
+- Vite
+- Auth0 for authentication
+- Stripe for billing hooks
+- Tailwind CSS and daisyUI for UI styling
 
-## Expanding the ESLint configuration
+## What The Frontend Does
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The frontend currently supports:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Authenticated login flow with Auth0
+- Dashboard views for compliance metrics
+- Employee management UI
+- License type management UI
+- Employee license assignment and renewal views
+- Settings, support, privacy, terms, and account deletion flows
+
+## Local Development
+
+### Prerequisites
+
+- Node.js installed locally
+- Backend API running locally
+
+### Install and run
+
+```powershell
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The default local frontend URL is typically:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `http://localhost:5173`
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## Environment Variables
+
+The frontend currently uses these Vite environment variables:
+
+- `VITE_APP_API_URL`
+- `VITE_AUTH0_AUDIENCE`
+- `VITE_STRIPE_PUBLISHABLE_KEY`
+
+### Example local env
+
+```env
+VITE_APP_API_URL=http://localhost:8080
+VITE_STRIPE_PUBLISHABLE_KEY=
+VITE_AUTH0_AUDIENCE=https://thumbsupsolutions.auth0.com/api/v2/
 ```
+
+## Auth0 Notes
+
+The frontend uses `Auth0Provider` in `src/main.tsx`.
+
+For local development, Auth0 should allow:
+
+- callback URL for `http://localhost:5173`
+- logout URL for `http://localhost:5173`
+- web origin for `http://localhost:5173`
+
+Session persistence was configured to reduce unnecessary re-login behavior across refreshes.
+
+## Main Frontend Areas
+
+- `src/main.tsx`: app bootstrap and Auth0 provider
+- `src/App.tsx`: route map
+- `src/context/UserContext.tsx`: user loading and session-related app state
+- `src/components/auth0`: login, logout, and route protection
+- `src/components/Dashboard.tsx`: top-level metrics UI
+- `src/components/employees`: employee screens
+- `src/components/licenses`: license type screens
+- `src/components/employee-licenses`: employee license screens
+
+## Useful Scripts
+
+Run dev server:
+
+```powershell
+npm run dev
+```
+
+Build production bundle:
+
+```powershell
+npm run build
+```
+
+Lint the frontend:
+
+```powershell
+npm run lint
+```
+
+Preview production build locally:
+
+```powershell
+npm run preview
+```
+
+## Current Priorities
+
+1. Stabilize auth and route persistence
+2. Verify all CRUD flows against the local backend
+3. Improve onboarding and empty states
+4. Prepare the app for staging deployment
+
+## Related Docs
+
+Main roadmap document lives in the backend repo root:
+
+- `../accredi-track/REVIVAL_ROADMAP.md`
