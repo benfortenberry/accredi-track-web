@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
@@ -171,6 +172,32 @@ function Dashboard() {
   } else {
     return (
       <div>
+        <div className="mb-6 rounded-box border border-base-content/10 bg-base-100 p-4">
+          <h3 className="text-lg font-semibold">Getting started</h3>
+          <ul className="mt-3 space-y-2 text-sm">
+            <li className="flex items-center gap-2">
+              <span className="badge badge-success">1</span>
+              <span>Add an employee and assign their first license.</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="badge badge-success">2</span>
+              <span>Create a license type in the License Types view.</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="badge badge-success">3</span>
+              <span>Use the dashboard to track expiring and expired credentials.</span>
+            </li>
+          </ul>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link to="/employees" className="btn btn-sm btn-primary">
+              Add employee
+            </Link>
+            <Link to="/license-types" className="btn btn-sm btn-outline">
+              Add license type
+            </Link>
+          </div>
+        </div>
+
         <div className="grid overflow-x-auto lg:grid-cols-2 gap-4">
           {/* {noData && (
             <h1 className="text-xl font-bold mb-4">

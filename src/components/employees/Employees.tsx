@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AddIcon,
   EditIcon,
@@ -34,6 +35,7 @@ function Employees() {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getEmployees();
@@ -78,15 +80,14 @@ function Employees() {
         .post(api, employeeData)
         .then((res) => {
           console.log("Employee added successfully:", res.data);
-          showToast("Employee added successfully!", "success");
-          getEmployees();
-
+          showToast("Employee added! Add a license next.", "success");
           (
             document.getElementById("addEmployeeForm") as HTMLFormElement
           )?.reset();
           (
             document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
+          navigate(`/employee/${res.data.id}?from=onboarding`);
         })
         .catch((err) => {
           console.error("Error adding employee:", err);
@@ -283,9 +284,23 @@ function Employees() {
             </table>
           </div>
         ) : (
-          <h3 className="text-center text-lg font-bold mt-4">
-            Add your first employee
-          </h3>
+          <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-6">
+            <button
+              className="text-lg font-bold underline-offset-4 hover:underline"
+              onClick={() => {
+                setIsEditing(false);
+                setCurrentEmployee(null);
+                (
+                  document.getElementById("add-edit-modal") as HTMLDialogElement
+                )?.showModal();
+              }}
+            >
+              Add your first employee
+            </button>
+            <p className="mt-2 text-sm opacity-80">
+              After you save an employee, you’ll be taken straight to their license page so you can add their first credential.
+            </p>
+          </div>
         )}
 
         <DeleteModal

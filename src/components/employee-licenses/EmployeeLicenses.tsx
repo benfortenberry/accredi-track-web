@@ -293,6 +293,20 @@ function EmployeeLicenses() {
             : "Loading Employee..."}
         </h2>
 
+        {(!licenses || licenses.length === 0) && (
+          <div className="alert alert-info mb-4">
+            <span>
+              No license types exist yet. Create one first so you can assign it to this employee.
+            </span>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => navigate("/license-types")}
+            >
+              Create license type
+            </button>
+          </div>
+        )}
+
         {employeeLicenses && employeeLicenses.length > 0 ? (
           <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
             <table className="table">
@@ -372,9 +386,25 @@ function EmployeeLicenses() {
             </table>
           </div>
         ) : (
-          <h3 className="text-center text-lg font-bold mt-4">
-            Add your first employee license
-          </h3>
+          <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-6">
+            <button
+              className="text-lg font-bold underline-offset-4 hover:underline"
+              onClick={() => {
+                setIsEditing(false);
+                setCurrentEmployeeLicense(null);
+                (
+                  document.getElementById("add-edit-modal") as HTMLDialogElement
+                )?.showModal();
+              }}
+            >
+              Add your first employee license
+            </button>
+            <p className="mt-2 text-sm opacity-80">
+              {licenses && licenses.length > 0
+                ? "Use this action to add a license for this employee."
+                : "Create a license type first, then come back and add the assignment."}
+            </p>
+          </div>
         )}
 
         <DeleteModal
@@ -410,11 +440,13 @@ function EmployeeLicenses() {
               isEditing ||
               aUser.pro == 1) && (
               <form autoComplete="off" id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
-                {!licenses && (
+                {(!licenses || licenses.length === 0) && (
                   <div role="alert" className="alert mt-3 alert-warning">
                     <WarningIcon />
 
-                    <span>Must add licenses first.</span>
+                    <span>
+                      No license types are available yet. Create one first and then return here.
+                    </span>
                   </div>
                 )}
                 <select

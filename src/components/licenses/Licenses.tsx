@@ -256,9 +256,23 @@ function Licenses() {
             </table>
           </div>
         ) : (
-          <h3 className="text-center text-lg font-bold mt-4">
-            Add your first License Type
-          </h3>
+          <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-6">
+            <button
+              className="text-lg font-bold underline-offset-4 hover:underline"
+              onClick={() => {
+                setIsEditing(false);
+                setCurrentLicense(null);
+                (
+                  document.getElementById("add-edit-modal") as HTMLDialogElement
+                )?.showModal();
+              }}
+            >
+              Add your first License Type
+            </button>
+            <p className="mt-2 text-sm opacity-80">
+              Create the license categories you’ll use when assigning credentials to employees.
+            </p>
+          </div>
         )}
         <DeleteModal
           delete={handleDelete}

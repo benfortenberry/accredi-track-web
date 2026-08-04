@@ -23,7 +23,7 @@ function Layout() {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="navbar  bg-base-200 ">
         <div className="flex-1">
           <a href="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
