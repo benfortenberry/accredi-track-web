@@ -11,6 +11,10 @@
     top:0;
   }
 
+  body {
+    background-color: oklch(0.97 0.01 250);
+  }
+
   @media (prefers-color-scheme: dark) {
     canvas {
         filter: invert(1) hue-rotate(180deg);

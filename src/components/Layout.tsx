@@ -3,7 +3,6 @@ import LogoutButton from "./auth0/LogoutButton";
 
 import logo from "../assets/logo_white2.png";
 import logoDark from "../assets/logo_black2.png";
-import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
@@ -13,18 +12,12 @@ function Layout() {
   const { user } = useAuth0();
   const { aUser } = useUser();
 
-  const [email, setEmail] = useState<string | undefined>("");
-
-  useEffect(() => {
-    getEmail();
-  }, []);
-  const getEmail = () => {
-    setEmail(user?.email);
-  };
+  const email = user?.email || aUser?.email || "";
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="navbar  bg-base-200 ">
+    <div className="min-h-screen bg-base-100">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="navbar rounded-box mt-3 bg-base-200/90 shadow-sm">
         <div className="flex-1">
           <a href="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
             <img
@@ -158,10 +151,13 @@ function Layout() {
           </ul>
         </div>
       </div>
-      <header className="text-center text-2xl font-bold  py-3"></header>
-      <main>
-        <Outlet />
+      <header className="text-center text-2xl font-bold py-3"></header>
+      <main className="pb-8 pt-2">
+        <div className="rounded-box border border-base-content/10 bg-base-100 p-3 sm:p-6 lg:p-8 shadow-sm">
+          <Outlet />
+        </div>
       </main>
+    </div>
     </div>
   );
 }

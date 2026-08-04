@@ -35,13 +35,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated && user && !userData) {
-      logUser();
+  const logUser = async (forceRefresh = false) => {
+    if (!isAuthenticated || !user) {
+      return;
     }
-  }, [isAuthenticated, user, userData]);
 
-  const logUser = async () => {
+    if (!forceRefresh && userData) {
+      return;
+    }
+
     const accessToken = await getAccessTokenSilently();
     const axiosInstance = withAxiosDirect(accessToken);
     const response = await axiosInstance.post(userApi, {
@@ -63,6 +65,32 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       )?.showModal();
     }
   };
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      return;
+    }
+
+    if (!userData) {
+      logUser();
+      return;
+    }
+
+    if (window.location.search.includes("checkout=success")) {
+      logUser(true);
+    }
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (isAuthenticated && user) {
+        logUser(true);
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [isAuthenticated, user]);
 
   return (
     <UserContext.Provider
