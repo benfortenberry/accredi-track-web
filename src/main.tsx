@@ -5,11 +5,13 @@ import App from "./App.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { UserProvider } from "./context/UserContext";
 
+const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN || "thumbsupsolutions.auth0.com";
+const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID || "RwAsIDcSImAUQsefyBpCH8FWvxe4wSLL";
 
 createRoot(document.getElementById("root")!).render(
   <Auth0Provider
-    domain="thumbsupsolutions.auth0.com"
-    clientId="RwAsIDcSImAUQsefyBpCH8FWvxe4wSLL"
+    domain={auth0Domain}
+    clientId={auth0ClientId}
     cacheLocation="localstorage"
     useRefreshTokens={true}
     authorizationParams={{

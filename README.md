@@ -45,6 +45,8 @@ The default local frontend URL is typically:
 The frontend currently uses these Vite environment variables:
 
 - `VITE_APP_API_URL`
+- `VITE_AUTH0_DOMAIN`
+- `VITE_AUTH0_CLIENT_ID`
 - `VITE_AUTH0_AUDIENCE`
 - `VITE_STRIPE_PUBLISHABLE_KEY`
 
@@ -52,6 +54,8 @@ The frontend currently uses these Vite environment variables:
 
 ```env
 VITE_APP_API_URL=http://localhost:8080
+VITE_AUTH0_DOMAIN=thumbsupsolutions.auth0.com
+VITE_AUTH0_CLIENT_ID=
 VITE_STRIPE_PUBLISHABLE_KEY=
 VITE_AUTH0_AUDIENCE=https://thumbsupsolutions.auth0.com/api/v2/
 ```
@@ -112,8 +116,27 @@ npm run preview
 3. Improve onboarding and empty states
 4. Prepare the app for staging deployment
 
+## Railway Deployment
+
+This frontend can be deployed as a Railway service using the included Dockerfile.
+
+1. Create a Railway service from `benfortenberry/accredi-track-web`.
+2. Railway will build using `Dockerfile` and serve `dist` with `serve`.
+3. Set variables from `.env.railway.example`.
+4. Redeploy after variable updates.
+
+Important:
+
+- `VITE_APP_API_URL` must point to the Railway backend public domain.
+- Auth0 callback/logout/web origin settings must include the Railway frontend domain.
+
 ## Related Docs
 
 Main roadmap document lives in the backend repo root:
 
 - `../accredi-track/REVIVAL_ROADMAP.md`
+- `../accredi-track/AWS_STAGING_DEPLOYMENT.md`
+
+Frontend staging env template:
+
+- `.env.production.example`
