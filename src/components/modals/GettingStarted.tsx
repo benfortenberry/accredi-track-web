@@ -26,14 +26,10 @@ function GettingStarted(props: any) {
 
   return (
     <div>
-      <video
-        src={tutorialSteps[step].video}
-        loop
-        muted
-        controls={props.controls}
-        autoPlay={props.auto}
-        className="w-full rounded mb-4"
-      />
+      <div className="w-full rounded mb-4 border border-base-300 bg-base-200 p-4">
+        <p className="font-semibold">Tutorial video is temporarily disabled.</p>
+        <p className="text-sm opacity-80">Follow the step notes below to get started.</p>
+      </div>
       <p className="mb-4">{tutorialSteps[step].description}</p>
       <div className="flex justify-between">
         <button
