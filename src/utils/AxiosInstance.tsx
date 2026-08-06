@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
-import { getApiBaseUrl } from "./config";
+import { getApiBaseUrl, getAuth0Audience } from "./config";
 
 const httpClient = axios.create();
 
@@ -12,7 +12,12 @@ const AddTokenInterceptor = () => {
     const interceptor = httpClient.interceptors.request.use(
       async (config) => {
         try {
-          const accessToken = await getAccessTokenSilently();
+          const audience = getAuth0Audience();
+          const accessToken = await getAccessTokenSilently(
+            audience
+              ? { authorizationParams: { audience } }
+              : undefined
+          );
           config.headers.Authorization = `Bearer ${accessToken}`;
         } catch (e) {
           // Handle error (e.g., token could not be retrieved)
