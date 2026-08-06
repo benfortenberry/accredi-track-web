@@ -19,11 +19,25 @@ const HealthCheck = () => {
     setMessage("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/health`, {
+      const healthUrl = `${apiBaseUrl}/health`;
+      const response = await fetch(healthUrl, {
         method: "GET",
       });
 
       const bodyText = await response.text();
+      const contentType = response.headers.get("content-type") || "";
+      const looksLikeHtml =
+        contentType.includes("text/html") ||
+        bodyText.toLowerCase().includes("<!doctype html");
+
+      if (looksLikeHtml) {
+        setStatus("error");
+        setMessage(
+          `Received HTML from ${healthUrl}. API URL is likely pointing to the frontend domain instead of backend.`
+        );
+        return;
+      }
+
       if (!response.ok) {
         setStatus("error");
         setMessage(`HTTP ${response.status}: ${bodyText}`);
