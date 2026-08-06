@@ -45,7 +45,15 @@ export const getApiBaseUrl = (): string => {
 };
 
 const normalizeTextValue = (value?: string): string => {
-  return (value || "").trim().replace(/^"+|"+$/g, "");
+  let normalized = (value || "").trim();
+  normalized = normalized.replace(/^['"]+|['"]+$/g, "");
+
+  if (normalized.startsWith("[") && normalized.endsWith("]")) {
+    normalized = normalized.slice(1, -1).trim();
+    normalized = normalized.replace(/^['"]+|['"]+$/g, "");
+  }
+
+  return normalized;
 };
 
 export const getAuth0Domain = (): string => {

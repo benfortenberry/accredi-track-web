@@ -16,9 +16,10 @@ createRoot(document.getElementById("root")!).render(
     clientId={auth0ClientId}
     cacheLocation="localstorage"
     useRefreshTokens={true}
+    useRefreshTokensFallback={true}
     authorizationParams={{
       redirect_uri: window.location.origin,
-      scope: 'openid email profile',
+      scope: "openid email profile offline_access",
       ...(auth0Audience ? { audience: auth0Audience } : {}),
     }}
   >
