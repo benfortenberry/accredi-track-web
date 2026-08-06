@@ -64,12 +64,12 @@ function Dashboard() {
   };
 
   const getLicenseCounts = async () => {
-    let expiredCount: LicenseCount[];
+    let expiredCount: LicenseCount[] = [];
 
     await httpClient
       .get(api + "/license-chart-data-expired")
       .then((res) => {
-        expiredCount = res.data;
+        expiredCount = Array.isArray(res.data) ? res.data : [];
       })
       .catch(() => {
         setError("Failed to fetch License Chart Data");
@@ -81,14 +81,16 @@ function Dashboard() {
         // setLicenseCounts(res.data);
         //if (res && res.data && res.data.length) {
         setLicenseCounts(() => {
-          const licenseCounts = res.data;
+          const licenseCounts: LicenseCount[] = Array.isArray(res.data)
+            ? res.data
+            : [];
 
-          let labels = [];
+          let labels: string[] = [];
           const datasets = [];
 
-          if (res && res.data && res.data.length) {
-            labels = licenseCounts.map(
-              (row: { licenseName: unknown }) => row.licenseName
+          if (licenseCounts.length) {
+            labels = licenseCounts.map((row: { licenseName: unknown }) =>
+              String(row.licenseName)
             );
 
             datasets.push({
@@ -99,8 +101,8 @@ function Dashboard() {
           }
 
           if (expiredCount && expiredCount.length) {
-            labels = expiredCount.map(
-              (row: { licenseName: unknown }) => row.licenseName
+            labels = expiredCount.map((row: { licenseName: unknown }) =>
+              String(row.licenseName)
             );
 
             datasets.push({
@@ -134,9 +136,11 @@ function Dashboard() {
       .then((res) => {
         // setLicenseCounts(res.data);
         setExpiringSoonLCounts(() => {
-          const expiringSoonCounts = res.data;
-          const labels = expiringSoonCounts.map(
-            (row: { month: unknown }) => row.month
+          const expiringSoonCounts: ExpiringSoon[] = Array.isArray(res.data)
+            ? res.data
+            : [];
+          const labels: string[] = expiringSoonCounts.map(
+            (row: { month: unknown }) => String(row.month)
           );
 
           const datasets = [

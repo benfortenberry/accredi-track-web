@@ -44,25 +44,34 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
-    const accessToken = await getAccessTokenSilently();
-    const axiosInstance = withAxiosDirect(accessToken);
-    const response = await axiosInstance.post(userApi, {
-      token: accessToken,
-      email: user?.email,
-    });
-    setUserData(response.data);
-    sessionStorage.setItem("userData", JSON.stringify(response.data)); // Save userData to sessionStorage
+    try {
+      const accessToken = await getAccessTokenSilently();
+      const axiosInstance = withAxiosDirect(accessToken);
+      const response = await axiosInstance.post(userApi, {
+        token: accessToken,
+        email: user?.email,
+      });
 
-    if (response.data.pro ==2 &&  !isCancelledOver30DaysAgo(response.data.cancelled)  ) {
-      (
-        document.getElementById("cancelled-modal") as HTMLDialogElement
-      )?.showModal();
-    }
+      const responseData = response?.data ?? {};
+      setUserData(responseData);
+      sessionStorage.setItem("userData", JSON.stringify(responseData));
 
-     if (response.data.firstTime  ) {
-      (
-        document.getElementById("first-time-user-modal") as HTMLDialogElement
-      )?.showModal();
+      if (
+        responseData.pro == 2 &&
+        !isCancelledOver30DaysAgo(responseData.cancelled)
+      ) {
+        (
+          document.getElementById("cancelled-modal") as HTMLDialogElement
+        )?.showModal();
+      }
+
+      if (responseData.firstTime) {
+        (
+          document.getElementById("first-time-user-modal") as HTMLDialogElement
+        )?.showModal();
+      }
+    } catch (err) {
+      console.error("Failed to bootstrap user data", err);
     }
   };
 
