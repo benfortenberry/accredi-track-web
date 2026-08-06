@@ -11,11 +11,12 @@ import {
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
+import { getApiBaseUrl } from "../../utils/config";
 import DeleteModal from "../modals/DeleteModal";
 import { useUser } from "../../context/UserContext";
 
 function Employees() {
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = getApiBaseUrl();
   const api = `${API_BASE_URL}/employees`;
 
   const { aUser } = useUser();

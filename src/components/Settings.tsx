@@ -3,9 +3,10 @@ import { httpClient, withAxios } from "../utils/AxiosInstance";
 import DeleteModal from "../components/modals/DeleteModal";
 import { showToast } from "../utils/Utilities";
 import { useAuth0 } from "@auth0/auth0-react";
+import { getApiBaseUrl } from "../utils/config";
 
 const Settings = () => {
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = getApiBaseUrl();
   const api = `${API_BASE_URL}/employee-data`;
   const userApi = `${API_BASE_URL}/user`;
 

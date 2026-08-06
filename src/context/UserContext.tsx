@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { withAxiosDirect } from "../utils/AxiosInstance";
 import { isCancelledOver30DaysAgo } from "../utils/Utilities";
+import { getApiBaseUrl } from "../utils/config";
 import CancelledModal from "../components/modals/CancelledModal";
 import FirstTimeUserModal from "../components/modals/FirstTimeUserModal";
 
@@ -22,7 +23,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = getApiBaseUrl();
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [userData, setUserData] = useState<User>();
   const userApi = `${API_BASE_URL}/user`;

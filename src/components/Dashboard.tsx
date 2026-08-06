@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
+import { getApiBaseUrl } from "../utils/config";
 
 function Dashboard() {
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = getApiBaseUrl();
 
   const api = `${API_BASE_URL}/metrics`;
 

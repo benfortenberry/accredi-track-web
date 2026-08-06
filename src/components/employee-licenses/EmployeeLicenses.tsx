@@ -9,12 +9,13 @@ import {
 import { showToast, formatDate } from "../../utils/Utilities";
 
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
+import { getApiBaseUrl } from "../../utils/config";
 import DeleteModal from "../modals/DeleteModal";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 
 function EmployeeLicenses() {
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = getApiBaseUrl();
 
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
+import { getApiBaseUrl } from "./config";
 
 const httpClient = axios.create();
 
@@ -40,7 +41,7 @@ const withAxios = (WrappedComponent: any) => {
 
 const withAxiosDirect = (accessToken: string) => {
   const instance = axios.create({
-    baseURL: import.meta.env.VITE_APP_API_URL, // Base API URL
+    baseURL: getApiBaseUrl(), // Base API URL
     headers: {
       Authorization: `Bearer ${accessToken}`, // Add Authorization header
     },

@@ -12,4 +12,4 @@ RUN npm install -g serve
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]
+CMD ["sh", "-c", "API_URL=${VITE_APP_API_URL:-${BACKEND_URL:-}}; printf \"window.__APP_CONFIG__ = { VITE_APP_API_URL: '%s' };\\n\" \"$API_URL\" > /app/dist/runtime-config.js; serve -s dist -l ${PORT:-8080}"]

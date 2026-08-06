@@ -6,8 +6,9 @@ import logoDark from "../assets/logo_black2.png";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
+import { getApiBaseUrl } from "../utils/config";
 function Layout() {
-  const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
+  const API_BASE_URL = getApiBaseUrl();
   const api = `${API_BASE_URL}/create-checkout-session`;
   const { user } = useAuth0();
   const { aUser } = useUser();

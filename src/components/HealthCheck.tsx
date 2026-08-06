@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { getApiBaseUrl } from "../utils/config";
 
 type ProbeStatus = "idle" | "loading" | "ok" | "error";
 
 const HealthCheck = () => {
-  const apiBaseUrl = import.meta.env.VITE_APP_API_URL;
+  const apiBaseUrl = getApiBaseUrl();
   const [status, setStatus] = useState<ProbeStatus>("idle");
   const [message, setMessage] = useState("");
 
