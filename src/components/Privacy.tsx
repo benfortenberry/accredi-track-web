@@ -52,7 +52,7 @@ function PrivacyPolicy() {
           information. To exercise these rights, please contact us at{" "}
           <a
             href="mailto:support@accreditrack.com"
-            className="text-blue-500 underline"
+            className="text-primary underline"
           >
             support@accreditrack.com
           </a>
@@ -81,7 +81,7 @@ function PrivacyPolicy() {
           at{" "}
           <a
             href="mailto:support@accreditrack.com"
-            className="text-blue-500 underline"
+            className="text-primary underline"
           >
             support@accreditrack.com
           </a>

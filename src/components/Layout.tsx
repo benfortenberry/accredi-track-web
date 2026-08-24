@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
 
 import logo from "../assets/logo_white2.png";
@@ -7,13 +7,18 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
 import { getApiBaseUrl } from "../utils/config";
+
 function Layout() {
   const API_BASE_URL = getApiBaseUrl();
   const api = `${API_BASE_URL}/create-checkout-session`;
   const { user } = useAuth0();
   const { aUser } = useUser();
+  const { pathname } = useLocation();
 
   const email = user?.email || aUser?.email || "";
+
+  const navLinkClass = (path: string) =>
+    pathname === path ? "active font-semibold" : "";
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -29,42 +34,41 @@ function Layout() {
               <img
                 src={logoDark}
                 alt="AccrediTrack Logo"
-                className="w-12 mx-auto  block dark:hidden"
+                className="w-12 mx-auto block dark:hidden"
               />
             </a>
           </div>
           <div className="flex-none">
-            <ul className="menu  menu-horizontal px-1">
-              <li className="hidden md:block ">
-                <a href="/dashboard">Dashboard </a>
+            <ul className="menu menu-horizontal px-1">
+              <li className="hidden md:block">
+                <a href="/dashboard" className={navLinkClass("/dashboard")}>Dashboard</a>
               </li>
-              <li className="hidden md:block ">
-                <a href="/employees">Employees</a>
+              <li className="hidden md:block">
+                <a href="/employees" className={navLinkClass("/employees")}>Employees</a>
               </li>
-              <li className="hidden md:block ">
-                <a href="/license-types">Licenses</a>
+              <li className="hidden md:block">
+                <a href="/license-types" className={navLinkClass("/license-types")}>Licenses</a>
               </li>
 
               {aUser && aUser.pro != 1 && (
-                <li className="hidden md:block ">
+                <li className="hidden md:block">
                   <form
                     className="pt-0 pb-0 pl-0 mx-2 pr-0"
                     action={api}
                     method="post"
                   >
-                    <button className="btn btn-secondary btn-sm ">go PRO</button>
+                    <button className="btn btn-secondary btn-sm">go PRO</button>
                     <input type="hidden" name="email" value={email} />
                   </form>
                 </li>
               )}
-              <li className="hidden md:block ">
-                <a href="/settings" title="Settings">
+              <li className="hidden md:block">
+                <a href="/settings" className={navLinkClass("/settings")} title="Settings">
                   <GearIcon />
                 </a>
               </li>
-
-              <li className="hidden md:block ">
-                <a href="/support" title="Support">
+              <li className="hidden md:block">
+                <a href="/support" className={navLinkClass("/support")} title="Support">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -82,12 +86,13 @@ function Layout() {
                 </a>
               </li>
 
+              {/* Mobile hamburger */}
               <li className="">
                 <div className="dropdown md:hidden dropdown-end pl-0 pt-0 pr-0 pb-0">
                   <div
                     tabIndex={0}
                     role="button"
-                    className="btn btn-sm btn-ghost  "
+                    className="btn btn-sm btn-ghost"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -109,28 +114,28 @@ function Layout() {
                     className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
                   >
                     <li>
-                      <a href="/dashboard" className="btn btn-ghost">
+                      <a href="/dashboard" className={`btn btn-ghost ${navLinkClass("/dashboard")}`}>
                         Dashboard
                       </a>
                     </li>
                     <li>
-                      <a href="/employees" className="btn btn-ghost">
+                      <a href="/employees" className={`btn btn-ghost ${navLinkClass("/employees")}`}>
                         Employees
                       </a>
                     </li>
-
                     <li>
-                      <a href="/settings" className="btn btn-ghost">
+                      <a href="/license-types" className={`btn btn-ghost ${navLinkClass("/license-types")}`}>
+                        License Types
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/settings" className={`btn btn-ghost ${navLinkClass("/settings")}`}>
                         Settings
                       </a>
                     </li>
-
-                    <li >
-                      <a href="/support" className="btn btn-ghost" title="Support">
-
+                    <li>
+                      <a href="/support" className={`btn btn-ghost ${navLinkClass("/support")}`}>
                         Support
-
-
                       </a>
                     </li>
 
@@ -140,7 +145,7 @@ function Layout() {
                         action={api}
                         method="post"
                       >
-                        <button className="btn btn-sm btn-secondary w-full ">
+                        <button className="btn btn-sm btn-secondary w-full">
                           go PRO
                         </button>
                         <input type="hidden" name="email" value={email} />

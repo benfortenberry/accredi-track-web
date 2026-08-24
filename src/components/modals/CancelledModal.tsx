@@ -9,7 +9,7 @@ function CancelledModal() {
         </form>
         <h3 className="font-bold text-lg my-5">
           It appears your PRO subscription is no longer active. In 30 days, any
-          data over the free liimits will be removed. Be sure to download your
+          data over the free limits will be removed. Be sure to download your
           data from the settings page.
         </h3>
 

@@ -7,7 +7,7 @@ function NotFound() {
       <p className="text-lg mb-8">
         The page you are looking for does not exist.
       </p>
-      <Link to="/" className="text-blue-500 underline">
+      <Link to="/" className="text-primary underline">
         Go back to Home
       </Link>
     </div>

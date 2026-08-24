@@ -53,7 +53,9 @@ function Licenses() {
           (document.getElementById("addEditForm") as HTMLFormElement)?.reset();
 
           setLicense((prevLicense) =>
-            prevLicense.map((lic) => (lic.id === lic.id ? res.data : lic))
+            prevLicense.map((lic) =>
+              lic.id === currentLicense.id ? res.data : lic
+            )
           );
           (
             document.getElementById("add-edit-modal") as HTMLDialogElement

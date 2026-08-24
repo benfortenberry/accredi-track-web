@@ -1,22 +1,58 @@
 @import "tailwindcss";
-@plugin "daisyui";
 @plugin "daisyui" {
-    themes: corporate --default, night --prefersdark;
-  }
+  themes: accredi-dark --default --prefersdark;
+}
 
+/* ── Single dark theme ─────────────────────────────────────── */
+@plugin "daisyui/theme" {
+  name: "accredi-dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
 
-  .login-button{
-    position: absolute;
-    right: 0;
-    top:0;
-  }
+  /* Deep warm-tinted dark surfaces */
+  --color-base-100: oklch(16% 0.008 60);
+  --color-base-200: oklch(20% 0.009 60);
+  --color-base-300: oklch(25% 0.010 60);
+  --color-base-content: oklch(92% 0.008 60);
 
-  body {
-    background-color: oklch(0.97 0.01 250);
-  }
+  /* Primary = burnt orange */
+  --color-primary: oklch(66% 0.19 40);
+  --color-primary-content: oklch(100% 0 0);
 
-  @media (prefers-color-scheme: dark) {
-    canvas {
-        filter: invert(1) hue-rotate(180deg);
-    }
+  /* Secondary = mid charcoal */
+  --color-secondary: oklch(30% 0.01 60);
+  --color-secondary-content: oklch(92% 0 0);
+
+  --color-accent: oklch(66% 0.19 40);
+  --color-accent-content: oklch(100% 0 0);
+
+  --color-neutral: oklch(25% 0.01 60);
+  --color-neutral-content: oklch(92% 0 0);
+
+  --color-info: oklch(60% 0.15 220);
+  --color-info-content: oklch(100% 0 0);
+
+  --color-success: oklch(65% 0.2 145);
+  --color-success-content: oklch(100% 0 0);
+
+  --color-warning: oklch(78% 0.18 75);
+  --color-warning-content: oklch(20% 0 0);
+
+  --color-error: oklch(60% 0.22 25);
+  --color-error-content: oklch(100% 0 0);
+
+  --radius-box: 0.75rem;
+  --radius-field: 0.5rem;
+  --radius-selector: 0.5rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ── Shared overrides ──────────────────────────────────────── */
+.login-button {
+  position: absolute;
+  right: 0;
+  top: 0;
 }

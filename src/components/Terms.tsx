@@ -64,7 +64,7 @@ function TermsOfService() {
           us at{" "}
           <a
             href="mailto:support@accreditrack.com"
-            className="text-blue-500 underline"
+            className="text-primary underline"
           >
             support@accreditrack.com
           </a>

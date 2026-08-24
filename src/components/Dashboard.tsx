@@ -97,7 +97,7 @@ function Dashboard() {
             datasets.push({
               label: "Valid",
               data: licenseCounts.map((row: { count: unknown }) => row.count),
-              backgroundColor: "rgb(59, 187, 247)",
+              backgroundColor: "rgba(234, 88, 12, 0.85)", // burnt orange
             });
           }
 
@@ -109,7 +109,7 @@ function Dashboard() {
             datasets.push({
               label: "Expired",
               data: expiredCount.map((row: { count: unknown }) => row.count),
-              backgroundColor: "rgb(251, 112, 133)",
+              backgroundColor: "rgba(180, 60, 60, 0.85)", // muted red
             });
           }
 
@@ -146,9 +146,12 @@ function Dashboard() {
 
           const datasets = [
             {
-              label: "Valid",
+              label: "Expiring",
               data: expiringSoonCounts.map((row: { count: unknown }) => row.count),
-              backgroundColor: "rgb(59, 187, 247)",
+              backgroundColor: "rgba(234, 88, 12, 0.2)",
+              borderColor: "rgba(234, 88, 12, 0.9)",
+              borderWidth: 2,
+              tension: 0.3,
             },
           ];
 
@@ -177,31 +180,33 @@ function Dashboard() {
   } else {
     return (
       <div>
-        <div className="mb-6 rounded-box border border-base-content/10 bg-base-100 p-4">
-          <h3 className="text-lg font-semibold">Getting started</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li className="flex items-center gap-2">
-              <span className="badge badge-success">1</span>
-              <span>Add an employee and assign their first license.</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="badge badge-success">2</span>
-              <span>Create a license type in the License Types view.</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="badge badge-success">3</span>
-              <span>Use the dashboard to track expiring and expired credentials.</span>
-            </li>
-          </ul>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link to="/employees" className="btn btn-sm btn-primary">
-              Add employee
-            </Link>
-            <Link to="/license-types" className="btn btn-sm btn-outline">
-              Add license type
-            </Link>
+        {(!metrics || metrics.totalEmployees === 0) && (
+          <div className="mb-6 rounded-box border border-base-content/10 bg-base-100 p-4">
+            <h3 className="text-lg font-semibold">Getting started</h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li className="flex items-center gap-2">
+                <span className="badge badge-success">1</span>
+                <span>Add an employee and assign their first license.</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="badge badge-success">2</span>
+                <span>Create a license type in the License Types view.</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="badge badge-success">3</span>
+                <span>Use the dashboard to track expiring and expired credentials.</span>
+              </li>
+            </ul>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link to="/employees" className="btn btn-sm btn-primary">
+                Add employee
+              </Link>
+              <Link to="/license-types" className="btn btn-sm btn-outline">
+                Add license type
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid overflow-x-auto lg:grid-cols-2 gap-4">
           {/* {noData && (
