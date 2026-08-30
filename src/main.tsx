@@ -4,7 +4,23 @@ import "./index.css";
 import App from "./App.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { UserProvider } from "./context/UserContext";
-import { getAuth0Audience, getAuth0ClientId, getAuth0Domain } from "./utils/config";
+import {
+  getApiBaseUrl,
+  getAuth0Audience,
+  getAuth0ClientId,
+  getAuth0Domain,
+} from "./utils/config";
+
+// Fail loud on misconfiguration: an empty API base URL means every API call
+// hits the frontend host and 404s (spinners never resolve). Surface it clearly
+// instead of leaving developers to decode cryptic 404s.
+if (!getApiBaseUrl()) {
+  console.error(
+    "[config] VITE_APP_API_URL is not set. API requests will hit the frontend " +
+      "origin and fail with 404. Set it as a build-time env var or in " +
+      "public/runtime-config.js (window.__APP_CONFIG__.VITE_APP_API_URL)."
+  );
+}
 
 const auth0Domain = getAuth0Domain();
 const auth0ClientId = getAuth0ClientId();
