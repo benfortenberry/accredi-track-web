@@ -11,6 +11,9 @@ It is built with:
 - Stripe for billing hooks
 - Tailwind CSS and daisyUI for UI styling
 
+
+4242424242424242
+
 ## What The Frontend Does
 
 The frontend currently supports:
@@ -26,9 +29,6 @@ The frontend currently supports:
 
 ### Prerequisites
 
-- Node.js installed locally
-- Backend API running locally
-
 ### Install and run
 
 ```powershell
@@ -36,6 +36,54 @@ npm install
 npm run dev
 ```
 
+The default local frontend URL is:
+
+- `http://localhost:5173`
+
+### One-command local startup (both apps)
+
+From the backend repo root (`../accredi-track`) run either script to start the
+backend and frontend together:
+
+```powershell
+.\start-dev.ps1   # PowerShell
+start-dev.bat     # cmd
+```
+
+These scripts:
+
+- Build the backend to a fixed `accredi-track.exe` (instead of `go run`, whose
+  fresh temp binary re-triggers the Windows Firewall prompt every launch).
+- Start the backend with `HOST=127.0.0.1` so it binds localhost-only. This
+  avoids the Windows Firewall "allow network access" prompt entirely. In
+  production the `HOST` var is left empty so the server binds all interfaces.
+- Start the frontend on `http://localhost:5173`.
+
+## Monitoring the Database (Railway MySQL)
+
+The database lives on Railway and is not publicly exposed. Use the Railway CLI
+to open a stable SSH tunnel, then point any client (DBeaver recommended;
+MySQL Workbench is crash-prone on Windows) at it:
+
+```powershell
+railway connect MySQL --tunnel-only --port 3307
+```
+
+This prints connection details and holds the tunnel open until Ctrl+C. Because
+the port is pinned to `3307`, a saved client connection keeps working across
+sessions. Connect with:
+
+- Host: `127.0.0.1`
+- Port: `3307`
+- User / Password / Database: as printed by the command (database is `railway`)
+
+To quickly check the pro-subscription state during Stripe testing:
+
+```sql
+SELECT email, pro, stripeCustomerId FROM users ORDER BY id DESC;
+```
+
+(`pro = 1` means active pro; `2` means cancelled.)
 The default local frontend URL is typically:
 
 - `http://localhost:5173`
@@ -57,8 +105,24 @@ VITE_APP_API_URL=http://localhost:8080
 VITE_AUTH0_DOMAIN=thumbsupsolutions.auth0.com
 VITE_AUTH0_CLIENT_ID=
 VITE_STRIPE_PUBLISHABLE_KEY=
-VITE_AUTH0_AUDIENCE=https://thumbsupsolutions.auth0.com/api/v2/
+VITE_AUTH0_AUDIENCE=https://accredi-track/api
 ```
+
+Important env notes (these caused real production outages):
+
+- `VITE_AUTH0_AUDIENCE` must be the **custom API identifier** (`https://accredi-track/api`),
+  NOT the Auth0 Management API (`.../api/v2/`). If it is empty or wrong, Auth0
+  returns an opaque token and the backend rejects every request with 401
+  ("Invalid token" / "Invalid audience"). The backend's `AUTH0_AUDIENCE` must
+  match this exact value.
+- `VITE_APP_API_URL` must be the backend's **public** URL. In production that is
+  `https://accredi-track-production.up.railway.app` (Railway-internal hostnames
+  are not reachable from the browser). If empty, API calls hit the frontend
+  origin and 404.
+- In the deployed build these values are read at runtime from
+  `public/runtime-config.js` (its committed defaults are the production values),
+  so an unset Railway env var degrades to the correct URL/audience rather than
+  breaking.
 
 ## Auth0 Notes
 
