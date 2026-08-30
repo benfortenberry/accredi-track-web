@@ -32,6 +32,10 @@ function Licenses() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentLicense, setCurrentLicense] = useState<License | null>(null);
 
+  // Prefer the backend's specific error message over generic fallback text.
+  const serverMessage = (err: any, fallback: string): string =>
+    err?.response?.data?.error || fallback;
+
   useEffect(() => {
     getLicenses();
   }, []);
@@ -63,7 +67,10 @@ function Licenses() {
         })
         .catch((err) => {
           console.error("Error updating License:", err);
-          showToast("Failed to update License. Please try again.", "error");
+          showToast(
+            serverMessage(err, "Failed to update License. Please try again."),
+            "error"
+          );
         });
     } else {
       httpClient
@@ -78,7 +85,10 @@ function Licenses() {
         })
         .catch((err) => {
           console.error("Error adding License:", err);
-          showToast("An error happened when trying to add License.", "error");
+          showToast(
+            serverMessage(err, "An error happened when trying to add License."),
+            "error"
+          );
         });
     }
   };
@@ -102,7 +112,10 @@ function Licenses() {
       })
       .catch((err) => {
         console.error("Error deleting License:", err);
-        showToast("Failed to delete License. Please try again.", "error");
+        showToast(
+          serverMessage(err, "Failed to delete License. Please try again."),
+          "error"
+        );
       });
   };
 

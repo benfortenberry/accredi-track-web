@@ -18,6 +18,7 @@ function Dashboard() {
     complianceRate: number;
     licenseAvg: number;
     notificationCount: number;
+    totalEmployeeLicenses: number;
   }
 
   interface LicenseCount {
@@ -42,6 +43,8 @@ function Dashboard() {
   // const [noData, setNoData] = useState(false);
   const [expiringSoonChartData, setLExpiringSoonChartData] =
     useState<ChartData>();
+  const [licenseTypeCount, setLicenseTypeCount] = useState(0);
+  const [assignmentCount, setAssignmentCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,13 +52,27 @@ function Dashboard() {
     getMetrics();
     getLicenseCounts();
     getExpiringSoon();
+    getSetupProgress();
   }, []);
+
+  // Fetch counts used to drive the first-run setup checklist.
+  const getSetupProgress = async () => {
+    await httpClient
+      .get(`${API_BASE_URL}/licenses`)
+      .then((res) => {
+        setLicenseTypeCount(Array.isArray(res.data) ? res.data.length : 0);
+      })
+      .catch(() => {
+        /* non-critical for the checklist */
+      });
+  };
 
   const getMetrics = async () => {
     await httpClient
       .get(api)
       .then((res) => {
         setMetrics(res.data);
+        setAssignmentCount(res.data?.totalEmployeeLicenses ?? 0);
         setIsLoading(false);
       })
       .catch(() => {
@@ -180,33 +197,54 @@ function Dashboard() {
   } else {
     return (
       <div>
-        {(!metrics || metrics.totalEmployees === 0) && (
-          <div className="mb-6 rounded-box border border-base-content/10 bg-base-100 p-4">
-            <h3 className="text-lg font-semibold">Getting started</h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li className="flex items-center gap-2">
-                <span className="badge badge-success">1</span>
-                <span>Add an employee and assign their first license.</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="badge badge-success">2</span>
-                <span>Create a license type in the License Types view.</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="badge badge-success">3</span>
-                <span>Use the dashboard to track expiring and expired credentials.</span>
-              </li>
-            </ul>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Link to="/employees" className="btn btn-sm btn-primary">
-                Add employee
-              </Link>
-              <Link to="/license-types" className="btn btn-sm btn-outline">
-                Add license type
-              </Link>
+        {(() => {
+          const hasLicenseTypes = licenseTypeCount > 0;
+          const hasEmployees = (metrics?.totalEmployees ?? 0) > 0;
+          const hasAssignments = assignmentCount > 0;
+          const allDone = hasLicenseTypes && hasEmployees && hasAssignments;
+          if (allDone) return null;
+
+          const step = (done: boolean, label: string) => (
+            <li className="flex items-center gap-2">
+              <span
+                className={`badge ${done ? "badge-success" : "badge-ghost"}`}
+              >
+                {done ? "\u2713" : ""}
+              </span>
+              <span className={done ? "line-through opacity-60" : ""}>
+                {label}
+              </span>
+            </li>
+          );
+
+          return (
+            <div className="mb-6 rounded-box border border-base-content/10 bg-base-100 p-4">
+              <h3 className="text-lg font-semibold">Getting started</h3>
+              <ul className="mt-3 space-y-2 text-sm">
+                {step(hasLicenseTypes, "Create a license type in the License Types view.")}
+                {step(hasEmployees, "Add your first employee.")}
+                {step(hasAssignments, "Assign a license to an employee.")}
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {!hasLicenseTypes && (
+                  <Link to="/license-types" className="btn btn-sm btn-primary">
+                    Add license type
+                  </Link>
+                )}
+                {!hasEmployees && (
+                  <Link to="/employees" className="btn btn-sm btn-primary">
+                    Add employee
+                  </Link>
+                )}
+                {hasEmployees && !hasAssignments && (
+                  <Link to="/employees" className="btn btn-sm btn-primary">
+                    Assign a license
+                  </Link>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         <div className="grid overflow-x-auto lg:grid-cols-2 gap-4">
           {/* {noData && (

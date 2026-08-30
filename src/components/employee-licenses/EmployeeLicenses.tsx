@@ -69,6 +69,10 @@ function EmployeeLicenses() {
   const [currentEmployeeLicense, setCurrentEmployeeLicense] =
     useState<EmployeeLicense | null>(null);
 
+  // Prefer the backend's specific error message over generic fallback text.
+  const serverMessage = (err: any, fallback: string): string =>
+    err?.response?.data?.error || fallback;
+
   useEffect(() => {
     getEmployee(employeeId);
     getEmployeeLicenses(employeeId);
@@ -113,7 +117,10 @@ function EmployeeLicenses() {
         .catch((err) => {
           console.error("Error updating employee license:", err);
           showToast(
-            "Failed to update employee license. Please try again.",
+            serverMessage(
+              err,
+              "Failed to update employee license. Please try again."
+            ),
             "error"
           );
         });
@@ -138,7 +145,10 @@ function EmployeeLicenses() {
         .catch((err) => {
           console.error("Error adding employee license:", err);
           showToast(
-            "An error happened when trying to add employee license.",
+            serverMessage(
+              err,
+              "An error happened when trying to add employee license."
+            ),
             "error"
           );
         });
@@ -171,7 +181,10 @@ function EmployeeLicenses() {
       .catch((err) => {
         console.error("Error deleting employee license:", err);
         showToast(
-          "Failed to delete employee license. Please try again.",
+          serverMessage(
+            err,
+            "Failed to delete employee license. Please try again."
+          ),
           "error"
         );
       });
@@ -274,7 +287,7 @@ function EmployeeLicenses() {
     return (
       <div>
         <div
-          id="toast-container "
+          id="toast-container"
           className="fixed bottom-4 right-4 z-50"
         ></div>
 

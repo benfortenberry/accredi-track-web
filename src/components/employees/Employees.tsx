@@ -31,12 +31,26 @@ function Employees() {
     licenseCount: number;
   }
 
+  interface ImportRowError {
+    row: number;
+    reason: string;
+  }
+
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
+  const [importSkipped, setImportSkipped] = useState<ImportRowError[]>([]);
+  const [importImported, setImportImported] = useState(0);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
   const navigate = useNavigate();
+
+  // Pull a human-readable message out of an axios error, preferring the
+  // backend's specific error text over a generic fallback.
+  const serverMessage = (err: any, fallback: string): string =>
+    err?.response?.data?.error || fallback;
 
   useEffect(() => {
     getEmployees();
@@ -74,7 +88,10 @@ function Employees() {
         })
         .catch((err) => {
           console.error("Error updating employee:", err);
-          showToast("Failed to update employee. Please try again.", "error");
+          showToast(
+            serverMessage(err, "Failed to update employee. Please try again."),
+            "error"
+          );
         });
     } else {
       httpClient
@@ -92,7 +109,10 @@ function Employees() {
         })
         .catch((err) => {
           console.error("Error adding employee:", err);
-          showToast("An error happened when trying to add employee.", "error");
+          showToast(
+            serverMessage(err, "An error happened when trying to add employee."),
+            "error"
+          );
         });
     }
   };
@@ -119,7 +139,10 @@ function Employees() {
       })
       .catch((err) => {
         console.error("Error deleting employee:", err);
-        showToast("Failed to delete employee. Please try again.", "error");
+        showToast(
+          serverMessage(err, "Failed to delete employee. Please try again."),
+          "error"
+        );
       });
   };
 
@@ -146,8 +169,9 @@ function Employees() {
         const blob = new Blob([res.data], { type: "text/csv" });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
+        const stamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
         link.href = url;
-        link.setAttribute("download", "employee_data.csv");
+        link.setAttribute("download", `employee_data_${stamp}.csv`);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -155,8 +179,70 @@ function Employees() {
       })
       .catch((err) => {
         console.error("Error exporting employee data:", err);
-        showToast("Failed to export data. Please try again.", "error");
+        showToast(
+          serverMessage(err, "Failed to export data. Please try again."),
+          "error"
+        );
       });
+  };
+
+  const handleImportFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    // Reset the input so selecting the same file again re-triggers onChange.
+    event.target.value = "";
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setIsImporting(true);
+    httpClient
+      .post(`${API_BASE_URL}/employees/import`, formData)
+      .then((res) => {
+        const imported: number = res.data?.imported ?? 0;
+        const skipped: ImportRowError[] = Array.isArray(res.data?.skipped)
+          ? res.data.skipped
+          : [];
+        setImportImported(imported);
+        setImportSkipped(skipped);
+        showToast(
+          `Imported ${imported} employee${imported === 1 ? "" : "s"}` +
+            (skipped.length ? `, ${skipped.length} skipped` : ""),
+          skipped.length ? "error" : "success"
+        );
+        getEmployees();
+        if (skipped.length) {
+          (
+            document.getElementById("import-result-modal") as HTMLDialogElement
+          )?.showModal();
+        }
+      })
+      .catch((err) => {
+        console.error("Error importing employees:", err);
+        showToast(
+          serverMessage(err, "Failed to import CSV. Please try again."),
+          "error"
+        );
+      })
+      .finally(() => setIsImporting(false));
+  };
+
+  const loadDemoData = () => {
+    setIsSeeding(true);
+    httpClient
+      .post(`${API_BASE_URL}/demo-data`)
+      .then(() => {
+        showToast("Demo data loaded. Explore, then delete it anytime.", "success");
+        getEmployees();
+      })
+      .catch((err) => {
+        console.error("Error loading demo data:", err);
+        showToast(
+          serverMessage(err, "Failed to load demo data. Please try again."),
+          "error"
+        );
+      })
+      .finally(() => setIsSeeding(false));
   };
 
   const handleCloseModal = () => {
@@ -208,6 +294,16 @@ function Employees() {
               Export CSV
             </button>
           )}
+          <label className="btn btn-outline btn-sm float-right mr-3 mt-1 font-normal">
+            {isImporting ? "Importing..." : "Import CSV"}
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              disabled={isImporting}
+              onChange={handleImportFile}
+            />
+          </label>
         </h2>
 
         {employees && employees.length > 0 ? (
@@ -329,6 +425,28 @@ function Employees() {
             <p className="mt-2 text-sm opacity-80">
               After you save an employee, you’ll be taken straight to their license page so you can add their first credential.
             </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <label className="btn btn-sm btn-outline">
+                {isImporting ? "Importing..." : "Import from CSV"}
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  className="hidden"
+                  disabled={isImporting}
+                  onChange={handleImportFile}
+                />
+              </label>
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={loadDemoData}
+                disabled={isSeeding}
+              >
+                {isSeeding ? "Loading..." : "Load demo data"}
+              </button>
+            </div>
+            <p className="mt-2 text-xs opacity-60">
+              Demo data adds a few sample employees and licenses you can delete anytime.
+            </p>
           </div>
         )}
 
@@ -428,6 +546,34 @@ function Employees() {
               aUser.pro != 1 && (
                 <p>Become a PRO subscriber to add more employees.</p>
               )}
+          </div>
+        </dialog>
+
+        <dialog id="import-result-modal" className="modal">
+          <div className="modal-box">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+            <h3 className="font-bold text-lg mb-2">Import summary</h3>
+            <p className="mb-3">
+              Imported {importImported} employee
+              {importImported === 1 ? "" : "s"}.
+              {importSkipped.length > 0 &&
+                ` ${importSkipped.length} row${
+                  importSkipped.length === 1 ? "" : "s"
+                } skipped:`}
+            </p>
+            {importSkipped.length > 0 && (
+              <ul className="list-disc pl-5 space-y-1 text-sm max-h-60 overflow-y-auto">
+                {importSkipped.map((s, i) => (
+                  <li key={i}>
+                    Row {s.row}: {s.reason}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </dialog>
       </div>
