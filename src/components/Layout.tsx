@@ -7,6 +7,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
 import { getApiBaseUrl } from "../utils/config";
+import { httpClient } from "../utils/AxiosInstance";
+import { showToast } from "../utils/Utilities";
 
 function Layout() {
   const API_BASE_URL = getApiBaseUrl();
@@ -16,6 +18,29 @@ function Layout() {
   const { pathname } = useLocation();
 
   const email = user?.email || aUser?.email || "";
+
+  // Start Stripe checkout. This must go through httpClient so the Auth0 Bearer
+  // token is attached (the route is behind AuthMiddleware). A native form POST
+  // would omit the token and fail with "Authorization header is missing".
+  const goPro = async () => {
+    try {
+      const form = new URLSearchParams();
+      form.append("email", email);
+      const res = await httpClient.post(api, form);
+      const url = res.data?.url;
+      if (url) {
+        window.location.href = url;
+      } else {
+        showToast("Could not start checkout. Please try again.", "error");
+      }
+    } catch (err: any) {
+      console.error("Error starting checkout:", err);
+      showToast(
+        err?.response?.data?.error || "Could not start checkout. Please try again.",
+        "error"
+      );
+    }
+  };
 
   const navLinkClass = (path: string) =>
     pathname === path ? "active font-semibold" : "";
@@ -52,14 +77,12 @@ function Layout() {
 
               {aUser && aUser.pro != 1 && (
                 <li className="hidden md:block">
-                  <form
-                    className="pt-0 pb-0 pl-0 mx-2 pr-0"
-                    action={api}
-                    method="post"
+                  <button
+                    className="btn btn-secondary btn-sm mx-2"
+                    onClick={goPro}
                   >
-                    <button className="btn btn-secondary btn-sm">go PRO</button>
-                    <input type="hidden" name="email" value={email} />
-                  </form>
+                    go PRO
+                  </button>
                 </li>
               )}
               <li className="hidden md:block">
@@ -140,16 +163,14 @@ function Layout() {
                     </li>
 
                     {aUser && aUser.pro != 1 && (
-                      <form
-                        className="pt-0 pb-0 pl-0 mx-2 pr-0"
-                        action={api}
-                        method="post"
-                      >
-                        <button className="btn btn-sm btn-secondary w-full">
+                      <li>
+                        <button
+                          className="btn btn-sm btn-secondary w-full"
+                          onClick={goPro}
+                        >
                           go PRO
                         </button>
-                        <input type="hidden" name="email" value={email} />
-                      </form>
+                      </li>
                     )}
                   </ul>
                 </div>
