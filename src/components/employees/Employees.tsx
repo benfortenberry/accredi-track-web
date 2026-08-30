@@ -139,6 +139,26 @@ function Employees() {
       });
   };
 
+  const exportData = () => {
+    httpClient
+      .get(`${API_BASE_URL}/employee-data`, { responseType: "blob" })
+      .then((res) => {
+        const blob = new Blob([res.data], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "employee_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((err) => {
+        console.error("Error exporting employee data:", err);
+        showToast("Failed to export data. Please try again.", "error");
+      });
+  };
+
   const handleCloseModal = () => {
     const modal = document.getElementById(
       "add-edit-modal"
@@ -180,6 +200,14 @@ function Employees() {
           >
             <AddIcon />
           </button>
+          {employees && employees.length > 0 && (
+            <button
+              className="btn btn-outline btn-sm float-right mr-3 mt-1 font-normal"
+              onClick={exportData}
+            >
+              Export CSV
+            </button>
+          )}
         </h2>
 
         {employees && employees.length > 0 ? (

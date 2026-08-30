@@ -263,7 +263,7 @@ function Dashboard() {
           <div className="stat place-items-center">
             <div className="stat-title">Notifications Sent</div>
             <div className="stat-value ">{metrics?.notificationCount}</div>
-            <div className="stat-desc ">This Month</div>
+            <div className="stat-desc ">Total Sent</div>
           </div>
         </div>
       </div>
