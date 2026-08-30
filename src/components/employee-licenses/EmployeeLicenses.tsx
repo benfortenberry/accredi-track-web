@@ -6,7 +6,7 @@ import {
   BackIcon,
   WarningIcon,
 } from "../../utils/SvgIcons";
-import { showToast, formatDate } from "../../utils/Utilities";
+import { showToast, formatDate, getLicenseStatus } from "../../utils/Utilities";
 
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import { getApiBaseUrl } from "../../utils/config";
@@ -235,18 +235,7 @@ function EmployeeLicenses() {
       });
   };
 
-  const getStatus = (expDate?: string): string => {
-    if (!expDate) return "No Expiration Date";
-    // Compare date-only: a license is active through its expiration date and
-    // becomes expired the following day (matches backend expDate < CURDATE()).
-    const parts = expDate.slice(0, 10).split("-").map(Number);
-    if (parts.length !== 3 || parts.some(isNaN)) return "No Expiration Date";
-    const [year, month, day] = parts;
-    const expirationDate = new Date(year, month - 1, day);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return expirationDate < today ? "Expired" : "Active";
-  };
+  const getStatus = getLicenseStatus;
 
   const handleGoBack = () => {
     console.log(referral);
