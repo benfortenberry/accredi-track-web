@@ -287,14 +287,23 @@ function Dashboard() {
         <div className="grid  sm:grid-cols-3 xs:grid-cols-2 gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Compliance Rate</div>
-            <div className="stat-value ">{metrics?.complianceRate}%</div>
+            <div className="stat-value ">
+              {metrics?.complianceRate != null
+                ? Math.round(Number(metrics.complianceRate))
+                : 0}
+              %
+            </div>
 
             <div className="stat-desc text-error">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Avg License Per Employees</div>
-            <div className="stat-value ">{metrics?.licenseAvg}</div>
+            <div className="stat-value ">
+              {metrics?.licenseAvg != null
+                ? Number(metrics.licenseAvg).toFixed(1)
+                : "0"}
+            </div>
             <div className="stat-desc ">&nbsp;</div>
           </div>
 
