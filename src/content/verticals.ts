@@ -110,22 +110,22 @@ export const VERTICALS: Record<string, Vertical> = {
   childcare: {
     slug: "childcare",
     label: "Childcare & Education",
-    heroHeadline: "Keep every staff certification current and licensing-ready.",
+    heroHeadline: "Walk into every inspection knowing your staff files are current.",
     heroSubhead:
-      "AccrediTrack tracks background checks, CPR cards, and training hours for your childcare or education staff — with reminders before anything expires.",
-    problemHeading: "Expired staff credentials risk your license.",
+      "AccrediTrack tracks background checks, CPR cards, and required training hours for every staff member — and reminds you before anything lapses, so a licensing visit is never a scramble.",
+    problemHeading: "One expired clearance can cost you your license.",
     problemBody:
-      "Lapsed background checks, expired CPR/first aid, or incomplete training hours can jeopardize your facility's license and fail a state inspection.",
+      "Lapsed background checks, expired CPR or first aid, or incomplete annual training hours can fail a state inspection, trigger corrective action, or put your childcare license at risk — usually discovered at the worst possible moment.",
     exampleLicenses: [
       "Background check / clearance",
-      "CPR / first aid",
-      "Early childhood credentials",
+      "CPR & first aid",
+      "CDA / early childhood credential",
       "Annual training hours",
-      "Health & TB screening",
+      "Health screening / TB test",
     ],
-    metaTitle: "Staff Certification Tracking for Childcare & Education | AccrediTrack",
+    metaTitle: "Staff Compliance & Certification Tracking for Childcare Centers | AccrediTrack",
     metaDescription:
-      "Track background checks, CPR cards, and training hours for your childcare or education staff. Automated reminders to stay licensing-ready. Free to start.",
+      "Track background checks, CPR cards, and required training hours for your childcare staff. Automated renewal reminders so you stay licensing-ready for every inspection. Free to start.",
   },
 };
 

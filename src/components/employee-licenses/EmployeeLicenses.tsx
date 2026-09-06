@@ -91,6 +91,20 @@ function EmployeeLicenses() {
       expDate: formData.get("expDate") as string,
     };
 
+    // Expiration cannot be before the issue date. ISO YYYY-MM-DD strings compare
+    // correctly lexicographically, so a string compare is sufficient here.
+    if (
+      employeeLicenseData.issueDate &&
+      employeeLicenseData.expDate &&
+      employeeLicenseData.expDate < employeeLicenseData.issueDate
+    ) {
+      showToast(
+        "Expiration date must be on or after the issue date.",
+        "error"
+      );
+      return;
+    }
+
     if (isEditing && currentEmployeeLicense) {
       httpClient
         .put(`${api}/${currentEmployeeLicense.id}`, employeeLicenseData)

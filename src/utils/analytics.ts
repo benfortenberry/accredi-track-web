@@ -34,6 +34,33 @@ export function initAnalytics() {
   enabled = true;
 }
 
+// Capture UTM parameters from the current URL and attach them to the PostHog
+// person so they persist across the session and onto conversion events. Call
+// once on initial load. This is what ties a cold-email/ad click to an eventual
+// signup ("this go_pro came from utm_campaign=childcare-batch1").
+export function captureUtmParams() {
+  if (!enabled) return;
+  const params = new URLSearchParams(window.location.search);
+  const utmKeys = [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content",
+    "utm_term",
+  ];
+  const found: Record<string, string> = {};
+  for (const k of utmKeys) {
+    const v = params.get(k);
+    if (v) found[k] = v;
+  }
+  if (Object.keys(found).length > 0) {
+    // register() persists these as super-properties on every subsequent event
+    // this session, so conversion events (get_started_clicked, go_pro_clicked)
+    // carry the campaign attribution.
+    posthog.register(found);
+  }
+}
+
 export function trackPageview(path: string) {
   if (!enabled) return;
   posthog.capture("$pageview", { $current_url: window.location.origin + path });

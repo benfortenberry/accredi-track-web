@@ -186,11 +186,38 @@ function Employees() {
       });
   };
 
+  const downloadTemplate = () => {
+    // A correctly-shaped CSV: header row + one example row. Users fill it in and
+    // re-upload — removes all guessing about the expected format.
+    const csv =
+      "First Name,Last Name,Phone,Email\n" +
+      "Jane,Doe,5551234567,jane.doe@example.com\n";
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "employee_import_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
   const handleImportFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     // Reset the input so selecting the same file again re-triggers onChange.
     event.target.value = "";
     if (!file) return;
+
+    // Catch Excel files up front — they aren't CSV and won't parse. Give a
+    // clear "save as CSV" message instead of a confusing backend parse error.
+    if (/\.(xlsx|xls)$/i.test(file.name)) {
+      showToast(
+        "That's an Excel file. In Excel or Google Sheets, use File → Save As (or Download) → CSV, then upload the CSV.",
+        "error"
+      );
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
@@ -294,7 +321,10 @@ function Employees() {
               Export CSV
             </button>
           )}
-          <label className="btn btn-outline btn-sm float-right mr-3 mt-1 font-normal">
+          <label
+            className="btn btn-outline btn-sm float-right mr-3 mt-1 font-normal"
+            title="CSV columns: First Name, Last Name, Phone (10 digits), Email"
+          >
             {isImporting ? "Importing..." : "Import CSV"}
             <input
               type="file"
@@ -304,6 +334,13 @@ function Employees() {
               onChange={handleImportFile}
             />
           </label>
+          <button
+            className="btn btn-ghost btn-sm float-right mr-1 mt-1 font-normal"
+            onClick={downloadTemplate}
+            title="Download a correctly-formatted CSV to fill in"
+          >
+            Template
+          </button>
         </h2>
 
         {employees && employees.length > 0 ? (
@@ -436,6 +473,9 @@ function Employees() {
                   onChange={handleImportFile}
                 />
               </label>
+              <button className="btn btn-sm btn-ghost" onClick={downloadTemplate}>
+                Download template
+              </button>
               <button
                 className="btn btn-sm btn-ghost"
                 onClick={loadDemoData}
@@ -445,6 +485,12 @@ function Employees() {
               </button>
             </div>
             <p className="mt-2 text-xs opacity-60">
+              CSV needs columns: First Name, Last Name, Phone (10 digits), Email.
+              Download the template for the exact format. Have a spreadsheet? In
+              Excel or Google Sheets, use File → Save As (or Download) → CSV,
+              then upload that.
+            </p>
+            <p className="mt-1 text-xs opacity-60">
               Demo data adds a few sample employees and licenses you can delete anytime.
             </p>
           </div>
@@ -565,6 +611,19 @@ function Employees() {
                   importSkipped.length === 1 ? "" : "s"
                 } skipped:`}
             </p>
+            {importSkipped.length > 0 && (
+              <p className="text-xs opacity-70 mb-3">
+                Expected columns: First Name, Last Name, Phone (10 digits),
+                Email.{" "}
+                <button
+                  className="link link-primary"
+                  onClick={downloadTemplate}
+                >
+                  Download the template
+                </button>{" "}
+                for the exact format. From a spreadsheet, save as CSV first.
+              </p>
+            )}
             {importSkipped.length > 0 && (
               <ul className="list-disc pl-5 space-y-1 text-sm max-h-60 overflow-y-auto">
                 {importSkipped.map((s, i) => (

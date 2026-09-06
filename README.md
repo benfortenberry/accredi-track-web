@@ -187,14 +187,14 @@ forwarding). To set up / reconfigure at Squarespace DNS:
 5. Verify: send a test to `support@accreditrack.com` (should forward to your
    inbox) AND confirm Mailgun sending still works (trigger a notification).
 
-### Analytics (PostHog)
+### Analytics (PostHog) — LIVE
 
-Integrated via `posthog-js`, but **inert until a key is set** (no key = no
-tracking, no errors). To enable: set `VITE_POSTHOG_KEY` on the Railway frontend
-service to the PostHog **Project API Key** (`phc_...` — NOT the personal/secret
-key). If the PostHog project is EU-hosted, also set
-`VITE_POSTHOG_HOST=https://eu.i.posthog.com`. Redeploy, then confirm a
-`$pageview` appears in PostHog's live activity within seconds.
+Integrated via `posthog-js` and **active in production** (verified: pageviews
+flowing). US region. The Project API Key (`phc_...`, public by design) is baked
+into `public/runtime-config.js` — NOT just a Railway env var, because Railway
+serves the committed runtime-config as-is (setting the env var alone does NOT
+work; the value must be in the file). Same pattern as the API URL / Auth0
+audience. To change the key: edit `runtime-config.js` and redeploy.
 
 - Config is read from build-time env OR runtime `window.__APP_CONFIG__` (same
   mechanism as the API URL), so it can be toggled without a rebuild.
@@ -204,6 +204,32 @@ key). If the PostHog project is EU-hosted, also set
 - Conversion events (`src/utils/analytics.ts`): `get_started_clicked`,
   `go_pro_clicked`. Build funnels in PostHog: vertical pageview → Get Started →
   go PRO.
+
+#### Campaign tracking (UTM) for outreach / ads
+
+`captureUtmParams()` (called on load in `main.tsx`) reads UTM params from the
+landing URL and registers them as PostHog super-properties, so they ride along
+on every event that session (including the conversion events). This is how a
+cold-email or ad click gets attributed all the way to a signup.
+
+Link scheme to use in outreach — always point at the vertical page and tag the
+source/campaign, e.g. for the childcare cold-email batch:
+
+```
+https://accreditrack.com/for/childcare?utm_source=coldemail&utm_medium=email&utm_campaign=childcare-batch1
+```
+
+Vary `utm_campaign` per batch/vertical (`childcare-batch1`, `construction-ads`,
+etc.) and `utm_source` per channel (`coldemail`, `google`, `linkedin`).
+
+Build this funnel in PostHog to see what converts:
+1. `$pageview` where `$current_url` contains `/for/childcare`
+2. `get_started_clicked`
+3. `go_pro_clicked`
+
+Break down by `utm_campaign` / `utm_source` to compare batches and channels.
+Because UTMs are registered as super-properties, they appear as event
+properties you can filter/break-down on.
 - Note: adding PostHog grew the JS bundle (~568KB → ~850KB). Fine for now; can
   be lazy-loaded later if needed.
 

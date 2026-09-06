@@ -10,7 +10,7 @@ import {
   getAuth0ClientId,
   getAuth0Domain,
 } from "./utils/config";
-import { initAnalytics } from "./utils/analytics";
+import { initAnalytics, captureUtmParams } from "./utils/analytics";
 
 // Fail loud on misconfiguration: an empty API base URL means every API call
 // hits the frontend host and 404s (spinners never resolve). Surface it clearly
@@ -25,6 +25,9 @@ if (!getApiBaseUrl()) {
 
 // No-op unless VITE_POSTHOG_KEY is configured.
 initAnalytics();
+// Attach any UTM params from the landing URL so campaign attribution flows
+// through to conversion events (cold-email / ad tracking).
+captureUtmParams();
 
 const auth0Domain = getAuth0Domain();
 const auth0ClientId = getAuth0ClientId();

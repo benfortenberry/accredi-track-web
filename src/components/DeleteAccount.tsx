@@ -16,14 +16,14 @@ const DeleteAccount = () => {
             <strong>Locate the Delete Account Option:</strong> Scroll down to the <strong>Account Management</strong> section and click on the <strong>Delete Account</strong> button.
           </li>
           <li className="mb-4">
-            <strong>Confirm Deletion:</strong> A confirmation dialog will appear. Carefully read the message. If you are sure, confirm the deletion by clicking <strong>Yes, Delete My Account</strong>.
+            <strong>Confirm Deletion:</strong> A confirmation dialog will appear. Carefully read the message. If you are sure, confirm the deletion by clicking <strong>Yes, delete</strong>.
           </li>
           <li className="mb-4">
             <strong>Data Retention:</strong> After confirming, your account and associated data will be permanently deleted within 30 days. If you have a PRO subscription, you will have 30 days to download your data before it is permanently deleted.
           </li>
           <li className="mb-4">
             <strong>Need Help?</strong> If you encounter any issues, please contact our support team at:{" "}
-            <a href="mailto:support@accreditrack.com" className="text-blue-500 underline">
+            <a href="mailto:support@accreditrack.com" className="text-primary underline">
               support@accreditrack.com
             </a>.
           </li>

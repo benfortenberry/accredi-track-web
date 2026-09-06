@@ -1,5 +1,5 @@
 import LoginButton from "./auth0/LoginButton";
-function LogintPrompt() {
+function LoginPrompt() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-4">Access Restricted</h1>
@@ -11,4 +11,4 @@ function LogintPrompt() {
   );
 }
 
-export default LogintPrompt;
+export default LoginPrompt;
