@@ -3,6 +3,7 @@ function PrivacyPolicy() {
     <div className="flex flex-col items-center justify-center min-h-screen p-8">
       <h1 className="text-4xl font-bold mb-6">Privacy Policy</h1>
       <div className="max-w-3xl text-left">
+        <p className="mb-2 text-sm opacity-60">Last updated: September 2026</p>
         <p className="mb-4">
           At AccrediTrack, we are committed to protecting your privacy. This
           Privacy Policy explains how we collect, use, and safeguard your
@@ -24,19 +25,22 @@ function PrivacyPolicy() {
         </h2>
         <p className="mb-4">
           We use your information to provide and improve our services,
-          communicate with you, and ensure the security of our platform. We may
-          also use your information for analytics and to send you updates or
-          promotional materials.
+          communicate with you, and ensure the security of our platform. We use
+          privacy-conscious product analytics to understand how the platform is
+          used so we can improve it, and we may use your contact information to
+          send you service-related updates.
         </p>
 
         <h2 className="text-2xl font-semibold mb-2">
           3. Sharing Your Information
         </h2>
         <p className="mb-4">
-          We do not sell your personal information. However, we may share your
-          information with trusted third-party service providers to help us
-          deliver our services. These providers are bound by confidentiality
-          agreements.
+          We do not sell your personal information. We share information only
+          with trusted third-party service providers that help us operate the
+          platform, including authentication (Auth0), payment processing
+          (Stripe), transactional email (Mailgun), and product analytics
+          (PostHog). These providers process data on our behalf under their own
+          security and privacy commitments.
         </p>
 
         <h2 className="text-2xl font-semibold mb-2">4. Data Retention</h2>

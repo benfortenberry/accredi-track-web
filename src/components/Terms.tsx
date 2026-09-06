@@ -3,6 +3,7 @@ function TermsOfService() {
     <div className="flex flex-col items-center justify-center min-h-screen p-8">
       <h1 className="text-4xl font-bold mb-6">Terms of Service</h1>
       <div className="max-w-3xl text-left">
+        <p className="mb-2 text-sm opacity-60">Last updated: September 2026</p>
         <p className="mb-4">
           Welcome to AccrediTrack! By using our services, you agree to the
           following terms and conditions. Please read them carefully.
@@ -58,7 +59,7 @@ function TermsOfService() {
           new terms.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-2">6. Contact Us</h2>
+        <h2 className="text-2xl font-semibold mb-2">7. Contact Us</h2>
         <p className="mb-4">
           If you have any questions about these Terms of Service, please contact
           us at{" "}

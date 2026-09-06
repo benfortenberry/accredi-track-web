@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Don't crawl authenticated app routes (nothing useful for search there).
+Disallow: /dashboard
+Disallow: /employees
+Disallow: /license-types
+Disallow: /employee/
+Disallow: /settings
+Disallow: /support
+
+Sitemap: https://accreditrack.com/sitemap.xml
