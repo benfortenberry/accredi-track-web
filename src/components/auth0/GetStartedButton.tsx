@@ -14,7 +14,7 @@ const GetStartedButton = () => {
   };
 
   return (
-    <button className="btn btn-neutral" onClick={handleSignUp}>
+    <button className="btn btn-neutral cta-shine" onClick={handleSignUp}>
       Get Started
     </button>
   );

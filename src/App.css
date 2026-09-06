@@ -1,10 +1,150 @@
 /* 
   .bg-gradient is used for the homepage hero, step circles,
   the Pro pricing badge, and the final CTA band.
-  Option D: solid deep charcoal — no gradient, intentional and confident.
+  Base is deep warm charcoal; the hero/CTA bands layer a warm burnt-orange
+  glow on top (see .hero-glow) so the brand color bleeds through subtly.
 */
 .bg-gradient {
   background-color: #1c1917;
+}
+
+/*
+  Signature warm glow for the hero + final CTA bands. A soft burnt-orange
+  radial light rising from the lower-center, sitting under the dot grid and
+  content. Purely decorative — pointer-events off, aria-hidden on the element.
+*/
+.hero-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      60% 55% at 50% 78%,
+      oklch(66% 0.19 40 / 0.28) 0%,
+      oklch(66% 0.19 40 / 0.10) 38%,
+      transparent 72%
+    );
+}
+
+/*
+  Hero headline emphasis: the highlighted phrase gets the brand orange plus a
+  thick, soft underline accent sitting just below the text. Uses box-shadow
+  rather than text-decoration so the line is chunky and offset without eating
+  into descenders.
+*/
+/*
+  Signature interaction for the primary CTA. On hover: a gentle lift + a warm
+  burnt-orange glow, plus a one-pass shine sweeping left-to-right across the
+  button. Layout is untouched — the shine is an absolutely-positioned overlay
+  clipped by overflow:hidden, and the lift is a transform.
+*/
+.cta-shine {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cta-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  transform: skewX(-20deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(100% 0 0 / 0.18) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transition: left 0.55s ease;
+}
+.cta-shine:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px -10px oklch(66% 0.19 40 / 0.55);
+}
+.cta-shine:hover::after {
+  left: 125%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-shine,
+  .cta-shine:hover {
+    transform: none;
+    transition: none;
+  }
+  .cta-shine::after,
+  .cta-shine:hover::after {
+    transition: none;
+    left: -75%;
+  }
+}
+
+/*
+  "How it works" connector: a thin line linking the three step circles so the
+  flow reads as one journey. Desktop only (>=640px, where the grid is 3 cols).
+  The circles are 48px tall, so the line sits at 24px from the top; the circles
+  carry z-10 to punch through it. Endpoints are inset to 1/6 and 5/6 of the
+  width — the horizontal centers of the outer columns in a 3-up grid.
+*/
+@media (min-width: 640px) {
+  .steps-connector::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: 16.67%;
+    right: 16.67%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      oklch(66% 0.19 40 / 0.15),
+      oklch(66% 0.19 40 / 0.45),
+      oklch(66% 0.19 40 / 0.15)
+    );
+    z-index: 0;
+    pointer-events: none;
+  }
+}
+
+/* Gentle hover lift for feature + pricing cards. */
+.card-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -12px oklch(66% 0.19 40 / 0.35);
+  border-color: oklch(66% 0.19 40 / 0.45);
+}
+
+/*
+  Scroll reveal: elements start slightly lowered + transparent, then the
+  .is-visible class (added by an IntersectionObserver) eases them in.
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .card-lift,
+  .card-lift:hover {
+    transform: none;
+    transition: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 @keyframes fadeIn {

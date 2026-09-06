@@ -6,6 +6,7 @@ import logo from "../assets/logo_white2.png";
 import GetStartedButton from "./auth0/GetStartedButton";
 import { getVertical } from "../content/verticals";
 import { useSeo } from "../utils/useSeo";
+import { useScrollReveal } from "../utils/useScrollReveal";
 import {
   WrenchScrewdriverIcon,
   HeartIcon,
@@ -53,6 +54,10 @@ function Home() {
     }
   }, [isAuthenticated, isLoading, navigate]);
 
+  // Reveal sections on scroll. Re-scan when the vertical (and thus the rendered
+  // content) changes, and when auth loading finishes and the page renders.
+  useScrollReveal([verticalSlug, isLoading]);
+
   if (isLoading) {
     return (
       <h1 className="text-center mt-20">
@@ -65,7 +70,7 @@ function Home() {
     <div className="flex flex-col min-h-screen bg-base-100">
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
-      <header className="relative w-full bg-gradient text-white pt-20 pb-32 px-6 text-center overflow-hidden">
+      <header className="hero-glow relative w-full bg-gradient text-white pt-20 pb-32 px-6 text-center overflow-hidden">
         {/* Subtle dot pattern overlay */}
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -84,7 +89,7 @@ function Home() {
             alt="AccrediTrack"
             className="w-24 mx-auto mb-6"
           />
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.08] tracking-tight text-balance">
             {vertical.heroHeadline}
           </h1>
           <p className="text-lg sm:text-xl mb-8 opacity-90 max-w-xl mx-auto">
@@ -137,7 +142,7 @@ function Home() {
 
       {/* ── PROBLEM / COST OF DOING NOTHING ───────────────────────── */}
       <section className="w-full py-16 px-6 bg-base-100">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="reveal max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold text-base-content mb-4">
             {vertical.problemHeading}
           </h2>
@@ -161,7 +166,7 @@ function Home() {
             ].map(({ heading, body }) => (
               <div
                 key={heading}
-                className="p-5 rounded-box border border-primary/20 bg-primary/5"
+                className="card-lift p-5 rounded-box border border-primary/20 bg-primary/5"
               >
                 <h3 className="font-bold text-primary mb-1">{heading}</h3>
                 <p className="text-sm text-base-content/70">{body}</p>
@@ -190,12 +195,12 @@ function Home() {
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────── */}
       <section className="w-full bg-base-200 py-16 px-6">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="reveal max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold text-base-content mb-2">
             Up and running in minutes
           </h2>
           <p className="text-base-content/60 mb-12">No training required. No implementation fee.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="steps-connector relative grid grid-cols-1 sm:grid-cols-3 gap-8">
             {[
               {
                 step: "1",
@@ -214,7 +219,7 @@ function Home() {
               },
             ].map(({ step, heading, body }) => (
               <div key={step} className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-primary text-white font-extrabold text-lg flex items-center justify-center mb-4 shadow">
+                <div className="relative z-10 w-12 h-12 rounded-full bg-primary text-white font-extrabold text-lg flex items-center justify-center mb-4 shadow">
                   {step}
                 </div>
                 <h3 className="font-bold text-base-content mb-1">{heading}</h3>
@@ -227,7 +232,7 @@ function Home() {
 
       {/* ── FEATURES ──────────────────────────────────────────────── */}
       <section className="w-full py-16 px-6 bg-base-100">
-        <div className="max-w-4xl mx-auto">
+        <div className="reveal max-w-4xl mx-auto">
           <h2 className="text-3xl font-extrabold text-base-content text-center mb-10">
             Everything you need. Nothing you don't.
           </h2>
@@ -252,7 +257,7 @@ function Home() {
             ].map(({ heading, body }) => (
               <div
                 key={heading}
-                className="flex gap-4 p-5 rounded-box border border-base-300 bg-base-100 shadow-sm"
+                className="card-lift flex gap-4 p-5 rounded-box border border-base-300 bg-base-100 shadow-sm"
               >
                 <div className="mt-1 flex-shrink-0">
                   <CheckIcon />
@@ -269,7 +274,7 @@ function Home() {
 
       {/* ── PRICING ───────────────────────────────────────────────── */}
       <section className="w-full bg-base-200 py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="reveal max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold text-base-content mb-2">
             Simple, honest pricing
           </h2>
@@ -280,7 +285,7 @@ function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-3xl mx-auto">
 
             {/* Free tier */}
-            <div className="flex flex-col p-8 bg-base-100 rounded-box border border-base-300 shadow-sm text-left">
+            <div className="card-lift flex flex-col p-8 bg-base-100 rounded-box border border-base-300 shadow-sm text-left">
               <h3 className="text-xl font-bold text-base-content mb-1">Free</h3>
               <p className="text-sm text-base-content/60 mb-6">
                 Great for trying it out with a small team.
@@ -306,7 +311,7 @@ function Home() {
             </div>
 
             {/* Pro tier */}
-            <div className="flex flex-col p-8 bg-base-100 rounded-box border-2 border-primary shadow-lg text-left relative">
+            <div className="card-lift flex flex-col p-8 bg-base-100 rounded-box border-2 border-primary shadow-lg text-left relative">
               <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wide shadow">
                 Most Popular
               </span>
@@ -341,8 +346,8 @@ function Home() {
       </section>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────── */}
-      <section className="w-full bg-gradient text-white py-16 px-6 text-center">
-        <div className="fade-in max-w-2xl mx-auto">
+      <section className="hero-glow relative overflow-hidden w-full bg-gradient text-white py-16 px-6 text-center">
+        <div className="fade-in relative z-10 max-w-2xl mx-auto">
           <h2 className="text-3xl font-extrabold mb-3">
             Ready to get your team compliant?
           </h2>
