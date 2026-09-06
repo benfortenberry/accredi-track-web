@@ -1,9 +1,11 @@
 import LoginButton from "./auth0/LoginButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import logo from "../assets/logo_white2.png";
 import GetStartedButton from "./auth0/GetStartedButton";
+import { getVertical } from "../content/verticals";
+import { useSeo } from "../utils/useSeo";
 import {
   WrenchScrewdriverIcon,
   HeartIcon,
@@ -31,6 +33,19 @@ const CheckIcon = () => (
 function Home() {
   const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
+
+  // Resolve the vertical from the /for/:vertical route param. Falls back to the
+  // generic default for "/" or unknown slugs.
+  const { vertical: verticalSlug } = useParams();
+  const vertical = getVertical(verticalSlug);
+
+  useSeo({
+    title: vertical.metaTitle,
+    description: vertical.metaDescription,
+    url: verticalSlug
+      ? `https://accreditrack.com/for/${vertical.slug}`
+      : "https://accreditrack.com/",
+  });
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -70,11 +85,10 @@ function Home() {
             className="w-24 mx-auto mb-6"
           />
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight">
-            Stop tracking employee<br className="hidden sm:block" /> certifications in spreadsheets.
+            {vertical.heroHeadline}
           </h1>
           <p className="text-lg sm:text-xl mb-8 opacity-90 max-w-xl mx-auto">
-            AccrediTrack keeps every license, renewal date, and expiration in
-            one place — and alerts you before anything lapses.
+            {vertical.heroSubhead}
           </p>
           <GetStartedButton />
           <p className="mt-4 text-sm opacity-75">Free to start. No credit card required.</p>
@@ -125,12 +139,10 @@ function Home() {
       <section className="w-full py-16 px-6 bg-base-100">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold text-base-content mb-4">
-            A lapsed license isn't just an inconvenience.
+            {vertical.problemHeading}
           </h2>
           <p className="text-base-content/70 text-lg mb-10">
-            Failed audits, fines, halted job sites, and liability exposure — all
-            because someone's certification quietly expired while it was buried
-            in a spreadsheet tab nobody checked.
+            {vertical.problemBody}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
             {[
@@ -155,6 +167,23 @@ function Home() {
                 <p className="text-sm text-base-content/70">{body}</p>
               </div>
             ))}
+          </div>
+
+          {/* Example credentials this audience tracks */}
+          <div className="mt-10">
+            <p className="text-xs font-semibold text-base-content/50 uppercase tracking-widest mb-3">
+              Track credentials like
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {vertical.exampleLicenses.map((name) => (
+                <span
+                  key={name}
+                  className="px-3 py-1.5 rounded-full border border-base-300 bg-base-200 text-sm text-base-content/80"
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>

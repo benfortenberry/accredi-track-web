@@ -84,6 +84,167 @@ SELECT email, pro, stripeCustomerId FROM users ORDER BY id DESC;
 ```
 
 (`pro = 1` means active pro; `2` means cancelled.)
+
+## Operations & Production Runbook
+
+Things that are easy to forget. All CLI commands run from the backend repo root
+(`../accredi-track`) with the Railway CLI linked to the `accredi-track` project.
+
+### Production URLs
+
+- Frontend: `https://accreditrack.com` (Railway service `accredi-track-web`,
+  also `https://accredi-track-web-production.up.railway.app`)
+- Backend/API: `https://accredi-track-production.up.railway.app`
+- Backend health check: `.../health` → `{"status":"healthy"}`
+
+### Scheduled jobs (cron)
+
+Two daily jobs are configured on **cron-job.org** (external scheduler). They hit
+authenticated backend endpoints. The auth is a shared secret in the
+`X-Cron-Key` request header, which must equal the backend's `CRON_API_KEY` env
+var (set on the Railway `accredi-track` service). Without a matching key the
+endpoint returns 401; if `CRON_API_KEY` is unset the endpoint returns 500.
+
+| Job | Endpoint (GET) | Purpose |
+| --- | --- | --- |
+| Downgrade cancelled subs | `/check-active-subs` | Reconciles pro users vs active Stripe subscriptions; calls `TurnOffPro` (sets `pro=2`, clears `stripeCustomerId`) for anyone no longer active. This is what removes pro access after a customer cancels — a Stripe cancellation does NOT notify the app on its own. |
+| Expiry notifications | `/send-notifications` | Emails owners about expiring/expired licenses. **No-op until Mailgun is configured** (see below). |
+
+To reconfigure a cron job on cron-job.org: URL = the endpoint above, method GET,
+add a custom header `X-Cron-Key: <value of CRON_API_KEY on Railway>`. Prefer the
+header over the `?key=` query param so the secret doesn't leak into logs.
+
+Manual test of the downgrade job:
+
+```powershell
+# Expect 401 without the key, 200 with it.
+curl.exe "https://accredi-track-production.up.railway.app/check-active-subs" -H "X-Cron-Key: <CRON_API_KEY>"
+```
+
+Verified working: after a real cancellation, this flipped users to `pro=2`,
+cleared `stripeCustomerId`, and stamped `cancelled` (confirmed in the DB).
+
+### Email (Mailgun) — sending only, NOT an inbox
+
+Mailgun is a **sending** service. It lets the app send mail *from*
+`support@accreditrack.com`; it does NOT give you a mailbox to read replies.
+
+- Sender and domain are set in `go/utils/utils.go`: domain hardcoded to
+  `accreditrack.com`, sender `support@accreditrack.com`, API key from env
+  `MAILGUN_API_KEY` (Railway backend service).
+- To make notifications actually send: verify `accreditrack.com` in Mailgun (add
+  the SPF/DKIM DNS records they provide), then set `MAILGUN_API_KEY` on Railway.
+  Until then `/send-notifications` runs but sends nothing.
+- To RECEIVE mail at `support@accreditrack.com` (read customer replies): the
+  domain's MX records already point at Mailgun (`mxa/mxb.mailgun.org`), so use
+  **Mailgun Routes** rather than adding another provider. Mailgun dashboard →
+  Receiving → Routes → create a route matching recipient
+  `support@accreditrack.com` with a "forward" action to your personal inbox.
+  No DNS changes needed. (Inbound routes may require a paid Mailgun plan; if so,
+  `support@` stays send-only until addressed.) Do NOT point MX at Cloudflare/a
+  registrar — that would break the Mailgun sending setup.
+
+### DNS / domain hosting
+
+- Registrar: **Squarespace Domains** (formerly Google Domains — hence the NS1
+  `*.nsone.net` nameservers Squarespace inherited). Confirmed via RDAP.
+- **DNS records are edited in the Squarespace domain panel** (Domains →
+  accreditrack.com → DNS settings), NOT in Railway. The Railway services only
+  have their `*.up.railway.app` service domains attached; `accreditrack.com` is
+  pointed at Railway via A records managed at Squarespace.
+- The Railway CLI/dashboard cannot manage DNS records (MX/TXT/CNAME) — only
+  service custom domains. So all record edits happen at Squarespace.
+- Current DNS state (verified via lookup):
+  - Nameservers: `dns1..4.p01.nsone.net` (NS1, via Squarespace)
+  - Root A records: AWS/Railway edge IPs
+  - MX: Mailgun (`mxa/mxb.mailgun.org`) — being replaced by ImprovMX for receiving
+  - SPF TXT: `v=spf1 include:mailgun.org ~all` (authorizes Mailgun sending — DO
+    NOT remove when changing MX)
+
+### ⚠️ DNS changes blocked pending Squarespace account recovery
+
+As of this writing, access to the Squarespace domain account is locked (support
+request filed). The site keeps working because DNS records were configured once
+(months ago) and DNS is passive — it answers queries without any login. Only
+*changing* records (e.g. the ImprovMX MX swap below) requires panel access.
+Domain is paid through **2027-04-11**, so there is no urgency. When access is
+restored: (1) make the MX change if still wanted, (2) verify `accreditrack.com`
+is cleanly attached as a custom domain on the Railway frontend service (the CLI
+did not show it attached — it currently resolves via A records only).
+
+### Receiving mail — ImprovMX setup (chosen approach, BLOCKED on DNS access)
+
+Mailgun inbound Routes require a paid plan, so receiving uses **ImprovMX** (free
+forwarding). To set up / reconfigure at Squarespace DNS:
+
+1. In ImprovMX: add `accreditrack.com`, create alias `support` → personal email.
+2. In Squarespace DNS: DELETE the Mailgun MX records; ADD two MX records:
+   - priority 10 → `mx1.improvmx.com`
+   - priority 20 → `mx2.improvmx.com`
+3. Leave the SPF TXT and any DKIM records untouched (they power Mailgun sending).
+4. If ImprovMX flags SPF, MERGE into the single SPF record (never add a second
+   `v=spf1` record): `v=spf1 include:mailgun.org include:spf.improvmx.com ~all`
+5. Verify: send a test to `support@accreditrack.com` (should forward to your
+   inbox) AND confirm Mailgun sending still works (trigger a notification).
+
+### Analytics (PostHog)
+
+Integrated via `posthog-js`, but **inert until a key is set** (no key = no
+tracking, no errors). To enable: set `VITE_POSTHOG_KEY` on the Railway frontend
+service to the PostHog **Project API Key** (`phc_...` — NOT the personal/secret
+key). If the PostHog project is EU-hosted, also set
+`VITE_POSTHOG_HOST=https://eu.i.posthog.com`. Redeploy, then confirm a
+`$pageview` appears in PostHog's live activity within seconds.
+
+- Config is read from build-time env OR runtime `window.__APP_CONFIG__` (same
+  mechanism as the API URL), so it can be toggled without a rebuild.
+- Pageviews fire on every SPA route change (`src/App.tsx` `PageviewTracker`), so
+  each vertical page (`/for/healthcare`, etc.) is tracked separately — this is
+  how you see which vertical converts.
+- Conversion events (`src/utils/analytics.ts`): `get_started_clicked`,
+  `go_pro_clicked`. Build funnels in PostHog: vertical pageview → Get Started →
+  go PRO.
+- Note: adding PostHog grew the JS bundle (~568KB → ~850KB). Fine for now; can
+  be lazy-loaded later if needed.
+
+### Stripe (LIVE)
+
+- Live product/price: AccrediTrack PRO, $19/month, price ID
+  `price_1U9xIwHlRlsQxu8xvEp3hzG3` (backend env `STRIPE_PRODUCT_KEY`).
+- Backend env: `STRIPE_SECRET_KEY` (live), `STRIPE_WEB_HOOK_SECRET` (live
+  endpoint's signing secret), `STRIPE_PRODUCT_KEY`, `DOMAIN`
+  (`https://accreditrack.com`, used for the post-checkout redirect).
+- Frontend `VITE_STRIPE_PUBLISHABLE_KEY` is set to live but is NOT actually used
+  — checkout is backend-driven via hosted Checkout (`src/lib/stripe.tsx`
+  `getStripe()` is dead code).
+- Live webhook endpoint points at `.../webhook`. A refund does NOT cancel a
+  subscription — cancel the subscription separately in the Stripe dashboard.
+- Checkout flow: go PRO button (`Layout.tsx`) → authed POST to
+  `/create-checkout-session` → backend returns the Stripe URL as JSON → browser
+  redirects to hosted Checkout → on payment, Stripe webhook →
+  `FulfillCheckout` → `TurnPro` sets `pro=1`.
+
+### Env var quick reference
+
+Backend (`accredi-track`): `AUTH0_DOMAIN`, `AUTH0_AUDIENCE`
+(`https://accredi-track/api`), `STRIPE_SECRET_KEY`, `STRIPE_WEB_HOOK_SECRET`,
+`STRIPE_PRODUCT_KEY`, `DOMAIN`, `CORS_ALLOWED_ORIGINS` (code also always allows
+accreditrack.com + www), `MAILGUN_API_KEY`, `CRON_API_KEY`, `HOST` (empty in
+prod). Frontend (`accredi-track-web`): `VITE_APP_API_URL`, `VITE_AUTH0_AUDIENCE`
+(must match backend), `VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`,
+`VITE_STRIPE_PUBLISHABLE_KEY`.
+
+### Deploy gotchas (learned the hard way)
+
+- Browser cannot reach Railway-internal hostnames (`*.railway.internal`). Any URL
+  the browser calls needs the service's PUBLIC URL.
+- `public/runtime-config.js` committed defaults ARE the production values (API
+  URL + Auth0 audience), so an unset Railway env var degrades to correct rather
+  than blank.
+- Auth0 audience must be identical in Auth0 (API identifier), frontend
+  `VITE_AUTH0_AUDIENCE`, and backend `AUTH0_AUDIENCE`. Empty frontend audience →
+  401 "Invalid token"; mismatch → 401 "Invalid audience".
+
 The default local frontend URL is typically:
 
 - `http://localhost:5173`

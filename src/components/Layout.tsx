@@ -9,6 +9,7 @@ import { GearIcon } from "../utils/SvgIcons";
 import { getApiBaseUrl } from "../utils/config";
 import { httpClient } from "../utils/AxiosInstance";
 import { showToast } from "../utils/Utilities";
+import { track } from "../utils/analytics";
 
 function Layout() {
   const API_BASE_URL = getApiBaseUrl();
@@ -23,6 +24,7 @@ function Layout() {
   // token is attached (the route is behind AuthMiddleware). A native form POST
   // would omit the token and fail with "Authorization header is missing".
   const goPro = async () => {
+    track("go_pro_clicked");
     try {
       const form = new URLSearchParams();
       form.append("email", email);

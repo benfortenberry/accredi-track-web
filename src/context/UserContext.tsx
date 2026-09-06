@@ -57,10 +57,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setUserData(responseData);
       sessionStorage.setItem("userData", JSON.stringify(responseData));
 
+      // Show the "subscription cancelled" modal at most once per browser
+      // session. logUser runs on load AND on every window refocus, so without
+      // this guard the modal re-pops every time the user tabs back in.
       if (
         responseData.pro == 2 &&
-        !isCancelledOver30DaysAgo(responseData.cancelled)
+        !isCancelledOver30DaysAgo(responseData.cancelled) &&
+        !sessionStorage.getItem("cancelledModalShown")
       ) {
+        sessionStorage.setItem("cancelledModalShown", "1");
         (
           document.getElementById("cancelled-modal") as HTMLDialogElement
         )?.showModal();

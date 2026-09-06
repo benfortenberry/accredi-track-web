@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "runId": "cb545b1d-b122-4b72-898d-45315d554339",
+  "tasks": [
+    {
+      "id": "8e464207-6819-4934-b5e8-d8705085644a",
+      "type": "warehouse",
+      "status": "pending",
+      "dependsOn": [],
+      "inputs": {
+        "sources": [
+          {
+            "kind": "Stripe",
+            "label": "Stripe",
+            "mode": "in-cli",
+            "matchedSignal": "found `@stripe/stripe-js` in package.json"
+          }
+        ]
+      },
+      "attempts": 0,
+      "maxAttempts": 2,
+      "enqueuedBy": "orchestrator",
+      "optional": true,
+      "createdAt": "2026-09-06T01:14:08.015Z"
+    }
+  ]
+}

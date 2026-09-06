@@ -10,6 +10,7 @@ import {
   getAuth0ClientId,
   getAuth0Domain,
 } from "./utils/config";
+import { initAnalytics } from "./utils/analytics";
 
 // Fail loud on misconfiguration: an empty API base URL means every API call
 // hits the frontend host and 404s (spinners never resolve). Surface it clearly
@@ -21,6 +22,9 @@ if (!getApiBaseUrl()) {
       "public/runtime-config.js (window.__APP_CONFIG__.VITE_APP_API_URL)."
   );
 }
+
+// No-op unless VITE_POSTHOG_KEY is configured.
+initAnalytics();
 
 const auth0Domain = getAuth0Domain();
 const auth0ClientId = getAuth0ClientId();
