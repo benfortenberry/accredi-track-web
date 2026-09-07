@@ -4,6 +4,8 @@ import { showToast } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import { getApiBaseUrl } from "../../utils/config";
 import DeleteModal from "../modals/DeleteModal";
+import UpgradeCta from "../UpgradeCta";
+import ErrorState from "../ErrorState";
 import { useUser } from "../../context/UserContext";
 
 function Licenses() {
@@ -81,7 +83,9 @@ function Licenses() {
           getLicenses();
 
           (document.getElementById("addEditForm") as HTMLFormElement)?.reset();
-          (document.getElementById("add-modal") as HTMLDialogElement)?.close();
+          (
+            document.getElementById("add-edit-modal") as HTMLDialogElement
+          )?.close();
         })
         .catch((err) => {
           console.error("Error adding License:", err);
@@ -166,6 +170,7 @@ function Licenses() {
 
   const getLicenses = () => {
     setIsLoading(true);
+    setError(null);
     httpClient
       .get(api)
       .then((res) => {
@@ -196,7 +201,7 @@ function Licenses() {
     setIsEditing(false);
   };
   if (error) {
-    return <h1 className="text-xl font-bold mb-4">{error}</h1>;
+    return <ErrorState detail={error} onRetry={getLicenses} />;
   } else if (isLoading || !aUser) {
     return (
       <h1 className="text-center">
@@ -206,7 +211,6 @@ function Licenses() {
   } else {
     return (
       <div>
-        <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
         <h2 className="text-xl font-bold mb-4 ml-2">
           License Types
           <button
@@ -238,7 +242,9 @@ function Licenses() {
                       <td>
                         <ul className="menu menu-horizontal bg-base-200  rounded-box">
                           <li>
-                            <a
+                            <button
+                              type="button"
+                              aria-label={`Edit ${license.name}`}
                               onClick={() => {
                                 setIsEditing(true);
                                 setCurrentLicense(license);
@@ -250,16 +256,18 @@ function Licenses() {
                               }}
                             >
                               <EditIcon />
-                            </a>
+                            </button>
                           </li>
                           <li>
-                            <a
+                            <button
+                              type="button"
+                              aria-label={`Delete ${license.name}`}
                               onClick={() => {
                                 checkInUse(license);
                               }}
                             >
                               <DeleteIcon />
-                            </a>
+                            </button>
                           </li>
                         </ul>
                       </td>
@@ -359,7 +367,10 @@ function Licenses() {
               </form>
             )}
             {licenses && licenses.length >= 5 && !isEditing && aUser.pro != 1 && (
-              <p>Become a PRO subscriber to add more license types.</p>
+              <UpgradeCta
+                heading="You've reached the free plan limit"
+                message="Free accounts can create up to 5 license types. Upgrade to PRO for unlimited license types."
+              />
             )}
           </div>
         </dialog>

@@ -57,43 +57,48 @@ beforeEach(() => {
 });
 
 describe("Dashboard setup checklist", () => {
-  it("shows all steps incomplete for a brand-new account", async () => {
+  it("shows the add-employee action for a brand-new account", async () => {
     wireDashboard({ metrics: { ...baseMetrics }, licenses: [] });
 
     render(<Dashboard />);
 
     expect(await screen.findByText(/Getting started/i)).toBeInTheDocument();
-    // Action buttons for the incomplete steps.
-    expect(screen.getByText(/Add license type/i)).toBeInTheDocument();
-    expect(screen.getByText(/Add employee/i)).toBeInTheDocument();
+    // First step's action: add an employee. (Matches the button role so we
+    // don't also match the step label text "Add an employee.")
+    expect(
+      screen.getByRole("link", { name: /Add an employee/i })
+    ).toBeInTheDocument();
   });
 
-  it("reflects partial progress: license types exist but no employees yet", async () => {
+  it("advances to the add-credential action once an employee exists", async () => {
     wireDashboard({
-      metrics: { ...baseMetrics, totalEmployees: 0, totalEmployeeLicenses: 0 },
-      licenses: [{ id: 1, name: "CPR", inUseBy: "" }],
+      metrics: { ...baseMetrics, totalEmployees: 2, totalEmployeeLicenses: 0 },
+      licenses: [],
     });
 
     render(<Dashboard />);
 
     await screen.findByText(/Getting started/i);
-    // License-type step is done, so its action button should be gone...
+    // Employee step is done, so its action button is gone...
     await waitFor(() => {
-      expect(screen.queryByText(/Add license type/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: /Add an employee/i })
+      ).not.toBeInTheDocument();
     });
-    // ...but the add-employee action remains.
-    expect(screen.getByText(/Add employee/i)).toBeInTheDocument();
+    // ...and the add-credential action is now shown.
+    expect(
+      screen.getByRole("link", { name: /Add a credential/i })
+    ).toBeInTheDocument();
   });
 
-  it("hides the checklist once all three steps are complete", async () => {
+  it("hides the checklist once there's an employee with a credential", async () => {
     wireDashboard({
       metrics: { ...baseMetrics, totalEmployees: 3, totalEmployeeLicenses: 5 },
-      licenses: [{ id: 1, name: "CPR", inUseBy: "[1]" }],
+      licenses: [],
     });
 
     render(<Dashboard />);
 
-    // Wait for data to load (a stat card or similar), then assert checklist gone.
     await waitFor(() => {
       expect(screen.queryByText(/Getting started/i)).not.toBeInTheDocument();
     });

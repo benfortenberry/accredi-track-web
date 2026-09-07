@@ -13,6 +13,8 @@ import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import { getApiBaseUrl } from "../../utils/config";
 import DeleteModal from "../modals/DeleteModal";
+import UpgradeCta from "../UpgradeCta";
+import ErrorState from "../ErrorState";
 import { useUser } from "../../context/UserContext";
 
 function Employees() {
@@ -98,14 +100,14 @@ function Employees() {
         .post(api, employeeData)
         .then((res) => {
           console.log("Employee added successfully:", res.data);
-          showToast("Employee added! Add a license next.", "success");
+          showToast("Employee added! Add a credential next.", "success");
           (
             document.getElementById("addEmployeeForm") as HTMLFormElement
           )?.reset();
           (
             document.getElementById("add-edit-modal") as HTMLDialogElement
           )?.close();
-          navigate(`/employee/${res.data.id}?from=onboarding`);
+          navigate(`/employee/${res.data.id}`);
         })
         .catch((err) => {
           console.error("Error adding employee:", err);
@@ -148,6 +150,7 @@ function Employees() {
 
   const getEmployees = () => {
     setIsLoading(true);
+    setError(null);
     httpClient
       .get(api)
       .then((res) => {
@@ -287,7 +290,7 @@ function Employees() {
     setIsEditing(false);
   };
   if (error) {
-    return <h1 className="text-xl font-bold mb-4">{error}</h1>;
+    return <ErrorState detail={error} onRetry={getEmployees} />;
   } else if (isLoading || !aUser) {
     return (
       <h1 className="text-center">
@@ -297,8 +300,6 @@ function Employees() {
   } else {
     return (
       <div>
-        <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
-
         <h2 className="text-xl font-bold mb-4 ml-2">
           Employees
           <button
@@ -380,7 +381,9 @@ function Employees() {
                       <td>
                         <ul className="menu menu-horizontal bg-base-200  rounded-box">
                           <li>
-                            <a
+                            <button
+                              type="button"
+                              aria-label={`Edit ${employee.firstName} ${employee.lastName}`}
                               onClick={() => {
                                 setIsEditing(true);
                                 setCurrentEmployee(employee);
@@ -392,10 +395,12 @@ function Employees() {
                               }}
                             >
                               <EditIcon />
-                            </a>
+                            </button>
                           </li>
                           <li>
-                            <a
+                            <button
+                              type="button"
+                              aria-label={`Delete ${employee.firstName} ${employee.lastName}`}
                               onClick={() => {
                                 const employeeIdInput = document.getElementById(
                                   "employeeIdToDelete"
@@ -410,7 +415,7 @@ function Employees() {
                               }}
                             >
                               <DeleteIcon />
-                            </a>
+                            </button>
                           </li>
                         </ul>
                       </td>
@@ -433,7 +438,10 @@ function Employees() {
                       <td className="">
                         <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
                           <li>
-                            <a href={`/employee/${employee.id}`}>
+                            <a
+                              href={`/employee/${employee.id}`}
+                              aria-label={`View credentials for ${employee.firstName} ${employee.lastName}`}
+                            >
                               <RightArrowIcon />
                             </a>
                           </li>
@@ -446,9 +454,16 @@ function Employees() {
             </table>
           </div>
         ) : (
-          <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-6">
+          <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-8">
+            <h3 className="text-xl font-bold">Add your first employee</h3>
+            <p className="mt-2 text-sm opacity-80 max-w-md mx-auto">
+              Save an employee and you'll go straight to their page to add a
+              credential — you can create the license type right there, in one
+              step.
+            </p>
+
             <button
-              className="text-lg font-bold underline-offset-4 hover:underline"
+              className="btn btn-primary mt-5"
               onClick={() => {
                 setIsEditing(false);
                 setCurrentEmployee(null);
@@ -457,14 +472,16 @@ function Employees() {
                 )?.showModal();
               }}
             >
-              Add your first employee
+              Add an employee
             </button>
-            <p className="mt-2 text-sm opacity-80">
-              After you save an employee, you’ll be taken straight to their license page so you can add their first credential.
-            </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <label className="btn btn-sm btn-outline">
-                {isImporting ? "Importing..." : "Import from CSV"}
+
+            {/* Quiet secondary options: bulk import or explore with demo data. */}
+            <div className="divider text-xs opacity-60 max-w-xs mx-auto">
+              or
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <label className="btn btn-sm btn-ghost">
+                {isImporting ? "Importing..." : "Import a CSV"}
                 <input
                   type="file"
                   accept=".csv,text/csv"
@@ -473,9 +490,6 @@ function Employees() {
                   onChange={handleImportFile}
                 />
               </label>
-              <button className="btn btn-sm btn-ghost" onClick={downloadTemplate}>
-                Download template
-              </button>
               <button
                 className="btn btn-sm btn-ghost"
                 onClick={loadDemoData}
@@ -484,14 +498,17 @@ function Employees() {
                 {isSeeding ? "Loading..." : "Load demo data"}
               </button>
             </div>
-            <p className="mt-2 text-xs opacity-60">
-              CSV needs columns: First Name, Last Name, Phone (10 digits), Email.
-              Download the template for the exact format. Have a spreadsheet? In
-              Excel or Google Sheets, use File → Save As (or Download) → CSV,
-              then upload that.
-            </p>
-            <p className="mt-1 text-xs opacity-60">
-              Demo data adds a few sample employees and licenses you can delete anytime.
+            <p className="mt-3 text-xs opacity-60 max-w-md mx-auto">
+              Importing? You'll need columns First Name, Last Name, Phone (10
+              digits), and Email —{" "}
+              <button
+                className="link link-hover font-medium"
+                onClick={downloadTemplate}
+              >
+                download the template
+              </button>
+              . Demo data drops in a few sample employees and licenses you can
+              delete anytime.
             </p>
           </div>
         )}
@@ -590,7 +607,10 @@ function Employees() {
               employees.length >= 5 &&
               !isEditing &&
               aUser.pro != 1 && (
-                <p>Become a PRO subscriber to add more employees.</p>
+                <UpgradeCta
+                  heading="You've reached the free plan limit"
+                  message="Free accounts can add up to 5 employees. Upgrade to PRO for unlimited employees."
+                />
               )}
           </div>
         </dialog>

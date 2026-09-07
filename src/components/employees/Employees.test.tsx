@@ -55,6 +55,12 @@ beforeEach(() => {
   navigateMock.mockReset();
   mocks.user.current = { userSub: "auth0|test", email: "t@example.com", pro: 0 };
   document.body.innerHTML = "";
+  // The #toast-container is normally provided by Layout (which wraps these
+  // pages in the app). These tests render the page in isolation, so add the
+  // container here so showToast has a target.
+  const toastRoot = document.createElement("div");
+  toastRoot.id = "toast-container";
+  document.body.appendChild(toastRoot);
 });
 
 describe("Employees list", () => {
@@ -75,7 +81,7 @@ describe("Employees list", () => {
     render(<Employees />);
 
     expect(await screen.findByText(/Add your first employee/i)).toBeInTheDocument();
-    expect(screen.getByText(/Import from CSV/i)).toBeInTheDocument();
+    expect(screen.getByText(/Import a CSV/i)).toBeInTheDocument();
     expect(screen.getByText(/Load demo data/i)).toBeInTheDocument();
   });
 });
@@ -89,8 +95,8 @@ describe("Employees add flow", () => {
     render(<Employees />);
     await screen.findByText(/Add your first employee/i);
 
-    // Open the add modal.
-    await user.click(screen.getByText(/Add your first employee/i));
+    // Open the add modal via the primary button.
+    await user.click(screen.getByRole("button", { name: /Add an employee/i }));
 
     await user.type(screen.getByPlaceholderText("First Name"), "Sam");
     await user.type(screen.getByPlaceholderText("Last Name"), "Doe");
@@ -111,7 +117,7 @@ describe("Employees add flow", () => {
       );
     });
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith("/employee/99?from=onboarding");
+      expect(navigateMock).toHaveBeenCalledWith("/employee/99");
     });
   });
 
@@ -124,7 +130,7 @@ describe("Employees add flow", () => {
 
     render(<Employees />);
     await screen.findByText(/Add your first employee/i);
-    await user.click(screen.getByText(/Add your first employee/i));
+    await user.click(screen.getByRole("button", { name: /Add an employee/i }));
 
     await user.type(screen.getByPlaceholderText("First Name"), "Sam");
     await user.type(screen.getByPlaceholderText("Last Name"), "Doe");

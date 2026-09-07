@@ -4,13 +4,14 @@ import {
   EditIcon,
   DeleteIcon,
   BackIcon,
-  WarningIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatDate, getLicenseStatus } from "../../utils/Utilities";
 
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import { getApiBaseUrl } from "../../utils/config";
 import DeleteModal from "../modals/DeleteModal";
+import UpgradeCta from "../UpgradeCta";
+import ErrorState from "../ErrorState";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 
@@ -69,9 +70,61 @@ function EmployeeLicenses() {
   const [currentEmployeeLicense, setCurrentEmployeeLicense] =
     useState<EmployeeLicense | null>(null);
 
+  // Inline license-type creation: lets a user create the license category they
+  // need without leaving this page, so the employee-first onboarding flow never
+  // dead-ends. `isCreatingLicense` toggles the mini-form inside the modal.
+  const [isCreatingLicense, setIsCreatingLicense] = useState(false);
+  const [newLicenseName, setNewLicenseName] = useState("");
+  const [isSavingLicense, setIsSavingLicense] = useState(false);
+
+  const hasLicenseTypes = Array.isArray(licenses) && licenses.length > 0;
+
   // Prefer the backend's specific error message over generic fallback text.
   const serverMessage = (err: any, fallback: string): string =>
     err?.response?.data?.error || fallback;
+
+  // Create a license type inline (POST /licenses), then refresh the dropdown and
+  // preselect the new type so the user can immediately assign it. Surfaces the
+  // backend's free-tier 403 message when the license-type cap is hit.
+  const createLicenseInline = () => {
+    const name = newLicenseName.trim();
+    if (!name) {
+      showToast("Enter a name for the license type.", "error");
+      return;
+    }
+    setIsSavingLicense(true);
+    httpClient
+      .post(licenseApi, { name })
+      .then((res) => {
+        const newId = res.data?.id as number | undefined;
+        showToast("License type created.", "success");
+        setNewLicenseName("");
+        setIsCreatingLicense(false);
+        // Refresh the list, then preselect the newly created type.
+        httpClient
+          .get(licenseApi)
+          .then((listRes) => {
+            setLicense(listRes.data);
+            if (newId != null) {
+              setCurrentEmployeeLicense((prev) => ({
+                ...prev,
+                licenseId: newId,
+              }));
+            }
+          })
+          .catch(() => {
+            /* non-critical; the select just won't preselect */
+          })
+          .finally(() => setIsSavingLicense(false));
+      })
+      .catch((err) => {
+        setIsSavingLicense(false);
+        showToast(
+          serverMessage(err, "Failed to create license type. Please try again."),
+          "error"
+        );
+      });
+  };
 
   useEffect(() => {
     getEmployee(employeeId);
@@ -221,6 +274,7 @@ function EmployeeLicenses() {
 
   const getLicenses = () => {
     setIsLoading(true);
+    setError(null);
     httpClient
       .get(licenseApi)
       .then((res) => {
@@ -235,6 +289,7 @@ function EmployeeLicenses() {
 
   const getEmployeeLicenses = (employeeId: number) => {
     setIsLoading(true);
+    setError(null);
     httpClient
       .get(`${api}/${employeeId}`)
       .then((res) => {
@@ -247,6 +302,13 @@ function EmployeeLicenses() {
         setIsLoading(false);
         setError("Failed to fetch employee licenses");
       });
+  };
+
+  // Re-run all page loads (used by the error-state retry button).
+  const reload = () => {
+    getEmployee(employeeId);
+    getEmployeeLicenses(employeeId);
+    getLicenses();
   };
 
   const getStatus = getLicenseStatus;
@@ -277,9 +339,11 @@ function EmployeeLicenses() {
 
     setCurrentEmployeeLicense(null);
     setIsEditing(false);
+    setIsCreatingLicense(false);
+    setNewLicenseName("");
   };
   if (error) {
-    return <h1 className="text-xl font-bold mb-4">{error}</h1>;
+    return <ErrorState detail={error} onRetry={reload} />;
   } else if (isLoading || !aUser) {
     return (
       <h1 className="text-center">
@@ -289,11 +353,6 @@ function EmployeeLicenses() {
   } else {
     return (
       <div>
-        <div
-          id="toast-container"
-          className="fixed bottom-4 right-4 z-50"
-        ></div>
-
         <button
           className="btn btn-circle float-right"
           onClick={() => {
@@ -307,25 +366,39 @@ function EmployeeLicenses() {
           <AddIcon />
         </button>
 
-        <a className="float-left mr-3 mt-1" onClick={handleGoBack}>
+        <button
+          type="button"
+          className="float-left mr-3 mt-1"
+          onClick={handleGoBack}
+          aria-label="Go back"
+        >
           <BackIcon />
-        </a>
+        </button>
         <h2 className="text-xl font-bold mb-4">
           {employee
             ? `Licenses for ${employee.firstName} ${employee.lastName}`
             : "Loading Employee..."}
         </h2>
 
-        {(!licenses || licenses.length === 0) && (
+        {!hasLicenseTypes && (
           <div className="alert alert-info mb-4">
             <span>
-              No license types exist yet. Create one first so you can assign it to this employee.
+              No license types yet. Add one and assign it to this employee — you
+              can do it all right here.
             </span>
             <button
               className="btn btn-sm btn-primary"
-              onClick={() => navigate("/license-types")}
+              onClick={() => {
+                setIsEditing(false);
+                setCurrentEmployeeLicense(null);
+                setIsCreatingLicense(true);
+                setNewLicenseName("");
+                (
+                  document.getElementById("add-edit-modal") as HTMLDialogElement
+                )?.showModal();
+              }}
             >
-              Create license type
+              Add a license
             </button>
           </div>
         )}
@@ -351,7 +424,9 @@ function EmployeeLicenses() {
                         <td>
                           <ul className="menu menu-horizontal bg-base-200  rounded-box">
                             <li>
-                              <a
+                              <button
+                                type="button"
+                                aria-label={`Edit ${employeeLicense.licenseName || "credential"}`}
                                 onClick={() => {
                                   setIsEditing(true);
                                   setCurrentEmployeeLicense(employeeLicense);
@@ -363,10 +438,12 @@ function EmployeeLicenses() {
                                 }}
                               >
                                 <EditIcon />
-                              </a>
+                              </button>
                             </li>
                             <li>
-                              <a
+                              <button
+                                type="button"
+                                aria-label={`Delete ${employeeLicense.licenseName || "credential"}`}
                                 onClick={() => {
                                   const employeeLicenseIdInput =
                                     document.getElementById(
@@ -384,7 +461,7 @@ function EmployeeLicenses() {
                                 }}
                               >
                                 <DeleteIcon />
-                              </a>
+                              </button>
                             </li>
                           </ul>
                         </td>
@@ -415,17 +492,19 @@ function EmployeeLicenses() {
               onClick={() => {
                 setIsEditing(false);
                 setCurrentEmployeeLicense(null);
+                setIsCreatingLicense(!hasLicenseTypes);
+                setNewLicenseName("");
                 (
                   document.getElementById("add-edit-modal") as HTMLDialogElement
                 )?.showModal();
               }}
             >
-              Add your first employee license
+              Add your first credential
             </button>
             <p className="mt-2 text-sm opacity-80">
-              {licenses && licenses.length > 0
-                ? "Use this action to add a license for this employee."
-                : "Create a license type first, then come back and add the assignment."}
+              {hasLicenseTypes
+                ? "Pick a license type, set the issue and expiration dates, and you're done."
+                : "You'll create a license type and assign it in one step — no need to leave this page."}
             </p>
           </div>
         )}
@@ -452,88 +531,156 @@ function EmployeeLicenses() {
               ✕
             </button>
 
-            {(employeeLicenses && employeeLicenses.length < 3) ||
-              aUser.pro == 1 ||
-              (isEditing && (
-                <h3 className="font-bold text-lg">
-                  {isEditing ? "Edit Employee License" : "Add Employee License"}
-                </h3>
-              ))}
-            {((employeeLicenses && employeeLicenses.length < 3) ||
-              isEditing ||
-              aUser.pro == 1) && (
-              <form autoComplete="off" id="addEmployeeLicenseForm" onSubmit={handleSubmit}>
-                {(!licenses || licenses.length === 0) && (
-                  <div role="alert" className="alert mt-3 alert-warning">
-                    <WarningIcon />
+            {(() => {
+              // A free user is at the per-employee credential cap (3) unless
+              // they're editing an existing one or are pro.
+              const atCredentialCap =
+                aUser.pro != 1 &&
+                !isEditing &&
+                employeeLicenses &&
+                employeeLicenses.length >= 3;
 
-                    <span>
-                      No license types are available yet. Create one first and then return here.
-                    </span>
-                  </div>
-                )}
-                <select
-                  name="licenseId"
-                  id="licenseId"
-                  required
-                  className="select mt-3"
-                  value={currentEmployeeLicense?.licenseId || ""}
-                  onChange={(e) =>
-                    setCurrentEmployeeLicense((prev) => ({
-                      ...prev,
-                      licenseId: parseInt(e.target.value, 10),
-                    }))
-                  }
-                >
-                  <option value="" disabled>
-                    Select a license
-                  </option>
-                  {licenses &&
-                    licenses.map((license) => (
-                      <option key={license.id} value={license.id}>
-                        {license.name}
-                      </option>
-                    ))}
-                </select>
-
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Issue Date</legend>
-                  <input
-                    type="date"
-                    className="input validator"
-                    required
-                    name="issueDate"
-                    placeholder="Issue Date"
-                    defaultValue={currentEmployeeLicense?.issueDate || ""}
+              if (atCredentialCap) {
+                return (
+                  <UpgradeCta
+                    heading="You've reached the free plan limit"
+                    message="Free accounts can add up to 3 credentials per employee. Upgrade to PRO for unlimited credentials."
                   />
-                  <p className="validator-hint  hidden mt-1 mb-2">Required</p>
-                </fieldset>
+                );
+              }
 
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Expiration Date</legend>
-                  <input
-                    type="date"
-                    className="input validator"
-                    required
-                    name="expDate"
-                    placeholder="Expiration Date"
-                    defaultValue={currentEmployeeLicense?.expDate || ""}
-                  />
-                  <p className="validator-hint  hidden mt-1 mb-2">Required</p>
-                </fieldset>
+              return (
+                <>
+                  <h3 className="font-bold text-lg">
+                    {isEditing ? "Edit Credential" : "Add Credential"}
+                  </h3>
 
-                <button className="btn float-right btn-primary mt-2">
-                  {isEditing ? "Save" : "Add"}
-                </button>
-              </form>
-            )}
+                  <form
+                    autoComplete="off"
+                    id="addEmployeeLicenseForm"
+                    onSubmit={handleSubmit}
+                  >
+                    <fieldset className="fieldset mt-3">
+                      <legend className="fieldset-legend">License type</legend>
 
-            {employeeLicenses &&
-              employeeLicenses.length >= 3 &&
-              !isEditing &&
-              aUser.pro !=1 && (
-                <p>Become a PRO subscriber to add more employee licenses.</p>
-              )}
+                      {isCreatingLicense || !hasLicenseTypes ? (
+                        // Inline create: name + Save, no page change.
+                        <div className="join w-full">
+                          <input
+                            type="text"
+                            className="input join-item grow"
+                            placeholder="e.g. CPR Certification"
+                            value={newLicenseName}
+                            onChange={(e) => setNewLicenseName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                createLicenseInline();
+                              }
+                            }}
+                            aria-label="New license type name"
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-primary join-item"
+                            onClick={createLicenseInline}
+                            disabled={isSavingLicense}
+                          >
+                            {isSavingLicense ? "Saving..." : "Save type"}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <select
+                            name="licenseId"
+                            id="licenseId"
+                            required
+                            className="select grow"
+                            value={currentEmployeeLicense?.licenseId || ""}
+                            onChange={(e) =>
+                              setCurrentEmployeeLicense((prev) => ({
+                                ...prev,
+                                licenseId: parseInt(e.target.value, 10),
+                              }))
+                            }
+                          >
+                            <option value="" disabled>
+                              Select a license type
+                            </option>
+                            {licenses.map((license) => (
+                              <option key={license.id} value={license.id}>
+                                {license.name}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => {
+                              setIsCreatingLicense(true);
+                              setNewLicenseName("");
+                            }}
+                          >
+                            + New type
+                          </button>
+                        </div>
+                      )}
+
+                      {isCreatingLicense && hasLicenseTypes && (
+                        <button
+                          type="button"
+                          className="link link-hover text-xs mt-1 self-start"
+                          onClick={() => {
+                            setIsCreatingLicense(false);
+                            setNewLicenseName("");
+                          }}
+                        >
+                          ← Pick from existing types instead
+                        </button>
+                      )}
+                    </fieldset>
+
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">Issue Date</legend>
+                      <input
+                        type="date"
+                        className="input validator"
+                        required
+                        name="issueDate"
+                        placeholder="Issue Date"
+                        defaultValue={currentEmployeeLicense?.issueDate || ""}
+                      />
+                      <p className="validator-hint hidden mt-1 mb-2">Required</p>
+                    </fieldset>
+
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">Expiration Date</legend>
+                      <input
+                        type="date"
+                        className="input validator"
+                        required
+                        name="expDate"
+                        placeholder="Expiration Date"
+                        defaultValue={currentEmployeeLicense?.expDate || ""}
+                      />
+                      <p className="validator-hint hidden mt-1 mb-2">Required</p>
+                    </fieldset>
+
+                    <button
+                      className="btn float-right btn-primary mt-2"
+                      disabled={!hasLicenseTypes || isCreatingLicense}
+                      title={
+                        !hasLicenseTypes || isCreatingLicense
+                          ? "Save the license type first"
+                          : undefined
+                      }
+                    >
+                      {isEditing ? "Save" : "Add"}
+                    </button>
+                  </form>
+                </>
+              );
+            })()}
           </div>
         </dialog>
       </div>

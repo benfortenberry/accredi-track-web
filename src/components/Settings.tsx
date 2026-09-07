@@ -29,6 +29,7 @@ const Settings = () => {
       document.body.removeChild(link); // Clean up the DOM
     } catch (error) {
       console.error("Failed to download employee data:", error);
+      showToast("Failed to export data. Please try again.", "error");
     }
   };
 
@@ -61,13 +62,13 @@ const Settings = () => {
         Edit License Types
       </a>
 
-      <a onClick={getEmployeeData} className="btn mx-2 btn-default">
+      <button type="button" onClick={getEmployeeData} className="btn mx-2 btn-default">
         Export Data
-      </a>
+      </button>
 
-      <a onClick={deleteAccount} className="btn mx-2 btn-default">
+      <button type="button" onClick={deleteAccount} className="btn mx-2 btn-default">
         Delete Account
-      </a>
+      </button>
 
       {aUser && aUser.pro == 1 && (
         <a

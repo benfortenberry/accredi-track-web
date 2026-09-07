@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
+import ErrorState from "./ErrorState";
 import { getApiBaseUrl } from "../utils/config";
 
 function Dashboard() {
@@ -43,7 +44,6 @@ function Dashboard() {
   // const [noData, setNoData] = useState(false);
   const [expiringSoonChartData, setLExpiringSoonChartData] =
     useState<ChartData>();
-  const [licenseTypeCount, setLicenseTypeCount] = useState(0);
   const [assignmentCount, setAssignmentCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,22 +52,10 @@ function Dashboard() {
     getMetrics();
     getLicenseCounts();
     getExpiringSoon();
-    getSetupProgress();
   }, []);
 
-  // Fetch counts used to drive the first-run setup checklist.
-  const getSetupProgress = async () => {
-    await httpClient
-      .get(`${API_BASE_URL}/licenses`)
-      .then((res) => {
-        setLicenseTypeCount(Array.isArray(res.data) ? res.data.length : 0);
-      })
-      .catch(() => {
-        /* non-critical for the checklist */
-      });
-  };
-
   const getMetrics = async () => {
+    setError(null);
     await httpClient
       .get(api)
       .then((res) => {
@@ -90,7 +78,9 @@ function Dashboard() {
         expiredCount = Array.isArray(res.data) ? res.data : [];
       })
       .catch(() => {
-        setError("Failed to fetch License Chart Data");
+        // Charts are supplementary; a failure here should not blank the whole
+        // dashboard. Leave the chart unrendered and keep the core metrics.
+        console.error("Failed to fetch expired license chart data");
       });
 
     await httpClient
@@ -142,7 +132,7 @@ function Dashboard() {
       })
       .catch(() => {
         setIsLoading(false);
-        setError("Failed to fetch License Chart Data");
+        console.error("Failed to fetch license chart data");
       });
 
     setIsLoading(false);
@@ -180,14 +170,14 @@ function Dashboard() {
       })
       .catch(() => {
         setIsLoading(false);
-        setError("Failed to fetch License Chart Data");
+        console.error("Failed to fetch expiring-soon chart data");
       });
 
     setIsLoading(false);
   };
 
   if (error) {
-    return <h1 className="text-xl font-bold mb-4">{error}</h1>;
+    return <ErrorState detail={error} onRetry={getMetrics} />;
   } else if (isLoading) {
     return (
       <h1 className="text-center">
@@ -198,10 +188,11 @@ function Dashboard() {
     return (
       <div>
         {(() => {
-          const hasLicenseTypes = licenseTypeCount > 0;
           const hasEmployees = (metrics?.totalEmployees ?? 0) > 0;
           const hasAssignments = assignmentCount > 0;
-          const allDone = hasLicenseTypes && hasEmployees && hasAssignments;
+          // License types are created inline while adding a credential, so the
+          // checklist is complete once there's an employee with a credential.
+          const allDone = hasEmployees && hasAssignments;
           if (allDone) return null;
 
           const step = (done: boolean, label: string) => (
@@ -217,28 +208,28 @@ function Dashboard() {
             </li>
           );
 
+          // Two-step flow that matches the app: add an employee, then add a
+          // credential (the license type is created inline during that step, so
+          // there's no separate "create a license type first" prerequisite).
           return (
             <div className="mb-6 rounded-box border border-base-content/10 bg-base-100 p-4">
               <h3 className="text-lg font-semibold">Getting started</h3>
               <ul className="mt-3 space-y-2 text-sm">
-                {step(hasLicenseTypes, "Create a license type in the License Types view.")}
-                {step(hasEmployees, "Add your first employee.")}
-                {step(hasAssignments, "Assign a license to an employee.")}
+                {step(hasEmployees, "Add an employee.")}
+                {step(
+                  hasAssignments,
+                  "Add a credential — pick or create a license type and set the dates."
+                )}
               </ul>
               <div className="mt-4 flex flex-wrap gap-2">
-                {!hasLicenseTypes && (
-                  <Link to="/license-types" className="btn btn-sm btn-primary">
-                    Add license type
-                  </Link>
-                )}
                 {!hasEmployees && (
                   <Link to="/employees" className="btn btn-sm btn-primary">
-                    Add employee
+                    Add an employee
                   </Link>
                 )}
                 {hasEmployees && !hasAssignments && (
                   <Link to="/employees" className="btn btn-sm btn-primary">
-                    Assign a license
+                    Add a credential
                   </Link>
                 )}
               </div>
@@ -246,45 +237,38 @@ function Dashboard() {
           );
         })()}
 
-        <div className="grid overflow-x-auto lg:grid-cols-2 gap-4">
-          {/* {noData && (
-            <h1 className="text-xl font-bold mb-4">
-              Metrics will be active when you add your first license.
-            </h1>
-          )} */}
-
-          <div className="pr-20 pl-20   pt-5 text-center  h-75">
+        <div className="grid lg:grid-cols-2 gap-4">
+          <div className="px-2 sm:px-6 pt-5 text-center h-64 sm:h-72">
             {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
           </div>
-          <div className="col-span-1 pr-20 pl-20 text-center  h-75  pt-5 ">
+          <div className="px-2 sm:px-6 pt-5 text-center h-64 sm:h-72">
             {licenseChartData && expiringSoonChartData && (
               <ExpiringSoonChart data={expiringSoonChartData} />
             )}
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-3 xs:grid-cols-2  gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Active Employees</div>
-            {/* {metrics?.totalEmployees} */}
-            <div className="stat-value">{metrics?.totalEmployees}</div>
+            <div className="stat-value">{metrics?.totalEmployees ?? 0}</div>
             <div className="stat-desc ">&nbsp;</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Expiring Soon</div>
-            <div className="stat-value ">{metrics?.expiringSoon}</div>
+            <div className="stat-value ">{metrics?.expiringSoon ?? 0}</div>
             <div className="stat-desc ">Next 30 Days</div>
           </div>
 
           <div className="stat place-items-center">
             <div className="stat-title">Expired Licenses</div>
-            <div className="stat-value ">{metrics?.expiredCount}</div>
+            <div className="stat-value ">{metrics?.expiredCount ?? 0}</div>
             <div className="stat-desc ">&nbsp;</div>
           </div>
         </div>
 
-        <div className="grid  sm:grid-cols-3 xs:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="stat place-items-center">
             <div className="stat-title">Compliance Rate</div>
             <div className="stat-value ">
@@ -309,7 +293,7 @@ function Dashboard() {
 
           <div className="stat place-items-center">
             <div className="stat-title">Notifications Sent</div>
-            <div className="stat-value ">{metrics?.notificationCount}</div>
+            <div className="stat-value ">{metrics?.notificationCount ?? 0}</div>
             <div className="stat-desc ">Total Sent</div>
           </div>
         </div>

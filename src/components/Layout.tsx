@@ -3,46 +3,18 @@ import LogoutButton from "./auth0/LogoutButton";
 
 import logo from "../assets/logo_white2.png";
 import logoDark from "../assets/logo_black2.png";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
-import { getApiBaseUrl } from "../utils/config";
-import { httpClient } from "../utils/AxiosInstance";
-import { showToast } from "../utils/Utilities";
-import { track } from "../utils/analytics";
+import { useGoPro } from "../utils/useGoPro";
 
 function Layout() {
-  const API_BASE_URL = getApiBaseUrl();
-  const api = `${API_BASE_URL}/create-checkout-session`;
-  const { user } = useAuth0();
   const { aUser } = useUser();
   const { pathname } = useLocation();
 
-  const email = user?.email || aUser?.email || "";
-
-  // Start Stripe checkout. This must go through httpClient so the Auth0 Bearer
-  // token is attached (the route is behind AuthMiddleware). A native form POST
-  // would omit the token and fail with "Authorization header is missing".
-  const goPro = async () => {
-    track("go_pro_clicked");
-    try {
-      const form = new URLSearchParams();
-      form.append("email", email);
-      const res = await httpClient.post(api, form);
-      const url = res.data?.url;
-      if (url) {
-        window.location.href = url;
-      } else {
-        showToast("Could not start checkout. Please try again.", "error");
-      }
-    } catch (err: any) {
-      console.error("Error starting checkout:", err);
-      showToast(
-        err?.response?.data?.error || "Could not start checkout. Please try again.",
-        "error"
-      );
-    }
-  };
+  // Shared checkout kickoff (see useGoPro): goes through httpClient so the
+  // Auth0 Bearer token is attached, and navigates the browser to the returned
+  // Stripe URL.
+  const goPro = useGoPro();
 
   const navLinkClass = (path: string) =>
     pathname === path ? "active font-semibold" : "";
@@ -74,7 +46,7 @@ function Layout() {
                 <a href="/employees" className={navLinkClass("/employees")}>Employees</a>
               </li>
               <li className="hidden md:block">
-                <a href="/license-types" className={navLinkClass("/license-types")}>Licenses</a>
+                <a href="/license-types" className={navLinkClass("/license-types")}>License Types</a>
               </li>
 
               {aUser && aUser.pro != 1 && (
@@ -88,12 +60,22 @@ function Layout() {
                 </li>
               )}
               <li className="hidden md:block">
-                <a href="/settings" className={navLinkClass("/settings")} title="Settings">
+                <a
+                  href="/settings"
+                  className={navLinkClass("/settings")}
+                  title="Settings"
+                  aria-label="Settings"
+                >
                   <GearIcon />
                 </a>
               </li>
               <li className="hidden md:block">
-                <a href="/support" className={navLinkClass("/support")} title="Support">
+                <a
+                  href="/support"
+                  className={navLinkClass("/support")}
+                  title="Support"
+                  aria-label="Support"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -101,6 +83,7 @@ function Layout() {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="size-6"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -118,6 +101,7 @@ function Layout() {
                     tabIndex={0}
                     role="button"
                     className="btn btn-sm btn-ghost"
+                    aria-label="Open menu"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -125,6 +109,7 @@ function Layout() {
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -183,13 +168,18 @@ function Layout() {
             </ul>
           </div>
         </div>
-        <header className="text-center text-2xl font-bold py-3"></header>
         <main className="pb-8 pt-2">
           <div className="rounded-box border border-base-content/10 bg-base-100 p-3 sm:p-6 lg:p-8 shadow-sm">
             <Outlet />
           </div>
         </main>
       </div>
+
+      {/* App-wide toast target. Hosted once here so showToast works on every
+          authenticated page (Dashboard, Settings, Support) and on Layout's own
+          actions (e.g. a failed goPro checkout) — previously it lived inline on
+          only a few pages, so toasts silently vanished elsewhere. */}
+      <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
     </div>
   );
 }

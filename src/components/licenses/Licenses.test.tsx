@@ -82,9 +82,10 @@ describe("Licenses delete guard", () => {
     render(<Licenses />);
     await screen.findByText("CPR Certification");
 
-    // Click the delete (trash) action. It is the second menu link in the row.
-    const deleteLinks = document.querySelectorAll("td .menu a");
-    await user.click(deleteLinks[1] as HTMLElement);
+    // Click the delete (trash) action, now an accessible button.
+    await user.click(
+      screen.getByRole("button", { name: /Delete CPR Certification/i })
+    );
 
     // The in-use modal is opened (not the confirm-delete modal), and lists the
     // blocking employee. Both dialogs exist in the DOM, so assert on `open`.
@@ -110,8 +111,9 @@ describe("Licenses delete guard", () => {
     render(<Licenses />);
     await screen.findByText("CPR Certification");
 
-    const deleteLinks = document.querySelectorAll("td .menu a");
-    await user.click(deleteLinks[1] as HTMLElement);
+    await user.click(
+      screen.getByRole("button", { name: /Delete CPR Certification/i })
+    );
 
     // The confirm-delete modal is opened; the in-use modal is not.
     await waitFor(() => {
