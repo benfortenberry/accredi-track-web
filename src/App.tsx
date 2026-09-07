@@ -18,6 +18,7 @@ import Privacy from "./components/Privacy";
 import HealthCheck from "./components/HealthCheck";
 import Settings from "./components/Settings";
 import Support from "./components/Support";
+import Notifications from "./components/Notifications";
 
 // Fires a PostHog pageview on every SPA route change. Must live inside the
 // Router so it can use useLocation. No-op when analytics isn't configured.
@@ -84,6 +85,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Support />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="notifications"
+                element={
+                  <ProtectedRoute>
+                    <Notifications />
                   </ProtectedRoute>
                 }
               />

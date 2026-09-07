@@ -291,11 +291,14 @@ function Dashboard() {
             <div className="stat-desc ">&nbsp;</div>
           </div>
 
-          <div className="stat place-items-center">
+          <Link
+            to="/notifications"
+            className="stat place-items-center hover:bg-base-200 rounded-box transition-colors"
+          >
             <div className="stat-title">Notifications Sent</div>
             <div className="stat-value ">{metrics?.notificationCount ?? 0}</div>
-            <div className="stat-desc ">Total Sent</div>
-          </div>
+            <div className="stat-desc link link-hover">View log</div>
+          </Link>
         </div>
       </div>
     );
