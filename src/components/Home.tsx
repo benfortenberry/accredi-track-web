@@ -299,6 +299,7 @@ function Home() {
                   "Up to 5 employees",
                   "Up to 5 license types",
                   "Up to 3 credentials per employee",
+                  "Expiration email reminders",
                   "Compliance dashboard",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3 text-sm text-base-content/70">
@@ -325,10 +326,11 @@ function Home() {
               </div>
               <ul className="space-y-3 mb-8 flex-grow">
                 {[
+                  "Everything in Free",
                   "Unlimited employees",
                   "Unlimited license types",
                   "Unlimited credentials",
-                  "Automated email reminders",
+                  "Early “expiring soon” warnings (30 days ahead)",
                   "Compliance dashboard & charts",
                   "CSV data export",
                 ].map((item) => (

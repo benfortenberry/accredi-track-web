@@ -23,6 +23,7 @@ function Notifications() {
     licenseName: string;
     recipientEmail: string;
     expDate: string;
+    notificationType: string;
     createdAt: string;
   }
 
@@ -54,6 +55,17 @@ function Notifications() {
     return name || "(deleted employee)";
   };
 
+  // Map the backend notificationType to a readable badge.
+  const typeBadge = (type: string) => {
+    if (type === "expiring_soon") {
+      return <span className="badge badge-warning badge-sm">Expiring soon</span>;
+    }
+    if (type === "expired") {
+      return <span className="badge badge-error badge-sm">Expired</span>;
+    }
+    return <span className="badge badge-ghost badge-sm">Reminder</span>;
+  };
+
   if (error) {
     return <ErrorState detail={error} onRetry={getNotifications} />;
   } else if (isLoading || !aUser) {
@@ -78,6 +90,7 @@ function Notifications() {
             <thead>
               <tr>
                 <th>Sent</th>
+                <th>Type</th>
                 <th>Employee</th>
                 <th>License Type</th>
                 <th>Expiration</th>
@@ -88,6 +101,7 @@ function Notifications() {
               {notifications.map((n) => (
                 <tr key={n.id}>
                   <td>{formatDate(n.createdAt)}</td>
+                  <td>{typeBadge(n.notificationType)}</td>
                   <td>{employeeName(n)}</td>
                   <td>{n.licenseName || "(deleted license type)"}</td>
                   <td>{n.expDate ? formatDate(n.expDate) : "—"}</td>
@@ -102,7 +116,8 @@ function Notifications() {
           <h3 className="text-lg font-bold">No notifications yet</h3>
           <p className="mt-2 text-sm opacity-80 max-w-md mx-auto">
             When a credential expires, AccrediTrack emails you a reminder and
-            records it here. Reminders are a PRO feature.
+            records it here. PRO accounts also get early "expiring soon"
+            warnings before a credential lapses.
           </p>
         </div>
       )}

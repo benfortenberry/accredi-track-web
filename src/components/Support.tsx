@@ -1,18 +1,24 @@
-import { withAxios } from "../utils/AxiosInstance";
-
+// Public page: getting-started guidance + contact info. No auth, no API calls,
+// so anyone (prospects, logged-out users) can reach it. Rendered standalone
+// (outside the app Layout), matching Terms/Privacy.
 const Support = () => {
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-6 ml-2">Support</h2>
+    <div className="min-h-screen bg-base-100 px-6 py-12">
+      <div className="max-w-2xl mx-auto">
+        <a href="/" className="text-sm text-primary hover:underline">
+          ← Back to AccrediTrack
+        </a>
+        <h1 className="text-3xl font-bold mt-4 mb-6">Support</h1>
 
-      <div className="pl-2 max-w-2xl space-y-6">
+        <div className="space-y-6">
         <div className="rounded-box border border-base-content/10 bg-base-200 p-5">
           <h3 className="font-semibold mb-2">Email notifications</h3>
           <p className="text-sm text-base-content/70">
-            Pro users — add{" "}
+            Add{" "}
             <strong className="text-base-content">support@accreditrack.com</strong>{" "}
             to your safe senders list so expiration reminders don't end up in
-            junk mail.
+            junk mail. PRO accounts also receive early "expiring soon" warnings
+            before a credential lapses.
           </p>
         </div>
 
@@ -41,9 +47,10 @@ const Support = () => {
             . We typically respond within one business day.
           </p>
         </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default withAxios(Support);
+export default Support;

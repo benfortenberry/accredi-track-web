@@ -80,15 +80,6 @@ function App() {
                 }
               />
 
-               <Route
-                path="support"
-                element={
-                  <ProtectedRoute>
-                    <Support />
-                  </ProtectedRoute>
-                }
-              />
-
               <Route
                 path="notifications"
                 element={
@@ -107,6 +98,9 @@ function App() {
             <Route path="/login" element={<LoginPrompt />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            {/* Support is public info (getting-started + contact) — reachable
+                by prospects and logged-out users, not gated behind login. */}
+            <Route path="/support" element={<Support />} />
             <Route path="/delete-account" element={<DeleteAccount />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
