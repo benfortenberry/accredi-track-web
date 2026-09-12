@@ -85,7 +85,7 @@ function Home() {
 
         <div className="fade-in max-w-3xl mx-auto relative z-10">
           <img
-            src="/logo-transparent-2000x2000.png"
+            src="/cropped-logo-transparent.png"
             alt="AccrediTrack"
             className="w-24 mx-auto mb-6"
           />
