@@ -1,8 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
 
-import logo from "../assets/logo_white2.png";
-import logoDark from "../assets/logo_black2.png";
 import { useUser } from "../context/UserContext";
 import { GearIcon } from "../utils/SvgIcons";
 import { useGoPro } from "../utils/useGoPro";
@@ -26,14 +24,9 @@ function Layout() {
           <div className="flex-1">
             <a href="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
               <img
-                src={logo}
-                alt="AccrediTrack Logo"
-                className="w-12 mx-auto hidden dark:block"
-              />
-              <img
-                src={logoDark}
-                alt="AccrediTrack Logo"
-                className="w-12 mx-auto block dark:hidden"
+                src="/logo-transparent-2000x2000.png"
+                alt="AccrediTrack"
+                className="w-12 mx-auto"
               />
             </a>
           </div>

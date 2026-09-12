@@ -383,11 +383,11 @@ Important:
 
 ## Related Docs
 
-Main roadmap document lives in the backend repo root:
+Backend repo root:
 
-- `../accredi-track/REVIVAL_ROADMAP.md`
-- `../accredi-track/AWS_STAGING_DEPLOYMENT.md`
+- `../accredi-track/RAILWAY_DEPLOYMENT.md` — deployment runbook
+- `../accredi-track/OPERATIONS.md` — ongoing operational items
 
-Frontend staging env template:
+Frontend production env template:
 
 - `.env.production.example`

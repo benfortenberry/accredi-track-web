@@ -2,7 +2,7 @@ import LoginButton from "./auth0/LoginButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import logo from "../assets/logo_white2.png";
+
 import GetStartedButton from "./auth0/GetStartedButton";
 import { getVertical } from "../content/verticals";
 import { useSeo } from "../utils/useSeo";
@@ -85,7 +85,7 @@ function Home() {
 
         <div className="fade-in max-w-3xl mx-auto relative z-10">
           <img
-            src={logo}
+            src="/logo-transparent-2000x2000.png"
             alt="AccrediTrack"
             className="w-24 mx-auto mb-6"
           />

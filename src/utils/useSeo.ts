@@ -21,6 +21,9 @@ function setMeta(attr: "name" | "property", key: string, content: string) {
   el.setAttribute("content", content);
 }
 
+// Absolute URL to the social share image (must be absolute for crawlers).
+const OG_IMAGE = "https://accreditrack.com/og-image-1280-600.png";
+
 export function useSeo({ title, description, url }: SeoOptions) {
   useEffect(() => {
     document.title = title;
@@ -28,9 +31,11 @@ export function useSeo({ title, description, url }: SeoOptions) {
     setMeta("property", "og:title", title);
     setMeta("property", "og:description", description);
     setMeta("property", "og:type", "website");
+    setMeta("property", "og:image", OG_IMAGE);
     if (url) setMeta("property", "og:url", url);
     setMeta("name", "twitter:card", "summary_large_image");
     setMeta("name", "twitter:title", title);
     setMeta("name", "twitter:description", description);
+    setMeta("name", "twitter:image", OG_IMAGE);
   }, [title, description, url]);
 }
