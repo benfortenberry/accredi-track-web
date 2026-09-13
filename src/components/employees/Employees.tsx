@@ -56,6 +56,16 @@ function Employees() {
   const serverMessage = (err: any, fallback: string): string =>
     err?.response?.data?.error || fallback;
 
+  // Map the backend-derived status to a daisyUI status color. Three tiers:
+  // Expired (red) > ExpiringSoon (amber, PRO-only) > Active (green). The backend
+  // only ever returns "ExpiringSoon" for PRO users, so free users see just
+  // green/red here.
+  const statusColorClass = (status: string): string => {
+    if (status === "Expired") return "status-error";
+    if (status === "ExpiringSoon") return "status-warning";
+    return "status-success";
+  };
+
   useEffect(() => {
     getEmployees(true);
   }, []);
@@ -403,10 +413,13 @@ function Employees() {
                       <div className="tooltip tooltip-right">
                         <div className="tooltip-content text-left p-2 pt-3">
                           <div className="status status-success"></div> - All
-                          Licenses Current
+                          licenses current
+                          <br />
+                          <div className="status status-warning"></div> - Expiring
+                          soon (within 30 days)
                           <br />
                           <div className="status status-error"></div> - Some or
-                          All Licences Expired
+                          all licenses expired
                         </div>
                         <button className="ml-2" aria-label="Status legend">
                           <QuestionMarkIcon />
@@ -448,11 +461,9 @@ function Employees() {
                       </td>
                       <td>
                         <div
-                          className={`status status-xl text-center ml-3 ${
-                            employee.status === "Active"
-                              ? "status-success"
-                              : "status-error"
-                          }`}
+                          className={`status status-xl text-center ml-3 ${statusColorClass(
+                            employee.status
+                          )}`}
                         ></div>
                       </td>
                       <td>{employee.firstName}</td>
@@ -493,11 +504,9 @@ function Employees() {
                     >
                       <div className="flex items-center gap-2">
                         <span
-                          className={`status status-md ${
-                            employee.status === "Active"
-                              ? "status-success"
-                              : "status-error"
-                          }`}
+                          className={`status status-md ${statusColorClass(
+                            employee.status
+                          )}`}
                         ></span>
                         <span className="font-semibold truncate">
                           {employee.firstName} {employee.lastName}
