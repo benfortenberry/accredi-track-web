@@ -50,9 +50,3 @@
   --noise: 0;
 }
 
-/* ── Shared overrides ──────────────────────────────────────── */
-.login-button {
-  position: absolute;
-  right: 0;
-  top: 0;
-}

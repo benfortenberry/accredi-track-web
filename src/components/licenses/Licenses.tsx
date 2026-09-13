@@ -39,7 +39,7 @@ function Licenses() {
     err?.response?.data?.error || fallback;
 
   useEffect(() => {
-    getLicenses();
+    getLicenses(true);
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -168,16 +168,13 @@ function Licenses() {
     }
   };
 
-  const getLicenses = () => {
-    setIsLoading(true);
+  const getLicenses = (showSpinner = false) => {
+    if (showSpinner) setIsLoading(true);
     setError(null);
     httpClient
       .get(api)
       .then((res) => {
-        if (res.data) {
-          setLicense(res.data);
-        }
-
+        setLicense(Array.isArray(res.data) ? res.data : []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -200,6 +197,15 @@ function Licenses() {
     setCurrentLicense(null);
     setIsEditing(false);
   };
+
+  // Row action shared between desktop table and mobile cards. (Delete goes
+  // through checkInUse, which blocks deletion if the type is assigned.)
+  const openEditLicense = (license: License) => {
+    setIsEditing(true);
+    setCurrentLicense(license);
+    (document.getElementById("add-edit-modal") as HTMLDialogElement)?.showModal();
+  };
+
   if (error) {
     return <ErrorState detail={error} onRetry={getLicenses} />;
   } else if (isLoading || !aUser) {
@@ -211,10 +217,11 @@ function Licenses() {
   } else {
     return (
       <div>
-        <h2 className="text-xl font-bold mb-4 ml-2">
-          License Types
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h2 className="text-xl font-bold">License Types</h2>
           <button
-            className="btn btn-circle float-right"
+            className="btn btn-circle btn-sm"
+            aria-label="Add license type"
             onClick={() => {
               setIsEditing(false);
               setCurrentLicense(null);
@@ -225,35 +232,28 @@ function Licenses() {
           >
             <AddIcon />
           </button>
-        </h2>
+        </div>
         {licenses && licenses.length > 0 ? (
-          <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-            <table className="table table-fixed">
-              <thead>
-                <tr>
-                  <th className="w-50"></th>
-                  <th>Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                {licenses?.map((license, i) => {
-                  return (
+          <>
+            {/* Desktop / tablet: table (sm and up). */}
+            <div className="hidden sm:block overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th className="w-32"></th>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {licenses.map((license, i) => (
                     <tr key={i}>
                       <td>
-                        <ul className="menu menu-horizontal bg-base-200  rounded-box">
+                        <ul className="menu menu-horizontal bg-base-200 rounded-box">
                           <li>
                             <button
                               type="button"
                               aria-label={`Edit ${license.name}`}
-                              onClick={() => {
-                                setIsEditing(true);
-                                setCurrentLicense(license);
-                                (
-                                  document.getElementById(
-                                    "add-edit-modal"
-                                  ) as HTMLDialogElement
-                                )?.showModal();
-                              }}
+                              onClick={() => openEditLicense(license)}
                             >
                               <EditIcon />
                             </button>
@@ -262,23 +262,52 @@ function Licenses() {
                             <button
                               type="button"
                               aria-label={`Delete ${license.name}`}
-                              onClick={() => {
-                                checkInUse(license);
-                              }}
+                              onClick={() => checkInUse(license)}
                             >
                               <DeleteIcon />
                             </button>
                           </li>
                         </ul>
                       </td>
-
                       <td>{license.name}</td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile: stacked cards (below sm). */}
+            <ul className="sm:hidden space-y-3">
+              {licenses.map((license, i) => (
+                <li
+                  key={i}
+                  className="rounded-box border border-base-content/10 bg-base-100 p-4 flex items-center justify-between gap-3"
+                >
+                  <span className="font-semibold min-w-0 flex-1 truncate">
+                    {license.name}
+                  </span>
+                  <div className="flex gap-1 shrink-0">
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm btn-square"
+                      aria-label={`Edit ${license.name}`}
+                      onClick={() => openEditLicense(license)}
+                    >
+                      <EditIcon />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm btn-square"
+                      aria-label={`Delete ${license.name}`}
+                      onClick={() => checkInUse(license)}
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-6">
             <button

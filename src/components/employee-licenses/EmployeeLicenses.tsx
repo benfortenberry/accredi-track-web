@@ -127,9 +127,7 @@ function EmployeeLicenses() {
   };
 
   useEffect(() => {
-    getEmployee(employeeId);
-    getEmployeeLicenses(employeeId);
-    getLicenses();
+    loadAll(true);
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -257,11 +255,14 @@ function EmployeeLicenses() {
       });
   };
 
-  const getEmployee = (employeeId: number) => {
+  // Individual fetches return their promise and do NOT touch isLoading — the
+  // page-level spinner is coordinated by loadAll() so it flips once instead of
+  // flickering as three requests resolve out of order.
+  const getEmployee = (employeeId: number) =>
     httpClient
       .get(`${employeeApi}/${employeeId}`)
       .then((res) => {
-        setEmployee(res.data); // Set the employee details in state
+        setEmployee(res.data);
       })
       .catch((err) => {
         console.error("Error fetching employee details:", err);
@@ -270,46 +271,41 @@ function EmployeeLicenses() {
           "error"
         );
       });
-  };
 
-  const getLicenses = () => {
-    setIsLoading(true);
-    setError(null);
+  const getLicenses = () =>
     httpClient
       .get(licenseApi)
       .then((res) => {
         setLicense(res.data);
-        setIsLoading(false);
       })
       .catch(() => {
-        setIsLoading(false);
         setError("Failed to fetch License");
       });
-  };
 
-  const getEmployeeLicenses = (employeeId: number) => {
-    setIsLoading(true);
-    setError(null);
+  const getEmployeeLicenses = (employeeId: number) =>
     httpClient
       .get(`${api}/${employeeId}`)
       .then((res) => {
-        if (res.data) {
-          setEmployeeLicenses(res.data);
-        }
-        setIsLoading(false);
+        setEmployeeLicenses(Array.isArray(res.data) ? res.data : []);
       })
       .catch(() => {
-        setIsLoading(false);
         setError("Failed to fetch employee licenses");
       });
+
+  // Coordinated page load: one spinner for the whole initial fetch, cleared
+  // once all three requests have settled (not per-request).
+  const loadAll = (showSpinner = false) => {
+    if (showSpinner) setIsLoading(true);
+    setError(null);
+    Promise.allSettled([
+      getEmployee(employeeId),
+      getEmployeeLicenses(employeeId),
+      getLicenses(),
+    ]).finally(() => setIsLoading(false));
   };
 
   // Re-run all page loads (used by the error-state retry button).
-  const reload = () => {
-    getEmployee(employeeId);
-    getEmployeeLicenses(employeeId);
-    getLicenses();
-  };
+  const reload = () => loadAll(true);
 
   const getStatus = getLicenseStatus;
 
@@ -342,6 +338,22 @@ function EmployeeLicenses() {
     setIsCreatingLicense(false);
     setNewLicenseName("");
   };
+
+  // Row action helpers, shared between the desktop table and mobile cards.
+  const openEditLicense = (employeeLicense: EmployeeLicense) => {
+    setIsEditing(true);
+    setCurrentEmployeeLicense(employeeLicense);
+    (document.getElementById("add-edit-modal") as HTMLDialogElement)?.showModal();
+  };
+
+  const openDeleteLicense = (employeeLicense: EmployeeLicense) => {
+    const input = document.getElementById(
+      "employeeLicenseIdToDelete"
+    ) as HTMLInputElement;
+    input.value = employeeLicense?.id?.toString() || "";
+    (document.getElementById("delete-modal") as HTMLDialogElement)?.showModal();
+  };
+
   if (error) {
     return <ErrorState detail={error} onRetry={reload} />;
   } else if (isLoading || !aUser) {
@@ -353,32 +365,36 @@ function EmployeeLicenses() {
   } else {
     return (
       <div>
-        <button
-          className="btn btn-circle float-right"
-          onClick={() => {
-            setIsEditing(false);
-            setCurrentEmployeeLicense(null);
-            (
-              document.getElementById("add-edit-modal") as HTMLDialogElement
-            )?.showModal();
-          }}
-        >
-          <AddIcon />
-        </button>
-
-        <button
-          type="button"
-          className="float-left mr-3 mt-1"
-          onClick={handleGoBack}
-          aria-label="Go back"
-        >
-          <BackIcon />
-        </button>
-        <h2 className="text-xl font-bold mb-4">
-          {employee
-            ? `Licenses for ${employee.firstName} ${employee.lastName}`
-            : "Loading Employee..."}
-        </h2>
+        {/* Responsive header: back + title on the left, add on the right;
+            wraps cleanly on narrow screens instead of floating. */}
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm btn-square shrink-0"
+            onClick={handleGoBack}
+            aria-label="Go back"
+          >
+            <BackIcon />
+          </button>
+          <h2 className="text-xl font-bold flex-1 min-w-0 truncate">
+            {employee
+              ? `Licenses for ${employee.firstName} ${employee.lastName}`
+              : "Loading Employee..."}
+          </h2>
+          <button
+            className="btn btn-circle btn-sm shrink-0"
+            aria-label="Add credential"
+            onClick={() => {
+              setIsEditing(false);
+              setCurrentEmployeeLicense(null);
+              (
+                document.getElementById("add-edit-modal") as HTMLDialogElement
+              )?.showModal();
+            }}
+          >
+            <AddIcon />
+          </button>
+        </div>
 
         {!hasLicenseTypes && (
           <div className="alert alert-info mb-4">
@@ -404,7 +420,9 @@ function EmployeeLicenses() {
         )}
 
         {employeeLicenses && employeeLicenses.length > 0 ? (
-          <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+          <>
+            {/* Desktop / tablet: table (sm and up). */}
+            <div className="hidden sm:block overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
             <table className="table">
               <thead>
                 <tr>
@@ -427,15 +445,7 @@ function EmployeeLicenses() {
                               <button
                                 type="button"
                                 aria-label={`Edit ${employeeLicense.licenseName || "credential"}`}
-                                onClick={() => {
-                                  setIsEditing(true);
-                                  setCurrentEmployeeLicense(employeeLicense);
-                                  (
-                                    document.getElementById(
-                                      "add-edit-modal"
-                                    ) as HTMLDialogElement
-                                  )?.showModal();
-                                }}
+                                onClick={() => openEditLicense(employeeLicense)}
                               >
                                 <EditIcon />
                               </button>
@@ -444,21 +454,7 @@ function EmployeeLicenses() {
                               <button
                                 type="button"
                                 aria-label={`Delete ${employeeLicense.licenseName || "credential"}`}
-                                onClick={() => {
-                                  const employeeLicenseIdInput =
-                                    document.getElementById(
-                                      "employeeLicenseIdToDelete"
-                                    ) as HTMLInputElement;
-                                  employeeLicenseIdInput.value =
-                                    employeeLicense?.id?.toString() || "";
-
-                                  // Show the delete modal
-                                  (
-                                    document.getElementById(
-                                      "delete-modal"
-                                    ) as HTMLDialogElement
-                                  )?.showModal();
-                                }}
+                                onClick={() => openDeleteLicense(employeeLicense)}
                               >
                                 <DeleteIcon />
                               </button>
@@ -484,7 +480,59 @@ function EmployeeLicenses() {
                   })}
               </tbody>
             </table>
-          </div>
+            </div>
+
+            {/* Mobile: stacked cards (below sm). */}
+            <ul className="sm:hidden space-y-3">
+              {employeeLicenses.map((employeeLicense, i) => (
+                <li
+                  key={i}
+                  className="rounded-box border border-base-content/10 bg-base-100 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`status status-md ${
+                            getStatus(employeeLicense.expDate) === "Active"
+                              ? "status-success"
+                              : "status-error"
+                          }`}
+                        ></span>
+                        <span className="font-semibold truncate">
+                          {employeeLicense.licenseName}
+                        </span>
+                      </div>
+                      <div className="text-sm text-base-content/70 mt-1">
+                        Issued {formatDate(employeeLicense.issueDate || "")}
+                      </div>
+                      <div className="text-sm text-base-content/70">
+                        Expires {formatDate(employeeLicense.expDate || "")}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm btn-square"
+                        aria-label={`Edit ${employeeLicense.licenseName || "credential"}`}
+                        onClick={() => openEditLicense(employeeLicense)}
+                      >
+                        <EditIcon />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm btn-square"
+                        aria-label={`Delete ${employeeLicense.licenseName || "credential"}`}
+                        onClick={() => openDeleteLicense(employeeLicense)}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-6">
             <button

@@ -85,32 +85,62 @@ function Notifications() {
       </p>
 
       {notifications.length > 0 ? (
-        <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Sent</th>
-                <th>Type</th>
-                <th>Employee</th>
-                <th>License Type</th>
-                <th>Expiration</th>
-                <th>Sent To</th>
-              </tr>
-            </thead>
-            <tbody>
-              {notifications.map((n) => (
-                <tr key={n.id}>
-                  <td>{formatDate(n.createdAt)}</td>
-                  <td>{typeBadge(n.notificationType)}</td>
-                  <td>{employeeName(n)}</td>
-                  <td>{n.licenseName || "(deleted license type)"}</td>
-                  <td>{n.expDate ? formatDate(n.expDate) : "—"}</td>
-                  <td>{n.recipientEmail || "—"}</td>
+        <>
+          {/* Desktop / tablet: table (sm and up). */}
+          <div className="hidden sm:block overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Sent</th>
+                  <th>Type</th>
+                  <th>Employee</th>
+                  <th>License Type</th>
+                  <th>Expiration</th>
+                  <th>Sent To</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {notifications.map((n) => (
+                  <tr key={n.id}>
+                    <td>{formatDate(n.createdAt)}</td>
+                    <td>{typeBadge(n.notificationType)}</td>
+                    <td>{employeeName(n)}</td>
+                    <td>{n.licenseName || "(deleted license type)"}</td>
+                    <td>{n.expDate ? formatDate(n.expDate) : "—"}</td>
+                    <td>{n.recipientEmail || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile: stacked cards (below sm). */}
+          <ul className="sm:hidden space-y-3">
+            {notifications.map((n) => (
+              <li
+                key={n.id}
+                className="rounded-box border border-base-content/10 bg-base-100 p-4"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold truncate">
+                    {employeeName(n)}
+                  </span>
+                  {typeBadge(n.notificationType)}
+                </div>
+                <div className="text-sm text-base-content/70 mt-1 truncate">
+                  {n.licenseName || "(deleted license type)"}
+                </div>
+                <div className="text-xs text-base-content/50 mt-2 space-y-0.5">
+                  <div>Sent {formatDate(n.createdAt)}</div>
+                  <div>
+                    Expiration {n.expDate ? formatDate(n.expDate) : "—"}
+                  </div>
+                  <div className="truncate">To {n.recipientEmail || "—"}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
       ) : (
         <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-8">
           <h3 className="text-lg font-bold">No notifications yet</h3>

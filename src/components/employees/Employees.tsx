@@ -55,7 +55,7 @@ function Employees() {
     err?.response?.data?.error || fallback;
 
   useEffect(() => {
-    getEmployees();
+    getEmployees(true);
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -148,14 +148,19 @@ function Employees() {
       });
   };
 
-  const getEmployees = () => {
-    setIsLoading(true);
+  // showSpinner=true only for the initial load. Refetches (after add/delete/
+  // import/demo) update the list in place without flipping the whole page back
+  // to the full-page spinner, which caused a jarring flash.
+  const getEmployees = (showSpinner = false) => {
+    if (showSpinner) setIsLoading(true);
     setError(null);
     httpClient
       .get(api)
       .then((res) => {
         if (res.data) {
           setEmployees(res.data);
+        } else {
+          setEmployees([]);
         }
         setIsLoading(false);
       })
@@ -289,6 +294,22 @@ function Employees() {
     setCurrentEmployee(null);
     setIsEditing(false);
   };
+
+  // Row action helpers, shared between the desktop table and the mobile cards.
+  const openEdit = (employee: Employee) => {
+    setIsEditing(true);
+    setCurrentEmployee(employee);
+    (document.getElementById("add-edit-modal") as HTMLDialogElement)?.showModal();
+  };
+
+  const openDelete = (employee: Employee) => {
+    const input = document.getElementById(
+      "employeeIdToDelete"
+    ) as HTMLInputElement;
+    input.value = employee.id.toString();
+    (document.getElementById("delete-modal") as HTMLDialogElement)?.showModal();
+  };
+
   if (error) {
     return <ErrorState detail={error} onRetry={getEmployees} />;
   } else if (isLoading || !aUser) {
@@ -300,99 +321,96 @@ function Employees() {
   } else {
     return (
       <div>
-        <h2 className="text-xl font-bold mb-4 ml-2">
-          Employees
-          <button
-            className="btn btn-circle float-right"
-            onClick={() => {
-              setIsEditing(false);
-              setCurrentEmployee(null);
-              (
-                document.getElementById("add-edit-modal") as HTMLDialogElement
-              )?.showModal();
-            }}
-          >
-            <AddIcon />
-          </button>
-          {employees && employees.length > 0 && (
+        {/* Responsive header: title and actions in a flex row that wraps on
+            narrow screens instead of floating over the title. */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h2 className="text-xl font-bold">Employees</h2>
+          <div className="flex flex-wrap items-center gap-2">
             <button
-              className="btn btn-outline btn-sm float-right mr-3 mt-1 font-normal"
-              onClick={exportData}
+              className="btn btn-ghost btn-sm font-normal"
+              onClick={downloadTemplate}
+              title="Download a correctly-formatted CSV to fill in"
             >
-              Export CSV
+              Template
             </button>
-          )}
-          <label
-            className="btn btn-outline btn-sm float-right mr-3 mt-1 font-normal"
-            title="CSV columns: First Name, Last Name, Phone (10 digits), Email"
-          >
-            {isImporting ? "Importing..." : "Import CSV"}
-            <input
-              type="file"
-              accept=".csv,text/csv"
-              className="hidden"
-              disabled={isImporting}
-              onChange={handleImportFile}
-            />
-          </label>
-          <button
-            className="btn btn-ghost btn-sm float-right mr-1 mt-1 font-normal"
-            onClick={downloadTemplate}
-            title="Download a correctly-formatted CSV to fill in"
-          >
-            Template
-          </button>
-        </h2>
+            <label
+              className="btn btn-outline btn-sm font-normal"
+              title="CSV columns: First Name, Last Name, Phone (10 digits), Email"
+            >
+              {isImporting ? "Importing..." : "Import CSV"}
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                disabled={isImporting}
+                onChange={handleImportFile}
+              />
+            </label>
+            {employees && employees.length > 0 && (
+              <button
+                className="btn btn-outline btn-sm font-normal"
+                onClick={exportData}
+              >
+                Export CSV
+              </button>
+            )}
+            <button
+              className="btn btn-circle btn-sm"
+              aria-label="Add employee"
+              onClick={() => {
+                setIsEditing(false);
+                setCurrentEmployee(null);
+                (
+                  document.getElementById("add-edit-modal") as HTMLDialogElement
+                )?.showModal();
+              }}
+            >
+              <AddIcon />
+            </button>
+          </div>
+        </div>
 
         {employees && employees.length > 0 ? (
-          <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>
-                    Status
-                    <div className="tooltip tooltip-right">
-                      <div className="tooltip-content text-left p-2 pt-3">
-                        <div className="status   status-success "></div> - All
-                        Licenses Current
-                        <br />
-                        <div className="status  status-error "></div> - Some or
-                        All Licences Expired
+          <>
+            {/* Desktop / tablet: table (sm and up). */}
+            <div className="hidden sm:block overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>
+                      Status
+                      <div className="tooltip tooltip-right">
+                        <div className="tooltip-content text-left p-2 pt-3">
+                          <div className="status status-success"></div> - All
+                          Licenses Current
+                          <br />
+                          <div className="status status-error"></div> - Some or
+                          All Licences Expired
+                        </div>
+                        <button className="ml-2" aria-label="Status legend">
+                          <QuestionMarkIcon />
+                        </button>
                       </div>
-                      <button className="ml-2">
-                        <QuestionMarkIcon />
-                      </button>
-                    </div>
-                  </th>
-
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Phone</th>
-                  <th>Email</th>
-                  <th>License(s)</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees?.map((employee, i) => {
-                  return (
+                    </th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>License(s)</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {employees.map((employee, i) => (
                     <tr key={i}>
                       <td>
-                        <ul className="menu menu-horizontal bg-base-200  rounded-box">
+                        <ul className="menu menu-horizontal bg-base-200 rounded-box">
                           <li>
                             <button
                               type="button"
                               aria-label={`Edit ${employee.firstName} ${employee.lastName}`}
-                              onClick={() => {
-                                setIsEditing(true);
-                                setCurrentEmployee(employee);
-                                (
-                                  document.getElementById(
-                                    "add-edit-modal"
-                                  ) as HTMLDialogElement
-                                )?.showModal();
-                              }}
+                              onClick={() => openEdit(employee)}
                             >
                               <EditIcon />
                             </button>
@@ -401,25 +419,13 @@ function Employees() {
                             <button
                               type="button"
                               aria-label={`Delete ${employee.firstName} ${employee.lastName}`}
-                              onClick={() => {
-                                const employeeIdInput = document.getElementById(
-                                  "employeeIdToDelete"
-                                ) as HTMLInputElement;
-                                employeeIdInput.value = employee.id.toString();
-
-                                (
-                                  document.getElementById(
-                                    "delete-modal"
-                                  ) as HTMLDialogElement
-                                )?.showModal();
-                              }}
+                              onClick={() => openDelete(employee)}
                             >
                               <DeleteIcon />
                             </button>
                           </li>
                         </ul>
                       </td>
-
                       <td>
                         <div
                           className={`status status-xl text-center ml-3 ${
@@ -429,14 +435,13 @@ function Employees() {
                           }`}
                         ></div>
                       </td>
-
                       <td>{employee.firstName}</td>
                       <td>{employee.lastName}</td>
                       <td>{formatPhoneNumber(employee.phone1)}</td>
                       <td>{employee.email}</td>
                       <td>{employee.licenseCount}</td>
-                      <td className="">
-                        <ul className="menu menu-horizontal bg-base-200 float-right  rounded-box">
+                      <td>
+                        <ul className="menu menu-horizontal bg-base-200 float-right rounded-box">
                           <li>
                             <a
                               href={`/employee/${employee.id}`}
@@ -448,11 +453,70 @@ function Employees() {
                         </ul>
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile: stacked cards (below sm). */}
+            <ul className="sm:hidden space-y-3">
+              {employees.map((employee, i) => (
+                <li
+                  key={i}
+                  className="rounded-box border border-base-content/10 bg-base-100 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <a
+                      href={`/employee/${employee.id}`}
+                      className="min-w-0 flex-1"
+                      aria-label={`View credentials for ${employee.firstName} ${employee.lastName}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`status status-md ${
+                            employee.status === "Active"
+                              ? "status-success"
+                              : "status-error"
+                          }`}
+                        ></span>
+                        <span className="font-semibold truncate">
+                          {employee.firstName} {employee.lastName}
+                        </span>
+                      </div>
+                      <div className="text-sm text-base-content/70 mt-1 truncate">
+                        {formatPhoneNumber(employee.phone1)}
+                      </div>
+                      <div className="text-sm text-base-content/70 truncate">
+                        {employee.email}
+                      </div>
+                      <div className="text-xs text-base-content/50 mt-1">
+                        {employee.licenseCount} license
+                        {employee.licenseCount === 1 ? "" : "s"}
+                      </div>
+                    </a>
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm btn-square"
+                        aria-label={`Edit ${employee.firstName} ${employee.lastName}`}
+                        onClick={() => openEdit(employee)}
+                      >
+                        <EditIcon />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm btn-square"
+                        aria-label={`Delete ${employee.firstName} ${employee.lastName}`}
+                        onClick={() => openDelete(employee)}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <div className="text-center mt-6 rounded-box border border-base-content/10 bg-base-100 p-8">
             <h3 className="text-xl font-bold">Add your first employee</h3>

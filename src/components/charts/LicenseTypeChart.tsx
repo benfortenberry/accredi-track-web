@@ -24,6 +24,9 @@ const gridColor  = "rgba(232, 224, 214, 0.1)";
 
 export const options = {
   responsive: true,
+  // Fill the fixed-height container instead of keeping a fixed aspect ratio,
+  // so the chart is centered and uses the available space on all screen sizes.
+  maintainAspectRatio: false,
   scales: {
     y: {
       ticks:  { precision: 0, color: labelColor },

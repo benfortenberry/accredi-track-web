@@ -238,13 +238,17 @@ function Dashboard() {
         })()}
 
         <div className="grid lg:grid-cols-2 gap-4">
-          <div className="px-2 sm:px-6 pt-5 text-center h-64 sm:h-72">
-            {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
+          <div className="px-2 sm:px-6 pt-5 h-64 sm:h-72 flex justify-center">
+            <div className="relative w-full max-w-xl">
+              {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
+            </div>
           </div>
-          <div className="px-2 sm:px-6 pt-5 text-center h-64 sm:h-72">
-            {licenseChartData && expiringSoonChartData && (
-              <ExpiringSoonChart data={expiringSoonChartData} />
-            )}
+          <div className="px-2 sm:px-6 pt-5 h-64 sm:h-72 flex justify-center">
+            <div className="relative w-full max-w-xl">
+              {licenseChartData && expiringSoonChartData && (
+                <ExpiringSoonChart data={expiringSoonChartData} />
+              )}
+            </div>
           </div>
         </div>
 

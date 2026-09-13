@@ -70,7 +70,7 @@ function Home() {
     <div className="flex flex-col min-h-screen bg-base-100">
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
-      <header className="hero-glow relative w-full bg-gradient text-white pt-20 pb-32 px-6 text-center overflow-hidden">
+      <header className="hero-glow relative w-full bg-gradient text-white pt-16 pb-20 sm:pt-20 sm:pb-32 px-6 text-center overflow-hidden">
         {/* Subtle dot pattern overlay */}
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -143,7 +143,7 @@ function Home() {
       {/* ── PROBLEM / COST OF DOING NOTHING ───────────────────────── */}
       <section className="w-full py-16 px-6 bg-base-100">
         <div className="reveal max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold text-base-content mb-4">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-base-content mb-4">
             {vertical.problemHeading}
           </h2>
           <p className="text-base-content/70 text-lg mb-10">
@@ -196,7 +196,7 @@ function Home() {
       {/* ── HOW IT WORKS ──────────────────────────────────────────── */}
       <section className="w-full bg-base-200 py-16 px-6">
         <div className="reveal max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold text-base-content mb-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-base-content mb-2">
             Up and running in minutes
           </h2>
           <p className="text-base-content/60 mb-12">No training required. No implementation fee.</p>
@@ -210,7 +210,7 @@ function Home() {
               {
                 step: "2",
                 heading: "Attach their licenses",
-                body: "Add each credential — license type, issue date, expiration date. That's it.",
+                body: "Add each credential: license type, issue date, expiration date. That's it.",
               },
               {
                 step: "3",
@@ -233,7 +233,7 @@ function Home() {
       {/* ── FEATURES ──────────────────────────────────────────────── */}
       <section className="w-full py-16 px-6 bg-base-100">
         <div className="reveal max-w-4xl mx-auto">
-          <h2 className="text-3xl font-extrabold text-base-content text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-base-content text-center mb-10">
             Everything you need. Nothing you don't.
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -244,7 +244,7 @@ function Home() {
               },
               {
                 heading: "Automated email reminders",
-                body: "Set it once. Your team gets notified before credentials expire — no manual follow-up.",
+                body: "Set it once. Your team gets notified before credentials expire, with no manual follow-up.",
               },
               {
                 heading: "Per-employee license history",
@@ -252,7 +252,7 @@ function Home() {
               },
               {
                 heading: "Data export",
-                body: "Export all employee license data to CSV any time — useful for audits and reporting.",
+                body: "Export all employee license data to CSV any time, useful for audits and reporting.",
               },
             ].map(({ heading, body }) => (
               <div
@@ -275,7 +275,7 @@ function Home() {
       {/* ── PRICING ───────────────────────────────────────────────── */}
       <section className="w-full bg-base-200 py-16 px-6">
         <div className="reveal max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold text-base-content mb-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-base-content mb-2">
             Simple, honest pricing
           </h2>
           <p className="text-base-content/60 mb-12">
@@ -350,7 +350,7 @@ function Home() {
       {/* ── FINAL CTA ─────────────────────────────────────────────── */}
       <section className="hero-glow relative overflow-hidden w-full bg-gradient text-white py-16 px-6 text-center">
         <div className="fade-in relative z-10 max-w-2xl mx-auto">
-          <h2 className="text-3xl font-extrabold mb-3">
+          <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">
             Ready to get your team compliant?
           </h2>
           <p className="text-lg mb-8 opacity-90">

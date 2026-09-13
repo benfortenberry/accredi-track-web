@@ -69,10 +69,13 @@ describe("Employees list", () => {
 
     render(<Employees />);
 
-    expect(await screen.findByText("Alex")).toBeInTheDocument();
-    expect(screen.getByText("Jordan")).toBeInTheDocument();
+    // The page renders BOTH a desktop table and a mobile card list (CSS hides
+    // one per viewport, but jsdom has no viewport so both are in the DOM).
+    // Assert the data appears at least once rather than exactly once.
+    expect((await screen.findAllByText(/Alex/)).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Jordan/).length).toBeGreaterThan(0);
     // Phone is formatted for display.
-    expect(screen.getByText("(555) 123-4567")).toBeInTheDocument();
+    expect(screen.getAllByText("(555) 123-4567").length).toBeGreaterThan(0);
   });
 
   it("shows the empty state with add/import/demo actions when there are no employees", async () => {

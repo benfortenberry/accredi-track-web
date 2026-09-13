@@ -52,8 +52,10 @@ describe("Licenses list", () => {
 
     render(<Licenses />);
 
-    expect(await screen.findByText("CPR Certification")).toBeInTheDocument();
-    expect(screen.getByText("Driver's License")).toBeInTheDocument();
+    // Page renders both a desktop table and a mobile card list (both in the
+    // DOM under jsdom), so the name appears more than once.
+    expect((await screen.findAllByText("CPR Certification")).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Driver's License").length).toBeGreaterThan(0);
   });
 
   it("shows the empty state when there are no license types", async () => {
@@ -80,11 +82,12 @@ describe("Licenses delete guard", () => {
     const user = userEvent.setup();
 
     render(<Licenses />);
-    await screen.findByText("CPR Certification");
+    await screen.findAllByText("CPR Certification");
 
-    // Click the delete (trash) action, now an accessible button.
+    // Click the delete (trash) action. Both the desktop table and mobile card
+    // render it (jsdom has no viewport), so click the first match.
     await user.click(
-      screen.getByRole("button", { name: /Delete CPR Certification/i })
+      screen.getAllByRole("button", { name: /Delete CPR Certification/i })[0]
     );
 
     // The in-use modal is opened (not the confirm-delete modal), and lists the
@@ -109,10 +112,10 @@ describe("Licenses delete guard", () => {
     const user = userEvent.setup();
 
     render(<Licenses />);
-    await screen.findByText("CPR Certification");
+    await screen.findAllByText("CPR Certification");
 
     await user.click(
-      screen.getByRole("button", { name: /Delete CPR Certification/i })
+      screen.getAllByRole("button", { name: /Delete CPR Certification/i })[0]
     );
 
     // The confirm-delete modal is opened; the in-use modal is not.
