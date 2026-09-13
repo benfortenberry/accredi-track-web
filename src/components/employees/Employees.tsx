@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   AddIcon,
   EditIcon,
@@ -463,12 +463,12 @@ function Employees() {
                       <td>
                         <ul className="menu menu-horizontal bg-base-200 float-right rounded-box">
                           <li>
-                            <a
-                              href={`/employee/${employee.id}`}
+                            <Link
+                              to={`/employee/${employee.id}`}
                               aria-label={`View credentials for ${employee.firstName} ${employee.lastName}`}
                             >
                               <RightArrowIcon />
-                            </a>
+                            </Link>
                           </li>
                         </ul>
                       </td>
@@ -486,8 +486,8 @@ function Employees() {
                   className="rounded-box border border-base-content/10 bg-base-100 p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <a
-                      href={`/employee/${employee.id}`}
+                    <Link
+                      to={`/employee/${employee.id}`}
                       className="min-w-0 flex-1"
                       aria-label={`View credentials for ${employee.firstName} ${employee.lastName}`}
                     >
@@ -513,7 +513,7 @@ function Employees() {
                         {employee.licenseCount} license
                         {employee.licenseCount === 1 ? "" : "s"}
                       </div>
-                    </a>
+                    </Link>
                     <div className="flex flex-col gap-1 shrink-0">
                       <button
                         type="button"

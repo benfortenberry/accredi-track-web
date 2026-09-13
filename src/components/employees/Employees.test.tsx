@@ -34,6 +34,14 @@ vi.mock("../../utils/config", () => ({
 const navigateMock = vi.fn();
 vi.mock("react-router-dom", () => ({
   useNavigate: () => navigateMock,
+  // Minimal Link stub: renders a plain anchor so the component tree mounts
+  // without a real Router. These tests assert on content/navigation, not on
+  // client-side routing behaviour of the link itself.
+  Link: ({ to, children, ...props }: any) => (
+    <a href={typeof to === "string" ? to : "#"} {...props}>
+      {children}
+    </a>
+  ),
 }));
 
 import Employees from "./Employees";

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { httpClient, withAxios } from "../utils/AxiosInstance";
 import DeleteModal from "../components/modals/DeleteModal";
@@ -108,9 +109,9 @@ const Settings = () => {
           >
             Export data (CSV)
           </button>
-          <a href="/license-types" className="btn btn-outline btn-sm">
+          <Link to="/license-types" className="btn btn-outline btn-sm">
             Edit license types
-          </a>
+          </Link>
         </div>
       </section>
 

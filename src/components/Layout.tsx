@@ -30,6 +30,14 @@ function Layout() {
   const mobileNavLinkClass = (path: string) =>
     pathname === path ? "bg-primary/10 text-primary" : "";
 
+  // daisyUI's dropdown stays open while its content holds focus. On mobile,
+  // clicking a link navigates via the SPA router (no page reload) so focus stays
+  // inside the menu and it stays open over the new page. Blurring the active
+  // element drops focus and collapses the dropdown after a tap.
+  const closeMobileMenu = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+  };
+
   return (
     <div className="min-h-screen bg-base-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -91,32 +99,32 @@ function Layout() {
                     className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
                   >
                     <li>
-                      <Link to="/dashboard" className={`btn btn-ghost ${mobileNavLinkClass("/dashboard")}`}>
+                      <Link to="/dashboard" onClick={closeMobileMenu} className={`btn btn-ghost ${mobileNavLinkClass("/dashboard")}`}>
                         Dashboard
                       </Link>
                     </li>
                     <li>
-                      <Link to="/employees" className={`btn btn-ghost ${mobileNavLinkClass("/employees")}`}>
+                      <Link to="/employees" onClick={closeMobileMenu} className={`btn btn-ghost ${mobileNavLinkClass("/employees")}`}>
                         Employees
                       </Link>
                     </li>
                     <li>
-                      <Link to="/credentials" className={`btn btn-ghost ${mobileNavLinkClass("/credentials")}`}>
+                      <Link to="/credentials" onClick={closeMobileMenu} className={`btn btn-ghost ${mobileNavLinkClass("/credentials")}`}>
                         Credentials
                       </Link>
                     </li>
                     <li>
-                      <Link to="/license-types" className={`btn btn-ghost ${mobileNavLinkClass("/license-types")}`}>
+                      <Link to="/license-types" onClick={closeMobileMenu} className={`btn btn-ghost ${mobileNavLinkClass("/license-types")}`}>
                         License Types
                       </Link>
                     </li>
                     <li>
-                      <Link to="/settings" className={`btn btn-ghost ${mobileNavLinkClass("/settings")}`}>
+                      <Link to="/settings" onClick={closeMobileMenu} className={`btn btn-ghost ${mobileNavLinkClass("/settings")}`}>
                         Settings
                       </Link>
                     </li>
                     <li>
-                      <Link to="/help" className={`btn btn-ghost ${mobileNavLinkClass("/help")}`}>
+                      <Link to="/help" onClick={closeMobileMenu} className={`btn btn-ghost ${mobileNavLinkClass("/help")}`}>
                         Support
                       </Link>
                     </li>
@@ -125,7 +133,10 @@ function Layout() {
                       <li>
                         <button
                           className="btn btn-sm btn-secondary w-full"
-                          onClick={goPro}
+                          onClick={() => {
+                            closeMobileMenu();
+                            goPro();
+                          }}
                         >
                           go PRO
                         </button>

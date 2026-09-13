@@ -30,6 +30,17 @@ vi.mock("../../utils/config", () => ({
   getAuth0ClientId: () => "",
 }));
 
+// Licenses renders a <Link> to the blocking employee inside the in-use modal.
+// These tests mount the page without a real Router, so stub Link as a plain
+// anchor (the tests assert on modal state and content, not routing).
+vi.mock("react-router-dom", () => ({
+  Link: ({ to, children, ...props }: any) => (
+    <a href={typeof to === "string" ? to : "#"} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
 import Licenses from "./Licenses";
 
 beforeEach(() => {

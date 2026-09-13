@@ -6,6 +6,7 @@ import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
 import ErrorState from "./ErrorState";
 import { getApiBaseUrl } from "../utils/config";
+import { themeColorAlpha } from "../utils/themeColors";
 
 function Dashboard() {
   const API_BASE_URL = getApiBaseUrl();
@@ -104,7 +105,7 @@ function Dashboard() {
             datasets.push({
               label: "Valid",
               data: licenseCounts.map((row: { count: unknown }) => row.count),
-              backgroundColor: "rgba(234, 88, 12, 0.85)", // burnt orange
+              backgroundColor: themeColorAlpha("success", 0.85), // matches the "Active" badge (green = valid)
             });
           }
 
@@ -116,7 +117,7 @@ function Dashboard() {
             datasets.push({
               label: "Expired",
               data: expiredCount.map((row: { count: unknown }) => row.count),
-              backgroundColor: "rgba(180, 60, 60, 0.85)", // muted red
+              backgroundColor: themeColorAlpha("error", 0.85), // matches text-error
             });
           }
 
@@ -150,8 +151,8 @@ function Dashboard() {
             {
               label: "Expiring",
               data: expiringSoonCounts.map((row: { count: unknown }) => row.count),
-              backgroundColor: "rgba(234, 88, 12, 0.2)",
-              borderColor: "rgba(234, 88, 12, 0.9)",
+              backgroundColor: themeColorAlpha("warning", 0.2), // matches Expiring Soon tile
+              borderColor: themeColorAlpha("warning", 0.9),
               borderWidth: 2,
               tension: 0.3,
             },
@@ -228,13 +229,13 @@ function Dashboard() {
         })()}
 
         <div className="grid lg:grid-cols-2 gap-4">
-          <div className="px-2 sm:px-6 pt-5 h-64 sm:h-72 flex justify-center">
-            <div className="relative w-full max-w-xl">
+          <div className="min-w-0 rounded-box border border-base-content/10 bg-base-100 p-4 h-64 sm:h-72 flex justify-center">
+            <div className="relative w-full max-w-xl min-w-0 overflow-hidden">
               {licenseChartData && <LicenseTypeChart data={licenseChartData} />}
             </div>
           </div>
-          <div className="px-2 sm:px-6 pt-5 h-64 sm:h-72 flex justify-center">
-            <div className="relative w-full max-w-xl">
+          <div className="min-w-0 rounded-box border border-base-content/10 bg-base-100 p-4 h-64 sm:h-72 flex justify-center">
+            <div className="relative w-full max-w-xl min-w-0 overflow-hidden">
               {licenseChartData && expiringSoonChartData && (
                 <ExpiringSoonChart data={expiringSoonChartData} />
               )}
@@ -242,62 +243,73 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
-          <div className="stat place-items-center">
-            <div className="stat-title">Active Employees</div>
-            <div className="stat-value">{metrics?.totalEmployees ?? 0}</div>
-            <div className="stat-desc ">&nbsp;</div>
-          </div>
+        {/* Metric tiles. Each is a bordered card (matching the tables/lists
+            elsewhere in the app) so they read as intentional rather than
+            floating text. Plain markup (not daisyUI `stat`) to avoid the dashed
+            divider borders. The two risk metrics (expiring / expired) carry a
+            warning/error color on the number so the eye lands on risk first. */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-8">
+          <Link
+            to="/employees"
+            className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
+          >
+            <div className="text-sm text-base-content/60">Active Employees</div>
+            <div className="text-3xl font-bold">{metrics?.totalEmployees ?? 0}</div>
+            <div className="text-xs link link-hover">View team</div>
+          </Link>
 
           <Link
             to="/credentials?status=expiring"
-            className="stat place-items-center hover:bg-base-200 rounded-box transition-colors"
+            className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
           >
-            <div className="stat-title">Expiring Soon</div>
-            <div className="stat-value ">{metrics?.expiringSoon ?? 0}</div>
-            <div className="stat-desc link link-hover">Next 30 Days</div>
+            <div className="text-sm text-base-content/60">Expiring Soon</div>
+            <div className="text-3xl font-bold text-warning">{metrics?.expiringSoon ?? 0}</div>
+            <div className="text-xs link link-hover">Next 30 days</div>
           </Link>
 
           <Link
             to="/credentials?status=expired"
-            className="stat place-items-center hover:bg-base-200 rounded-box transition-colors"
+            className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
           >
-            <div className="stat-title">Expired Licenses</div>
-            <div className="stat-value ">{metrics?.expiredCount ?? 0}</div>
-            <div className="stat-desc link link-hover">View</div>
+            <div className="text-sm text-base-content/60">Expired Licenses</div>
+            <div className="text-3xl font-bold text-error">{metrics?.expiredCount ?? 0}</div>
+            <div className="text-xs link link-hover">View all</div>
           </Link>
-        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="stat place-items-center">
-            <div className="stat-title">Compliance Rate</div>
-            <div className="stat-value ">
+          <Link
+            to="/credentials"
+            className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
+          >
+            <div className="text-sm text-base-content/60">Compliance Rate</div>
+            <div className="text-3xl font-bold">
               {metrics?.complianceRate != null
                 ? Math.round(Number(metrics.complianceRate))
                 : 0}
               %
             </div>
+            <div className="text-xs link link-hover">View credentials</div>
+          </Link>
 
-            <div className="stat-desc text-error">&nbsp;</div>
-          </div>
-
-          <div className="stat place-items-center">
-            <div className="stat-title">Avg License Per Employees</div>
-            <div className="stat-value ">
+          <Link
+            to="/credentials"
+            className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
+          >
+            <div className="text-sm text-base-content/60">Avg Licenses Per Employee</div>
+            <div className="text-3xl font-bold">
               {metrics?.licenseAvg != null
                 ? Number(metrics.licenseAvg).toFixed(1)
                 : "0"}
             </div>
-            <div className="stat-desc ">&nbsp;</div>
-          </div>
+            <div className="text-xs link link-hover">View credentials</div>
+          </Link>
 
           <Link
             to="/notifications"
-            className="stat place-items-center hover:bg-base-200 rounded-box transition-colors"
+            className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
           >
-            <div className="stat-title">Notifications Sent</div>
-            <div className="stat-value ">{metrics?.notificationCount ?? 0}</div>
-            <div className="stat-desc link link-hover">View log</div>
+            <div className="text-sm text-base-content/60">Notifications Sent</div>
+            <div className="text-3xl font-bold">{metrics?.notificationCount ?? 0}</div>
+            <div className="text-xs link link-hover">View log</div>
           </Link>
         </div>
       </div>

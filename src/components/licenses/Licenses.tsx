@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { AddIcon, DeleteIcon, EditIcon } from "../../utils/SvgIcons";
 import { showToast } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
@@ -348,12 +349,12 @@ function Licenses() {
               {employeeNames &&
                 employeeNames.map((emp) => (
                   <li key={emp.id}>
-                    <a
+                    <Link
                       className="btn btn-link pl-0"
-                      href={`employee/${emp.id}?r=l`}
+                      to={`/employee/${emp.id}?r=l`}
                     >
                       {emp.firstName} {emp.lastName}
-                    </a>
+                    </Link>
                   </li>
                 ))}
             </ul>
