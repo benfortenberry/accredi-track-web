@@ -18,6 +18,7 @@ import Privacy from "./components/Privacy";
 import HealthCheck from "./components/HealthCheck";
 import Settings from "./components/Settings";
 import Support from "./components/Support";
+import HelpPage from "./components/HelpPage";
 import Notifications from "./components/Notifications";
 import Credentials from "./components/Credentials";
 
@@ -98,6 +99,12 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+              {/* In-app support/help. Public (no ProtectedRoute) but rendered
+                  inside Layout, so the nav "Support" link stays within the app
+                  chrome instead of jumping out to the standalone /support page.
+                  Shares its body with /support via SupportContent. */}
+              <Route path="help" element={<HelpPage />} />
             </Route>
 
             {/* <Route path="/home" element={<Home />} /> */}
@@ -108,8 +115,9 @@ function App() {
             <Route path="/login" element={<LoginPrompt />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
-            {/* Support is public info (getting-started + contact) — reachable
-                by prospects and logged-out users, not gated behind login. */}
+            {/* Public standalone support page (getting-started + contact),
+                reachable by prospects and logged-out users. The in-app version
+                lives at /help inside Layout. */}
             <Route path="/support" element={<Support />} />
             <Route path="/delete-account" element={<DeleteAccount />} />
             <Route path="*" element={<NotFound />} />

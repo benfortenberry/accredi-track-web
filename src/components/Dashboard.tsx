@@ -242,7 +242,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
           <div className="stat place-items-center">
             <div className="stat-title">Active Employees</div>
             <div className="stat-value">{metrics?.totalEmployees ?? 0}</div>

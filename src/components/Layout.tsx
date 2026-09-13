@@ -2,7 +2,7 @@ import { Outlet, useLocation, Link } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
 
 import { useUser } from "../context/UserContext";
-import { GearIcon } from "../utils/SvgIcons";
+import { MenuIcon } from "../utils/SvgIcons";
 import { useGoPro } from "../utils/useGoPro";
 
 function Layout() {
@@ -14,8 +14,21 @@ function Layout() {
   // Stripe URL.
   const goPro = useGoPro();
 
+  // Desktop horizontal nav: signal active with a colored bottom border (+ text
+  // color), NOT font-weight. Bold text is wider than regular, so toggling weight
+  // reflowed the nav and shifted neighbouring links on every navigation. The
+  // border is always present but transparent when inactive, so it reserves its
+  // space in both states and never causes layout shift.
   const navLinkClass = (path: string) =>
-    pathname === path ? "active font-semibold" : "";
+    pathname === path
+      ? "border-b-2 border-primary text-primary rounded-none"
+      : "border-b-2 border-transparent";
+
+  // Mobile dropdown: vertical stack of full-width buttons, so there's no reflow
+  // concern. A background highlight (primary tint + text) is the clearer active
+  // cue here than an underline.
+  const mobileNavLinkClass = (path: string) =>
+    pathname === path ? "bg-primary/10 text-primary" : "";
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -56,38 +69,10 @@ function Layout() {
                 </li>
               )}
               <li className="hidden md:block">
-                <Link
-                  to="/settings"
-                  className={navLinkClass("/settings")}
-                  title="Settings"
-                  aria-label="Settings"
-                >
-                  <GearIcon />
-                </Link>
+                <Link to="/settings" className={navLinkClass("/settings")}>Settings</Link>
               </li>
               <li className="hidden md:block">
-                <Link
-                  to="/support"
-                  className={navLinkClass("/support")}
-                  title="Support"
-                  aria-label="Support"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
-                    />
-                  </svg>
-                </Link>
+                <Link to="/help" className={navLinkClass("/help")}>Support</Link>
               </li>
 
               {/* Mobile hamburger */}
@@ -99,53 +84,39 @@ function Layout() {
                     className="btn btn-sm btn-ghost"
                     aria-label="Open menu"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M4 6h16M4 12h8m-8 6h16"
-                      />
-                    </svg>
+                    <MenuIcon />
                   </div>
                   <ul
                     tabIndex={0}
                     className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
                   >
                     <li>
-                      <Link to="/dashboard" className={`btn btn-ghost ${navLinkClass("/dashboard")}`}>
+                      <Link to="/dashboard" className={`btn btn-ghost ${mobileNavLinkClass("/dashboard")}`}>
                         Dashboard
                       </Link>
                     </li>
                     <li>
-                      <Link to="/employees" className={`btn btn-ghost ${navLinkClass("/employees")}`}>
+                      <Link to="/employees" className={`btn btn-ghost ${mobileNavLinkClass("/employees")}`}>
                         Employees
                       </Link>
                     </li>
                     <li>
-                      <Link to="/credentials" className={`btn btn-ghost ${navLinkClass("/credentials")}`}>
+                      <Link to="/credentials" className={`btn btn-ghost ${mobileNavLinkClass("/credentials")}`}>
                         Credentials
                       </Link>
                     </li>
                     <li>
-                      <Link to="/license-types" className={`btn btn-ghost ${navLinkClass("/license-types")}`}>
+                      <Link to="/license-types" className={`btn btn-ghost ${mobileNavLinkClass("/license-types")}`}>
                         License Types
                       </Link>
                     </li>
                     <li>
-                      <Link to="/settings" className={`btn btn-ghost ${navLinkClass("/settings")}`}>
+                      <Link to="/settings" className={`btn btn-ghost ${mobileNavLinkClass("/settings")}`}>
                         Settings
                       </Link>
                     </li>
                     <li>
-                      <Link to="/support" className={`btn btn-ghost ${navLinkClass("/support")}`}>
+                      <Link to="/help" className={`btn btn-ghost ${mobileNavLinkClass("/help")}`}>
                         Support
                       </Link>
                     </li>

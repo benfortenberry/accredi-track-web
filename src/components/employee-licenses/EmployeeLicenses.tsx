@@ -9,6 +9,7 @@ import { showToast, formatDate, getLicenseStatus } from "../../utils/Utilities";
 
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import { getApiBaseUrl } from "../../utils/config";
+import { track } from "../../utils/analytics";
 import DeleteModal from "../modals/DeleteModal";
 import UpgradeCta from "../UpgradeCta";
 import ErrorState from "../ErrorState";
@@ -195,6 +196,7 @@ function EmployeeLicenses() {
         .post(api, employeeLicenseData)
         .then((res) => {
           console.log("Employee License added successfully:", res.data);
+          track("credential_added");
           showToast("Employee License added successfully!", "success");
 
           getEmployeeLicenses(employeeId);

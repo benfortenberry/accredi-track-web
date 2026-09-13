@@ -67,10 +67,21 @@ export function trackPageview(path: string) {
 }
 
 // Named conversion events. Keep the set small and meaningful.
+//
+// Acquisition:   get_started_clicked, login_clicked, go_pro_clicked
+// Activation:    employee_added, employees_imported, credential_added
+//
+// The activation events map to the app's real onboarding path (add an
+// employee, then attach a credential — license types are created inline). With
+// UTM super-properties riding on every event, they answer "did signups from a
+// given campaign actually activate, or bounce at the empty dashboard?".
 export type AnalyticsEvent =
   | "get_started_clicked"
   | "login_clicked"
-  | "go_pro_clicked";
+  | "go_pro_clicked"
+  | "employee_added"
+  | "employees_imported"
+  | "credential_added";
 
 export function track(event: AnalyticsEvent, props?: Record<string, unknown>) {
   if (!enabled) return;

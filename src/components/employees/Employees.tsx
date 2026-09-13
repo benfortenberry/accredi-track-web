@@ -8,10 +8,12 @@ import {
   EmailIcon,
   PhoneIcon,
   RightArrowIcon,
+  OverflowIcon,
 } from "../../utils/SvgIcons";
 import { showToast, formatPhoneNumber } from "../../utils/Utilities";
 import { httpClient, withAxios } from "../../utils/AxiosInstance";
 import { getApiBaseUrl } from "../../utils/config";
+import { track } from "../../utils/analytics";
 import DeleteModal from "../modals/DeleteModal";
 import UpgradeCta from "../UpgradeCta";
 import ErrorState from "../ErrorState";
@@ -100,6 +102,7 @@ function Employees() {
         .post(api, employeeData)
         .then((res) => {
           console.log("Employee added successfully:", res.data);
+          track("employee_added", { method: "manual" });
           showToast("Employee added! Add a credential next.", "success");
           (
             document.getElementById("addEmployeeForm") as HTMLFormElement
@@ -240,6 +243,9 @@ function Employees() {
           : [];
         setImportImported(imported);
         setImportSkipped(skipped);
+        if (imported > 0) {
+          track("employees_imported", { imported, skipped: skipped.length });
+        }
         showToast(
           `Imported ${imported} employee${imported === 1 ? "" : "s"}` +
             (skipped.length ? `, ${skipped.length} skipped` : ""),
@@ -336,21 +342,7 @@ function Employees() {
                 className="btn btn-ghost btn-sm btn-square"
                 aria-label="Import, export, and template options"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 5v.01M12 12v.01M12 19v.01"
-                  />
-                </svg>
+                <OverflowIcon />
               </div>
               <ul
                 tabIndex={0}
