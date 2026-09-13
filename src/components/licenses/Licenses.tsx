@@ -240,7 +240,7 @@ function Licenses() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th className="w-32"></th>
+                    <th></th>
                     <th>Name</th>
                   </tr>
                 </thead>

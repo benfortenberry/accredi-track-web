@@ -4,6 +4,7 @@ import DeleteModal from "../components/modals/DeleteModal";
 import { showToast } from "../utils/Utilities";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getApiBaseUrl } from "../utils/config";
+import { useGoPro } from "../utils/useGoPro";
 
 const Settings = () => {
   const API_BASE_URL = getApiBaseUrl();

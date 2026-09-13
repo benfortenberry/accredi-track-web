@@ -382,8 +382,7 @@ function EmployeeLicenses() {
               : "Loading Employee..."}
           </h2>
           <button
-            className="btn btn-circle btn-sm shrink-0"
-            aria-label="Add credential"
+            className="btn btn-primary btn-sm shrink-0"
             onClick={() => {
               setIsEditing(false);
               setCurrentEmployeeLicense(null);
@@ -393,6 +392,7 @@ function EmployeeLicenses() {
             }}
           >
             <AddIcon />
+            Add
           </button>
         </div>
 
