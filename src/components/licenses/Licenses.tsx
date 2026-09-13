@@ -240,14 +240,14 @@ function Licenses() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th></th>
+                    <th className="w-1 whitespace-nowrap"></th>
                     <th>Name</th>
                   </tr>
                 </thead>
                 <tbody>
                   {licenses.map((license, i) => (
                     <tr key={i}>
-                      <td>
+                      <td className="w-1 whitespace-nowrap">
                         <ul className="menu menu-horizontal bg-base-200 rounded-box">
                           <li>
                             <button

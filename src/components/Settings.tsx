@@ -13,6 +13,9 @@ const Settings = () => {
 
   const { logout } = useAuth0();
   const { aUser } = useUser();
+  const goPro = useGoPro();
+
+  const isPro = aUser?.pro === 1;
 
   const getEmployeeData = async () => {
     try {
@@ -56,44 +59,76 @@ const Settings = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4 ml-2">Settings</h2>
+    <div className="max-w-2xl mx-auto">
+      <h2 className="text-xl font-bold mb-6">Settings</h2>
 
-      <a href="/license-types" className="btn mx-2 btn-default">
-        Edit License Types
-      </a>
-
-      <button type="button" onClick={getEmployeeData} className="btn mx-2 btn-default">
-        Export Data
-      </button>
-
-      <button type="button" onClick={deleteAccount} className="btn mx-2 btn-default">
-        Delete Account
-      </button>
-
-      {aUser && aUser.pro == 1 && (
-        <a
-          href="https://billing.stripe.com/p/login/3cs16Q1iyayi8JqdQQ"
-          target="_blank"
-          className="btn mx-2 btn-default"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
+      {/* ── Subscription ─────────────────────────────────────────── */}
+      <section className="rounded-box border border-base-content/10 bg-base-100 p-5 mb-4">
+        <div className="flex items-center justify-between gap-3 mb-1">
+          <h3 className="font-semibold">Subscription</h3>
+          <span
+            className={`badge ${isPro ? "badge-primary" : "badge-ghost"}`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-            />
-          </svg>
-          Manage PRO Subscription
-        </a>
-      )}
+            {isPro ? "PRO" : "Free"}
+          </span>
+        </div>
+        <p className="text-sm text-base-content/60 mb-4">
+          {isPro
+            ? "You're on PRO — unlimited employees, license types, and credentials, plus early expiration warnings."
+            : "You're on the free plan. Upgrade to PRO for unlimited records and early “expiring soon” warnings."}
+        </p>
+        {isPro ? (
+          <a
+            href="https://billing.stripe.com/p/login/3cs16Q1iyayi8JqdQQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-outline btn-sm"
+          >
+            Manage subscription
+          </a>
+        ) : (
+          <button className="btn btn-primary btn-sm" onClick={goPro}>
+            Upgrade to PRO
+          </button>
+        )}
+      </section>
+
+      {/* ── Your data ────────────────────────────────────────────── */}
+      <section className="rounded-box border border-base-content/10 bg-base-100 p-5 mb-4">
+        <h3 className="font-semibold mb-1">Your data</h3>
+        <p className="text-sm text-base-content/60 mb-4">
+          Export your employee and license data, or manage the license types
+          you track.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={getEmployeeData}
+            className="btn btn-outline btn-sm"
+          >
+            Export data (CSV)
+          </button>
+          <a href="/license-types" className="btn btn-outline btn-sm">
+            Edit license types
+          </a>
+        </div>
+      </section>
+
+      {/* ── Danger zone ──────────────────────────────────────────── */}
+      <section className="rounded-box border border-error/30 bg-error/5 p-5">
+        <h3 className="font-semibold text-error mb-1">Danger zone</h3>
+        <p className="text-sm text-base-content/70 mb-4">
+          Deleting your account removes your data and cancels any active
+          subscription. Export your data first — this can't be undone.
+        </p>
+        <button
+          type="button"
+          onClick={deleteAccount}
+          className="btn btn-error btn-outline btn-sm"
+        >
+          Delete account
+        </button>
+      </section>
 
       <DeleteModal
         delete={handleDelete}
