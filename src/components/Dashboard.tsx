@@ -123,19 +123,14 @@ function Dashboard() {
           setLicenseChartData({ labels, datasets });
           return licenseCounts;
         });
-        // }
-        // else
-        // {
-        //   setNoData(true)
-        // }
-        setIsLoading(false);
       })
       .catch(() => {
-        setIsLoading(false);
+        // Charts are supplementary and do NOT control the page spinner; only
+        // getMetrics does. This prevents a flash where isLoading flips false
+        // before metrics arrives, briefly rendering the "Getting started"
+        // checklist for a user who actually has data.
         console.error("Failed to fetch license chart data");
       });
-
-    setIsLoading(false);
   };
 
   const getExpiringSoon = async () => {
@@ -165,15 +160,10 @@ function Dashboard() {
           setLExpiringSoonChartData({ labels, datasets });
           return expiringSoonCounts;
         });
-
-        setIsLoading(false);
       })
       .catch(() => {
-        setIsLoading(false);
         console.error("Failed to fetch expiring-soon chart data");
       });
-
-    setIsLoading(false);
   };
 
   if (error) {
