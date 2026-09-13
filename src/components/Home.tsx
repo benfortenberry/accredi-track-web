@@ -70,11 +70,11 @@ function Home() {
 
         <div className="fade-in max-w-3xl mx-auto relative z-10">
           <img
-            src="/cropped-logo-transparent.png"
+            src="/home-logo.png"
             alt="AccrediTrack"
-            className="w-24 mx-auto mb-6"
+            className="w-44 sm:w-52 mx-auto mb-10"
           />
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-[1.08] tracking-tight text-balance">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-5 leading-[1.08] tracking-tight text-balance">
             {vertical.heroHeadline}
           </h1>
           <p className="text-lg sm:text-xl mb-8 opacity-90 max-w-xl mx-auto">

@@ -176,3 +176,17 @@
 .slide-in {
   animation: slideIn 1.5s ease-in-out;
 }
+
+/*
+  Table header contrast. daisyUI's default thead blends into the body (both sit
+  on base-100), so headers are hard to distinguish from data rows. Give the
+  header row a subtle raised background (base-200) and slightly stronger text so
+  it reads as a header without resorting to the brand color. Applies to every
+  .table in the app (Employees, Credentials, License Types, per-employee
+  licenses) from one place.
+*/
+.table thead th {
+  background-color: var(--color-base-200);
+  color: color-mix(in oklch, var(--color-base-content) 75%, transparent);
+  font-weight: 600;
+}

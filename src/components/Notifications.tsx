@@ -55,15 +55,23 @@ function Notifications() {
     return name || "(deleted employee)";
   };
 
-  // Map the backend notificationType to a readable badge.
+  // Map the backend notificationType to a colored dot + plain label (matching
+  // the status style on the Credentials page).
   const typeBadge = (type: string) => {
-    if (type === "expiring_soon") {
-      return <span className="badge badge-warning badge-sm">Expiring soon</span>;
-    }
-    if (type === "expired") {
-      return <span className="badge badge-error badge-sm">Expired</span>;
-    }
-    return <span className="badge badge-ghost badge-sm">Reminder</span>;
+    const map: Record<string, { dot: string; label: string }> = {
+      expiring_soon: { dot: "status-warning", label: "Expiring soon" },
+      expired: { dot: "status-error", label: "Expired" },
+    };
+    const { dot, label } = map[type] ?? {
+      dot: "status-neutral",
+      label: "Reminder",
+    };
+    return (
+      <span className="inline-flex items-center gap-2 whitespace-nowrap">
+        <span className={`status status-sm ${dot}`}></span>
+        {label}
+      </span>
+    );
   };
 
   if (error) {

@@ -34,22 +34,36 @@ function buildOptions() {
       y: {
         ticks: { precision: 0, color: labelColor },
         grid: { color: gridColor },
+        border: { display: false },
       },
       x: {
         ticks: { color: labelColor },
-        grid: { color: gridColor },
+        // Modern look: drop the vertical gridlines, keep only the horizontal
+        // ones so the bars read cleanly.
+        grid: { display: false },
+        border: { display: false },
       },
     },
+    layout: { padding: { top: 4, bottom: 4 } },
     plugins: {
       legend: {
-        position: "top" as const,
-        display: true,
-        labels: { color: labelColor },
+        position: "bottom" as const,
+        display: false,
+        labels: {
+          color: labelColor,
+          usePointStyle: true,
+          pointStyle: "circle" as const,
+          boxWidth: 8,
+          padding: 10,
+          
+        },
       },
       title: {
         display: true,
         color: labelColor,
         text: "License Status by Type",
+        padding: { bottom: 12 },
+        font: { size: 14, weight: "bold" as const },
       },
     },
   };

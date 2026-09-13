@@ -64,7 +64,7 @@ const Settings = () => {
       <h2 className="text-xl font-bold mb-6">Settings</h2>
 
       {/* ── Subscription ─────────────────────────────────────────── */}
-      <section className="rounded-box border border-base-content/10 bg-base-100 p-5 mb-4">
+      <section className="rounded-box border border-base-content/10 bg-base-200 p-5 mb-4">
         <div className="flex items-center justify-between gap-3 mb-1">
           <h3 className="font-semibold">Subscription</h3>
           <span
@@ -75,7 +75,7 @@ const Settings = () => {
         </div>
         <p className="text-sm text-base-content/60 mb-4">
           {isPro
-            ? "You're on PRO — unlimited employees, license types, and credentials, plus early expiration warnings."
+            ? "You're on PRO: unlimited employees, license types, and credentials, plus early expiration warnings."
             : "You're on the free plan. Upgrade to PRO for unlimited records and early “expiring soon” warnings."}
         </p>
         {isPro ? (
@@ -95,7 +95,7 @@ const Settings = () => {
       </section>
 
       {/* ── Your data ────────────────────────────────────────────── */}
-      <section className="rounded-box border border-base-content/10 bg-base-100 p-5 mb-4">
+      <section className="rounded-box border border-base-content/10 bg-base-200 p-5 mb-4">
         <h3 className="font-semibold mb-1">Your data</h3>
         <p className="text-sm text-base-content/60 mb-4">
           Export your employee and license data, or manage the license types
@@ -120,7 +120,7 @@ const Settings = () => {
         <h3 className="font-semibold text-error mb-1">Danger zone</h3>
         <p className="text-sm text-base-content/70 mb-4">
           Deleting your account removes your data and cancels any active
-          subscription. Export your data first — this can't be undone.
+          subscription. Export your data first; this can't be undone.
         </p>
         <button
           type="button"

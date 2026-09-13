@@ -6,7 +6,7 @@ import LicenseTypeChart from "./charts/LicenseTypeChart";
 import ExpiringSoonChart from "./charts/ExpiringSoonChart";
 import ErrorState from "./ErrorState";
 import { getApiBaseUrl } from "../utils/config";
-import { themeColorAlpha } from "../utils/themeColors";
+import { themeColor, themeColorAlpha } from "../utils/themeColors";
 
 function Dashboard() {
   const API_BASE_URL = getApiBaseUrl();
@@ -94,30 +94,42 @@ function Dashboard() {
             ? res.data
             : [];
 
-          let labels: string[] = [];
+          // Build ONE shared set of category labels (every license type that
+          // appears in either the valid or the expired data), then align each
+          // dataset to that order. Previously each dataset set its own labels
+          // and the second overwrote the first, so the x-axis showed only the
+          // expired types and the two series didn't line up.
+          const validByName = new Map(
+            licenseCounts.map((r) => [String(r.licenseName), Number(r.count)])
+          );
+          const expiredByName = new Map(
+            (expiredCount || []).map((r) => [
+              String(r.licenseName),
+              Number(r.count),
+            ])
+          );
+
+          const labels = Array.from(
+            new Set([...validByName.keys(), ...expiredByName.keys()])
+          );
+
           const datasets = [];
-
-          if (licenseCounts.length) {
-            labels = licenseCounts.map((row: { licenseName: unknown }) =>
-              String(row.licenseName)
-            );
-
+          if (labels.length) {
             datasets.push({
               label: "Valid",
-              data: licenseCounts.map((row: { count: unknown }) => row.count),
-              backgroundColor: themeColorAlpha("success", 0.85), // matches the "Active" badge (green = valid)
+              data: labels.map((name) => validByName.get(name) ?? 0),
+              backgroundColor: themeColor("success"), // green = valid, matches the "Active" status
+              borderRadius: 2,
+              borderSkipped: false,
+              maxBarThickness: 40,
             });
-          }
-
-          if (expiredCount && expiredCount.length) {
-            labels = expiredCount.map((row: { licenseName: unknown }) =>
-              String(row.licenseName)
-            );
-
             datasets.push({
               label: "Expired",
-              data: expiredCount.map((row: { count: unknown }) => row.count),
-              backgroundColor: themeColorAlpha("error", 0.85), // matches text-error
+              data: labels.map((name) => expiredByName.get(name) ?? 0),
+              backgroundColor: themeColor("error"), // matches the "Expired" status
+              borderRadius: 2,
+              borderSkipped: false,
+              maxBarThickness: 40,
             });
           }
 

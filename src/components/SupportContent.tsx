@@ -27,7 +27,7 @@ const SupportContent = () => {
           <li>Assign credentials on each employee's license page.</li>
         </ol>
         <p className="text-sm text-base-content/70 mt-2">
-          That's it — the dashboard will show your compliance status automatically.
+          That's it. The dashboard will show your compliance status automatically.
         </p>
       </div>
 

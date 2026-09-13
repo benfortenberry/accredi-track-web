@@ -99,12 +99,21 @@ function Credentials() {
     return true;
   });
 
+  // Status shown as a colored dot + plain label (not text-on-color), so the
+  // punchy status hues never need to carry readable text.
   const statusBadge = (status: string) => {
-    if (status === "Expired")
-      return <span className="badge badge-error badge-sm">Expired</span>;
-    if (status === "ExpiringSoon")
-      return <span className="badge badge-warning badge-sm">Expiring soon</span>;
-    return <span className="badge badge-success badge-sm">Active</span>;
+    const map: Record<string, { dot: string; label: string }> = {
+      Expired: { dot: "status-error", label: "Expired" },
+      ExpiringSoon: { dot: "status-warning", label: "Expiring soon" },
+      Active: { dot: "status-success", label: "Active" },
+    };
+    const { dot, label } = map[status] ?? map.Active;
+    return (
+      <span className="inline-flex items-center gap-2 whitespace-nowrap">
+        <span className={`status status-sm ${dot}`}></span>
+        {label}
+      </span>
+    );
   };
 
   const employeeName = (c: Credential) =>
@@ -209,44 +218,42 @@ function Credentials() {
             <table className="table">
               <thead>
                 <tr>
-                  <th className="w-1 whitespace-nowrap"></th>
                   <th>Employee</th>
                   <th>License Type</th>
                   <th>Issued</th>
                   <th>Expires</th>
                   <th>Status</th>
+                  <th className="w-1 whitespace-nowrap text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {visible.map((c) => (
                   <tr key={c.id}>
-                    <td className="w-1 whitespace-nowrap">
-                      <ul className="menu menu-horizontal bg-base-200 rounded-box">
-                        <li>
-                          <button
-                            type="button"
-                            aria-label={`Edit ${c.licenseName} for ${employeeName(c)}`}
-                            onClick={() => openEdit(c)}
-                          >
-                            <EditIcon />
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            type="button"
-                            aria-label={`Delete ${c.licenseName} for ${employeeName(c)}`}
-                            onClick={() => openDelete(c)}
-                          >
-                            <DeleteIcon />
-                          </button>
-                        </li>
-                      </ul>
-                    </td>
                     <td>{employeeName(c)}</td>
                     <td>{c.licenseName || "(deleted license type)"}</td>
-                    <td>{formatDate(c.issueDate || "")}</td>
+                    <td>{c.issueDate ? formatDate(c.issueDate) : "—"}</td>
                     <td>{formatDate(c.expDate || "")}</td>
                     <td>{statusBadge(c.status)}</td>
+                    <td className="w-1 whitespace-nowrap">
+                      <div className="flex gap-1 justify-end">
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm btn-square"
+                          aria-label={`Edit ${c.licenseName} for ${employeeName(c)}`}
+                          onClick={() => openEdit(c)}
+                        >
+                          <EditIcon />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm btn-square"
+                          aria-label={`Delete ${c.licenseName} for ${employeeName(c)}`}
+                          onClick={() => openDelete(c)}
+                        >
+                          <DeleteIcon />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -364,11 +371,10 @@ function Credentials() {
             </fieldset>
 
             <fieldset className="fieldset">
-              <legend className="fieldset-legend">Issue Date</legend>
+              <legend className="fieldset-legend">Issue Date (optional)</legend>
               <input
                 type="date"
-                className="input validator"
-                required
+                className="input"
                 name="issueDate"
                 defaultValue={current?.issueDate || ""}
               />

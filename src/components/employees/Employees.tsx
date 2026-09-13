@@ -407,7 +407,6 @@ function Employees() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th></th>
                     <th>
                       Status
                       <div className="tooltip tooltip-right">
@@ -431,34 +430,12 @@ function Employees() {
                     <th>Phone</th>
                     <th>Email</th>
                     <th>License(s)</th>
-                    <th></th>
+                    <th className="w-1 whitespace-nowrap text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {employees.map((employee, i) => (
                     <tr key={i}>
-                      <td>
-                        <ul className="menu menu-horizontal bg-base-200 rounded-box">
-                          <li>
-                            <button
-                              type="button"
-                              aria-label={`Edit ${employee.firstName} ${employee.lastName}`}
-                              onClick={() => openEdit(employee)}
-                            >
-                              <EditIcon />
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              aria-label={`Delete ${employee.firstName} ${employee.lastName}`}
-                              onClick={() => openDelete(employee)}
-                            >
-                              <DeleteIcon />
-                            </button>
-                          </li>
-                        </ul>
-                      </td>
                       <td>
                         <div
                           className={`status status-xl text-center ml-3 ${statusColorClass(
@@ -471,17 +448,35 @@ function Employees() {
                       <td>{formatPhoneNumber(employee.phone1)}</td>
                       <td>{employee.email}</td>
                       <td>{employee.licenseCount}</td>
-                      <td>
-                        <ul className="menu menu-horizontal bg-base-200 float-right rounded-box">
-                          <li>
-                            <Link
-                              to={`/employee/${employee.id}`}
-                              aria-label={`View credentials for ${employee.firstName} ${employee.lastName}`}
-                            >
-                              <RightArrowIcon />
-                            </Link>
-                          </li>
-                        </ul>
+                      <td className="w-1 whitespace-nowrap">
+                        {/* Order: View (most-used) first, Delete last so the
+                            destructive action isn't adjacent to the navigation
+                            arrow people click most. */}
+                        <div className="flex gap-1 justify-end">
+                          <Link
+                            to={`/employee/${employee.id}`}
+                            className="btn btn-ghost btn-sm btn-square"
+                            aria-label={`View credentials for ${employee.firstName} ${employee.lastName}`}
+                          >
+                            <RightArrowIcon />
+                          </Link>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm btn-square"
+                            aria-label={`Edit ${employee.firstName} ${employee.lastName}`}
+                            onClick={() => openEdit(employee)}
+                          >
+                            <EditIcon />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm btn-square"
+                            aria-label={`Delete ${employee.firstName} ${employee.lastName}`}
+                            onClick={() => openDelete(employee)}
+                          >
+                            <DeleteIcon />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

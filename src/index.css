@@ -33,13 +33,16 @@
   --color-info: oklch(60% 0.15 220);
   --color-info-content: oklch(100% 0 0);
 
-  --color-success: oklch(65% 0.2 145);
+  /* Status colors: punchy Apple-system hues (green/amber/red). Status is shown
+     as a colored dot next to plain text (not text-on-color), so these can be
+     bright without any contrast constraint. */
+  --color-success: oklch(72% 0.19 150);
   --color-success-content: oklch(100% 0 0);
 
-  --color-warning: oklch(72% 0.18 75);
+  --color-warning: oklch(80% 0.16 75);
   --color-warning-content: oklch(20% 0 0);
 
-  --color-error: oklch(60% 0.22 25);
+  --color-error: oklch(64% 0.23 25);
   --color-error-content: oklch(100% 0 0);
 
   --radius-box: 0.75rem;

@@ -431,12 +431,10 @@ function EmployeeLicenses() {
             <table className="table">
               <thead>
                 <tr>
-                  <th></th>
                   <th>License Type</th>
                   <th>Issue Date</th>
                   <th>Exp Date</th>
-
-                  <th></th>
+                  <th className="w-1 whitespace-nowrap text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -444,31 +442,8 @@ function EmployeeLicenses() {
                   employeeLicenses?.map((employeeLicense, i) => {
                     return (
                       <tr key={i}>
-                        <td>
-                          <ul className="menu menu-horizontal bg-base-200  rounded-box">
-                            <li>
-                              <button
-                                type="button"
-                                aria-label={`Edit ${employeeLicense.licenseName || "credential"}`}
-                                onClick={() => openEditLicense(employeeLicense)}
-                              >
-                                <EditIcon />
-                              </button>
-                            </li>
-                            <li>
-                              <button
-                                type="button"
-                                aria-label={`Delete ${employeeLicense.licenseName || "credential"}`}
-                                onClick={() => openDeleteLicense(employeeLicense)}
-                              >
-                                <DeleteIcon />
-                              </button>
-                            </li>
-                          </ul>
-                        </td>
-
                         <td>{employeeLicense.licenseName}</td>
-                        <td>{formatDate(employeeLicense.issueDate || "")}</td>
+                        <td>{employeeLicense.issueDate ? formatDate(employeeLicense.issueDate) : "—"}</td>
                         <td>
                           {formatDate(employeeLicense.expDate || "")}
 
@@ -479,6 +454,26 @@ function EmployeeLicenses() {
                                 : "status-error"
                             }`}
                           ></div>
+                        </td>
+                        <td className="w-1 whitespace-nowrap">
+                          <div className="flex gap-1 justify-end">
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm btn-square"
+                              aria-label={`Edit ${employeeLicense.licenseName || "credential"}`}
+                              onClick={() => openEditLicense(employeeLicense)}
+                            >
+                              <EditIcon />
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm btn-square"
+                              aria-label={`Delete ${employeeLicense.licenseName || "credential"}`}
+                              onClick={() => openDeleteLicense(employeeLicense)}
+                            >
+                              <DeleteIcon />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -509,7 +504,7 @@ function EmployeeLicenses() {
                         </span>
                       </div>
                       <div className="text-sm text-base-content/70 mt-1">
-                        Issued {formatDate(employeeLicense.issueDate || "")}
+                        Issued {employeeLicense.issueDate ? formatDate(employeeLicense.issueDate) : "—"}
                       </div>
                       <div className="text-sm text-base-content/70">
                         Expires {formatDate(employeeLicense.expDate || "")}
@@ -695,16 +690,14 @@ function EmployeeLicenses() {
                     </fieldset>
 
                     <fieldset className="fieldset">
-                      <legend className="fieldset-legend">Issue Date</legend>
+                      <legend className="fieldset-legend">Issue Date (optional)</legend>
                       <input
                         type="date"
-                        className="input validator"
-                        required
+                        className="input"
                         name="issueDate"
                         placeholder="Issue Date"
                         defaultValue={currentEmployeeLicense?.issueDate || ""}
                       />
-                      <p className="validator-hint hidden mt-1 mb-2">Required</p>
                     </fieldset>
 
                     <fieldset className="fieldset">

@@ -45,7 +45,7 @@ function Layout() {
           <div className="flex-1">
             <Link to="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
               <img
-                src="/logo-transparent-2000x2000.png"
+                src="/cropped-logo-transparent.png"
                 alt="AccrediTrack"
                 className="w-12 mx-auto"
               />

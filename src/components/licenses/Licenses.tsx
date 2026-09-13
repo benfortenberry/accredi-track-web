@@ -241,36 +241,34 @@ function Licenses() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th className="w-1 whitespace-nowrap"></th>
                     <th>Name</th>
+                    <th className="w-1 whitespace-nowrap text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {licenses.map((license, i) => (
                     <tr key={i}>
-                      <td className="w-1 whitespace-nowrap">
-                        <ul className="menu menu-horizontal bg-base-200 rounded-box">
-                          <li>
-                            <button
-                              type="button"
-                              aria-label={`Edit ${license.name}`}
-                              onClick={() => openEditLicense(license)}
-                            >
-                              <EditIcon />
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              aria-label={`Delete ${license.name}`}
-                              onClick={() => checkInUse(license)}
-                            >
-                              <DeleteIcon />
-                            </button>
-                          </li>
-                        </ul>
-                      </td>
                       <td>{license.name}</td>
+                      <td className="w-1 whitespace-nowrap">
+                        <div className="flex gap-1 justify-end">
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm btn-square"
+                            aria-label={`Edit ${license.name}`}
+                            onClick={() => openEditLicense(license)}
+                          >
+                            <EditIcon />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm btn-square"
+                            aria-label={`Delete ${license.name}`}
+                            onClick={() => checkInUse(license)}
+                          >
+                            <DeleteIcon />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
