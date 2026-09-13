@@ -220,8 +220,7 @@ function Licenses() {
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <h2 className="text-xl font-bold">License Types</h2>
           <button
-            className="btn btn-circle btn-sm"
-            aria-label="Add license type"
+            className="btn btn-primary btn-sm"
             onClick={() => {
               setIsEditing(false);
               setCurrentLicense(null);
@@ -231,6 +230,7 @@ function Licenses() {
             }}
           >
             <AddIcon />
+            Add
           </button>
         </div>
         {licenses && licenses.length > 0 ? (

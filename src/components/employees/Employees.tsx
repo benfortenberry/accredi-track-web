@@ -325,38 +325,65 @@ function Employees() {
             narrow screens instead of floating over the title. */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <h2 className="text-xl font-bold">Employees</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              className="btn btn-ghost btn-sm font-normal"
-              onClick={downloadTemplate}
-              title="Download a correctly-formatted CSV to fill in"
-            >
-              Template
-            </button>
-            <label
-              className="btn btn-outline btn-sm font-normal"
-              title="CSV columns: First Name, Last Name, Phone (10 digits), Email"
-            >
-              {isImporting ? "Importing..." : "Import CSV"}
-              <input
-                type="file"
-                accept=".csv,text/csv"
-                className="hidden"
-                disabled={isImporting}
-                onChange={handleImportFile}
-              />
-            </label>
-            {employees && employees.length > 0 && (
-              <button
-                className="btn btn-outline btn-sm font-normal"
-                onClick={exportData}
+          <div className="flex items-center gap-2">
+            {/* Occasional admin actions (import / export / template) tucked into
+                an overflow menu so the recurring "Add" action stays primary and
+                the header isn't cluttered. */}
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-sm btn-square"
+                aria-label="Import, export, and template options"
               >
-                Export CSV
-              </button>
-            )}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 5v.01M12 12v.01M12 19v.01"
+                  />
+                </svg>
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-200 rounded-box z-10 mt-2 w-56 p-2 shadow"
+              >
+                <li>
+                  <label>
+                    {isImporting ? "Importing..." : "Import CSV"}
+                    <input
+                      type="file"
+                      accept=".csv,text/csv"
+                      className="hidden"
+                      disabled={isImporting}
+                      onChange={handleImportFile}
+                    />
+                  </label>
+                </li>
+                {employees && employees.length > 0 && (
+                  <li>
+                    <button type="button" onClick={exportData}>
+                      Export CSV
+                    </button>
+                  </li>
+                )}
+                <li>
+                  <button type="button" onClick={downloadTemplate}>
+                    Download CSV template
+                  </button>
+                </li>
+              </ul>
+            </div>
             <button
-              className="btn btn-circle btn-sm"
-              aria-label="Add employee"
+              className="btn btn-primary btn-sm"
               onClick={() => {
                 setIsEditing(false);
                 setCurrentEmployee(null);
@@ -366,6 +393,7 @@ function Employees() {
               }}
             >
               <AddIcon />
+              Add
             </button>
           </div>
         </div>
