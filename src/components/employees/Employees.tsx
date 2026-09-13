@@ -631,7 +631,12 @@ function Employees() {
             {((employees && employees.length <= 4) ||
               isEditing ||
               aUser.pro == 1) && (
-              <form autoComplete="off" id="addEmployeeForm" onSubmit={handleSubmit}>
+              <form
+                autoComplete="off"
+                id="addEmployeeForm"
+                onSubmit={handleSubmit}
+                key={currentEmployee?.id ?? "new"}
+              >
                 <label className="input validator mt-2 ">
                   <input
                     type="text"
@@ -690,7 +695,7 @@ function Employees() {
                 </div>
 
                 <button className="btn float-right btn-primary mt-2">
-                  {isEditing ? "Save" : "Add"}
+                  {isEditing ? "Save employee" : "Add employee"}
                 </button>
               </form>
             )}

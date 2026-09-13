@@ -249,17 +249,23 @@ function Dashboard() {
             <div className="stat-desc ">&nbsp;</div>
           </div>
 
-          <div className="stat place-items-center">
+          <Link
+            to="/credentials?status=expiring"
+            className="stat place-items-center hover:bg-base-200 rounded-box transition-colors"
+          >
             <div className="stat-title">Expiring Soon</div>
             <div className="stat-value ">{metrics?.expiringSoon ?? 0}</div>
-            <div className="stat-desc ">Next 30 Days</div>
-          </div>
+            <div className="stat-desc link link-hover">Next 30 Days</div>
+          </Link>
 
-          <div className="stat place-items-center">
+          <Link
+            to="/credentials?status=expired"
+            className="stat place-items-center hover:bg-base-200 rounded-box transition-colors"
+          >
             <div className="stat-title">Expired Licenses</div>
             <div className="stat-value ">{metrics?.expiredCount ?? 0}</div>
-            <div className="stat-desc ">&nbsp;</div>
-          </div>
+            <div className="stat-desc link link-hover">View</div>
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

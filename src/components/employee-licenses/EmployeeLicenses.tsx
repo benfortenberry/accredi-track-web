@@ -310,11 +310,14 @@ function EmployeeLicenses() {
   const getStatus = getLicenseStatus;
 
   const handleGoBack = () => {
-    console.log(referral);
-    if (referral) {
-      navigate("/license-types");
+    // Prefer real browser history so "back" returns wherever the user came
+    // from (Employees, Credentials, or the License Types in-use modal). Fall
+    // back to a sensible fixed route when there's no history (e.g. deep link):
+    // the ?r=l referral means we arrived from License Types.
+    if (window.history.length > 1) {
+      navigate(-1);
     } else {
-      navigate("/employees");
+      navigate(referral ? "/license-types" : "/employees");
     }
   };
 
@@ -607,6 +610,7 @@ function EmployeeLicenses() {
                     autoComplete="off"
                     id="addEmployeeLicenseForm"
                     onSubmit={handleSubmit}
+                    key={currentEmployeeLicense?.id ?? "new"}
                   >
                     <fieldset className="fieldset mt-3">
                       <legend className="fieldset-legend">License type</legend>
@@ -723,7 +727,7 @@ function EmployeeLicenses() {
                           : undefined
                       }
                     >
-                      {isEditing ? "Save" : "Add"}
+                      {isEditing ? "Save credential" : "Add credential"}
                     </button>
                   </form>
                 </>

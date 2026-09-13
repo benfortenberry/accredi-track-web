@@ -377,22 +377,30 @@ function Licenses() {
               </h3>
             )}
             {((licenses && licenses.length < 5) || isEditing || aUser.pro == 1) && (
-              <form autoComplete="off" id="addEditForm" onSubmit={handleSubmit}>
-                <label className="input validator mt-2">
+              <form
+                autoComplete="off"
+                id="addEditForm"
+                onSubmit={handleSubmit}
+                key={currentLicense?.id ?? "new"}
+                className="mt-4"
+              >
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">License type name</legend>
                   <input
                     type="text"
                     required
-                    className=""
+                    className="input w-full"
                     name="name"
-                    placeholder="License Name"
+                    placeholder="e.g. CPR Certification"
                     defaultValue={currentLicense?.name || ""}
                   />
-                </label>
-                <p className="validator-hint  hidden mt-1 mb-2">Required</p>
+                </fieldset>
 
-                <button className="btn float-right btn-primary mt-2">
-                  {isEditing ? "Save" : "Add"}
-                </button>
+                <div className="mt-4 flex justify-end">
+                  <button className="btn btn-primary">
+                    {isEditing ? "Save license type" : "Add license type"}
+                  </button>
+                </div>
               </form>
             )}
             {licenses && licenses.length >= 5 && !isEditing && aUser.pro != 1 && (

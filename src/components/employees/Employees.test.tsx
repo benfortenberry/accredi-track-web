@@ -106,7 +106,7 @@ describe("Employees add flow", () => {
     await user.type(screen.getByPlaceholderText("Phone Number"), "5551112222");
     await user.type(screen.getByPlaceholderText("Email Address"), "sam@example.com");
 
-    await user.click(screen.getByRole("button", { name: "Add" }));
+    await user.click(screen.getByRole("button", { name: "Add employee" }));
 
     await waitFor(() => {
       expect(mocks.httpClient.post).toHaveBeenCalledWith(
@@ -139,7 +139,7 @@ describe("Employees add flow", () => {
     await user.type(screen.getByPlaceholderText("Last Name"), "Doe");
     await user.type(screen.getByPlaceholderText("Phone Number"), "5551112222");
     await user.type(screen.getByPlaceholderText("Email Address"), "sam@example.com");
-    await user.click(screen.getByRole("button", { name: "Add" }));
+    await user.click(screen.getByRole("button", { name: "Add employee" }));
 
     // The specific backend message should appear via showToast.
     const toastContainer = document.getElementById("toast-container")!;

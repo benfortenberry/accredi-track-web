@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, Link } from "react-router-dom";
 import LogoutButton from "./auth0/LogoutButton";
 
 import { useUser } from "../context/UserContext";
@@ -22,24 +22,27 @@ function Layout() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="navbar rounded-box mt-3 bg-base-200/90 shadow-sm">
           <div className="flex-1">
-            <a href="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
+            <Link to="/dashboard" className="btn pr-1 pl-1 ml-2 btn-ghost text-xl">
               <img
                 src="/logo-transparent-2000x2000.png"
                 alt="AccrediTrack"
                 className="w-12 mx-auto"
               />
-            </a>
+            </Link>
           </div>
           <div className="flex-none">
             <ul className="menu menu-horizontal px-1">
               <li className="hidden md:block">
-                <a href="/dashboard" className={navLinkClass("/dashboard")}>Dashboard</a>
+                <Link to="/dashboard" className={navLinkClass("/dashboard")}>Dashboard</Link>
               </li>
               <li className="hidden md:block">
-                <a href="/employees" className={navLinkClass("/employees")}>Employees</a>
+                <Link to="/employees" className={navLinkClass("/employees")}>Employees</Link>
               </li>
               <li className="hidden md:block">
-                <a href="/license-types" className={navLinkClass("/license-types")}>License Types</a>
+                <Link to="/credentials" className={navLinkClass("/credentials")}>Credentials</Link>
+              </li>
+              <li className="hidden md:block">
+                <Link to="/license-types" className={navLinkClass("/license-types")}>License Types</Link>
               </li>
 
               {aUser && aUser.pro != 1 && (
@@ -53,18 +56,18 @@ function Layout() {
                 </li>
               )}
               <li className="hidden md:block">
-                <a
-                  href="/settings"
+                <Link
+                  to="/settings"
                   className={navLinkClass("/settings")}
                   title="Settings"
                   aria-label="Settings"
                 >
                   <GearIcon />
-                </a>
+                </Link>
               </li>
               <li className="hidden md:block">
-                <a
-                  href="/support"
+                <Link
+                  to="/support"
                   className={navLinkClass("/support")}
                   title="Support"
                   aria-label="Support"
@@ -84,7 +87,7 @@ function Layout() {
                       d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
                     />
                   </svg>
-                </a>
+                </Link>
               </li>
 
               {/* Mobile hamburger */}
@@ -117,29 +120,34 @@ function Layout() {
                     className="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
                   >
                     <li>
-                      <a href="/dashboard" className={`btn btn-ghost ${navLinkClass("/dashboard")}`}>
+                      <Link to="/dashboard" className={`btn btn-ghost ${navLinkClass("/dashboard")}`}>
                         Dashboard
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a href="/employees" className={`btn btn-ghost ${navLinkClass("/employees")}`}>
+                      <Link to="/employees" className={`btn btn-ghost ${navLinkClass("/employees")}`}>
                         Employees
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a href="/license-types" className={`btn btn-ghost ${navLinkClass("/license-types")}`}>
+                      <Link to="/credentials" className={`btn btn-ghost ${navLinkClass("/credentials")}`}>
+                        Credentials
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/license-types" className={`btn btn-ghost ${navLinkClass("/license-types")}`}>
                         License Types
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a href="/settings" className={`btn btn-ghost ${navLinkClass("/settings")}`}>
+                      <Link to="/settings" className={`btn btn-ghost ${navLinkClass("/settings")}`}>
                         Settings
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a href="/support" className={`btn btn-ghost ${navLinkClass("/support")}`}>
+                      <Link to="/support" className={`btn btn-ghost ${navLinkClass("/support")}`}>
                         Support
-                      </a>
+                      </Link>
                     </li>
 
                     {aUser && aUser.pro != 1 && (
