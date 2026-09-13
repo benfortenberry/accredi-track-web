@@ -263,7 +263,13 @@ function Dashboard() {
             className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
           >
             <div className="text-sm text-base-content/60">Expiring Soon</div>
-            <div className="text-3xl font-bold text-warning">{metrics?.expiringSoon ?? 0}</div>
+            <div
+              className={`text-3xl font-bold ${
+                (metrics?.expiringSoon ?? 0) > 0 ? "text-warning" : ""
+              }`}
+            >
+              {metrics?.expiringSoon ?? 0}
+            </div>
             <div className="text-xs link link-hover">Next 30 days</div>
           </Link>
 
@@ -272,7 +278,13 @@ function Dashboard() {
             className="flex flex-col items-center justify-center gap-1 p-5 rounded-box border border-base-content/10 bg-base-100 hover:bg-base-200 hover:border-base-content/20 transition-colors"
           >
             <div className="text-sm text-base-content/60">Expired Licenses</div>
-            <div className="text-3xl font-bold text-error">{metrics?.expiredCount ?? 0}</div>
+            <div
+              className={`text-3xl font-bold ${
+                (metrics?.expiredCount ?? 0) > 0 ? "text-error" : ""
+              }`}
+            >
+              {metrics?.expiredCount ?? 0}
+            </div>
             <div className="text-xs link link-hover">View all</div>
           </Link>
 
