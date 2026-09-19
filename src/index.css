@@ -16,15 +16,15 @@
   --color-base-300: oklch(25% 0.010 60);
   --color-base-content: oklch(92% 0.008 60);
 
-  /* Primary = burnt orange */
-  --color-primary: oklch(66% 0.19 40);
+  /* Primary = burnt orange, matched to the logo mark (#c8501e). */
+  --color-primary: oklch(58.3% 0.164 40.4);
   --color-primary-content: oklch(100% 0 0);
 
   /* Secondary = mid charcoal */
   --color-secondary: oklch(30% 0.01 60);
   --color-secondary-content: oklch(92% 0 0);
 
-  --color-accent: oklch(66% 0.19 40);
+  --color-accent: oklch(58.3% 0.164 40.4);
   --color-accent-content: oklch(100% 0 0);
 
   --color-neutral: oklch(25% 0.01 60);
