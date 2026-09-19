@@ -21,7 +21,7 @@ function Layout() {
   // space in both states and never causes layout shift.
   const navLinkClass = (path: string) =>
     pathname === path
-      ? "border-b-2 border-primary text-primary rounded-none"
+      ? "border-b-2 border-primary  rounded-none"
       : "border-b-2 border-transparent";
 
   // Mobile dropdown: vertical stack of full-width buttons, so there's no reflow
